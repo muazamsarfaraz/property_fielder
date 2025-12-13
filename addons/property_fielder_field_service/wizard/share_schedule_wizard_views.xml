@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Share Schedule Wizard Form View -->
+    <record id="view_share_schedule_wizard_form" model="ir.ui.view">
+        <field name="name">property_fielder.share.schedule.wizard.form</field>
+        <field name="model">property_fielder.share.schedule.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Share Schedule">
+                <group>
+                    <group string="Routes to Share">
+                        <field name="route_ids" widget="many2many_tags" 
+                               options="{'no_create': True}"/>
+                    </group>
+                    <group string="Summary">
+                        <field name="inspector_count" readonly="1"/>
+                        <field name="job_count" readonly="1"/>
+                        <field name="owner_count" readonly="1"/>
+                    </group>
+                </group>
+                <group string="Sharing Options">
+                    <group>
+                        <field name="share_with_inspectors"/>
+                        <field name="share_with_owners"/>
+                    </group>
+                    <group>
+                        <field name="include_map_link"/>
+                        <field name="additional_emails" placeholder="email1@example.com, email2@example.com"/>
+                    </group>
+                </group>
+                <group string="Custom Message">
+                    <field name="custom_message" nolabel="1" placeholder="Optional custom message to include in all emails..."/>
+                </group>
+                <footer>
+                    <button name="action_send_schedule" string="Send Schedule" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open wizard from routes -->
+    <record id="action_share_schedule_wizard" model="ir.actions.act_window">
+        <field name="name">Share Schedule</field>
+        <field name="res_model">property_fielder.share.schedule.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_property_fielder_route"/>
+        <field name="binding_view_types">list,form</field>
+    </record>
+</odoo>
+

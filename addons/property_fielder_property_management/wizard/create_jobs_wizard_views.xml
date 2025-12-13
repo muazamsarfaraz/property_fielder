@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Create Jobs from Inspections Wizard Form View -->
+    <record id="view_create_jobs_wizard_form" model="ir.ui.view">
+        <field name="name">property_fielder.create.jobs.wizard.form</field>
+        <field name="model">property_fielder.create.jobs.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Jobs from Inspections">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <i class="fa fa-calendar-plus text-primary" title="Create Jobs"/>
+                            Create Jobs from Inspections
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Find Inspections Without Jobs">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <button name="action_find_inspections"
+                                    string="Find Inspections"
+                                    type="object"
+                                    class="btn-primary"
+                                    icon="fa-search"/>
+                        </group>
+
+                        <group string="Job Details">
+                            <field name="duration_minutes"/>
+                            <field name="priority"/>
+                        </group>
+                    </group>
+
+                    <group string="Selected Inspections">
+                        <field name="inspection_count" readonly="1"/>
+                        <field name="inspection_ids" nolabel="1" colspan="2">
+                            <list>
+                                <field name="name"/>
+                                <field name="property_id"/>
+                                <field name="certification_type_id"/>
+                                <field name="scheduled_date"/>
+                                <field name="inspector_id"/>
+                                <field name="state"/>
+                            </list>
+                        </field>
+                    </group>
+
+                    <group string="Additional Information">
+                        <field name="notes" nolabel="1" placeholder="Add notes for all jobs..."/>
+                    </group>
+
+                    <div class="alert alert-info" role="alert">
+                        <p><strong><i class="fa fa-info-circle" title="Information"/> How it works:</strong></p>
+                        <ol>
+                            <li>Click "Find Inspections" to find inspections that don't have jobs yet</li>
+                            <li>Or select inspections from the Inspections list and use the Action menu</li>
+                            <li>Jobs will be scheduled on the inspection's scheduled date</li>
+                            <li>Click "Create Jobs" to generate field service jobs</li>
+                            <li>Jobs will appear in Field Service › Jobs and on the Dispatch map</li>
+                        </ol>
+                    </div>
+                </sheet>
+
+                <footer>
+                    <button name="action_create_jobs"
+                            string="Create Jobs"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-check"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open the wizard from Inspections list -->
+    <record id="action_create_jobs_wizard" model="ir.actions.act_window">
+        <field name="name">Create Jobs from Inspections</field>
+        <field name="res_model">property_fielder.create.jobs.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="property_fielder_property_management.model_property_fielder_property_inspection"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <!-- Menu item to open the wizard directly -->
+    <record id="action_create_jobs_wizard_menu" model="ir.actions.act_window">
+        <field name="name">Create Jobs from Inspections</field>
+        <field name="res_model">property_fielder.create.jobs.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
+

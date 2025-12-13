@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Job List View -->
+    <record id="view_field_service_job_list" model="ir.ui.view">
+        <field name="name">property_fielder.job.list</field>
+        <field name="model">property_fielder.job</field>
+        <field name="arch" type="xml">
+            <list string="Jobs" create="1" edit="1" delete="1">
+                <field name="job_number"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="inspector_id"/>
+                <field name="route_id"/>
+                <field name="scheduled_date"/>
+                <field name="earliest_start"/>
+                <field name="latest_end"/>
+                <field name="duration_minutes"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-info="state == 'in_progress'" decoration-warning="state == 'scheduled'" decoration-muted="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Job Form View -->
+    <record id="view_field_service_job_form" model="ir.ui.view">
+        <field name="name">property_fielder.job.form</field>
+        <field name="model">property_fielder.job</field>
+        <field name="arch" type="xml">
+            <form string="Job">
+                <header>
+                    <button name="action_request_change" string="Request Change" type="object"
+                            class="btn-secondary" icon="fa-exchange"
+                            invisible="state in ('completed', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,scheduled,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="job_number" readonly="1"/>
+                        </h1>
+                        <label for="name"/>
+                        <field name="name" placeholder="e.g., Annual Gas Safety Inspection"/>
+                    </div>
+                    <group>
+                        <group name="job_details">
+                            <field name="partner_id" required="1"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="duration_minutes"/>
+                        </group>
+                        <group name="assignment">
+                            <field name="inspector_id"/>
+                            <field name="route_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="scheduling">
+                            <field name="scheduled_date"/>
+                            <field name="earliest_start" widget="datetime"/>
+                            <field name="latest_end" widget="datetime"/>
+                        </group>
+                        <group name="location">
+                            <field name="street"/>
+                            <field name="city"/>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Skills Required" name="skills">
+                            <field name="skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Job Kanban View -->
+    <record id="view_field_service_job_kanban" model="ir.ui.view">
+        <field name="name">property_fielder.job.kanban</field>
+        <field name="model">property_fielder.job</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column" quick_create="false">
+                <field name="id"/>
+                <field name="job_number"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="inspector_id"/>
+                <field name="scheduled_date"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <field name="skill_ids"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title"><field name="job_number"/></strong>
+                                    <br/>
+                                    <span class="o_kanban_record_subtitle"><field name="name"/></span>
+                                </div>
+                                <div class="o_kanban_record_top_right">
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <field name="partner_id"/>
+                                <br/>
+                                <i class="fa fa-calendar"/> <field name="scheduled_date"/>
+                                <br/>
+                                <i class="fa fa-user"/> <field name="inspector_id"/>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Job Calendar View -->
+    <record id="view_field_service_job_calendar" model="ir.ui.view">
+        <field name="name">property_fielder.job.calendar</field>
+        <field name="model">property_fielder.job</field>
+        <field name="arch" type="xml">
+            <calendar string="Jobs Calendar" date_start="earliest_start" date_stop="latest_end" color="inspector_id" mode="week">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="inspector_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- Job Search View -->
+    <record id="view_field_service_job_search" model="ir.ui.view">
+        <field name="name">property_fielder.job.search</field>
+        <field name="model">property_fielder.job</field>
+        <field name="arch" type="xml">
+            <search string="Search Jobs">
+                <field name="job_number"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="inspector_id"/>
+                <field name="route_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Scheduled" name="scheduled" domain="[('state', '=', 'scheduled')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+                <separator/>
+                <filter string="Unassigned" name="unassigned" domain="[('inspector_id', '=', False)]"/>
+                <filter string="Today" name="today" domain="[('scheduled_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="this_week" domain="[('scheduled_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')), ('scheduled_date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="High Priority" name="high_priority" domain="[('priority', '=', '3')]"/>
+                <separator/>
+                <filter string="Inspector" name="group_inspector" context="{'group_by': 'inspector_id'}"/>
+                <filter string="Route" name="group_route" context="{'group_by': 'route_id'}"/>
+                <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                <filter string="Scheduled Date" name="group_date" context="{'group_by': 'scheduled_date'}"/>
+                <filter string="Customer" name="group_customer" context="{'group_by': 'partner_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Job Actions -->
+    <record id="action_field_service_job" model="ir.actions.act_window">
+        <field name="name">Jobs</field>
+        <field name="res_model">property_fielder.job</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first job
+            </p>
+            <p>
+                Jobs represent work to be done at customer locations.
+                Schedule jobs, assign inspectors, and optimize routes.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_field_service_job_today" model="ir.actions.act_window">
+        <field name="name">Today's Jobs</field>
+        <field name="res_model">property_fielder.job</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
+        <field name="context">{'search_default_today': 1}</field>
+        <field name="domain">[('scheduled_date', '=', context_today().strftime('%Y-%m-%d'))]</field>
+    </record>
+
+    <record id="action_field_service_job_unassigned" model="ir.actions.act_window">
+        <field name="name">Unassigned Jobs</field>
+        <field name="res_model">property_fielder.job</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_unassigned': 1}</field>
+        <field name="domain">[('inspector_id', '=', False)]</field>
+    </record>
+</odoo>

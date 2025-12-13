@@ -1,0 +1,310 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+
+        <!-- Certification Type Views -->
+        <record id="view_certification_type_tree" model="ir.ui.view">
+            <field name="name">property_fielder.certification.type.tree</field>
+            <field name="model">property_fielder.certification.type</field>
+            <field name="arch" type="xml">
+                <list string="Certification Types" decoration-muted="not active">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="flage_category" widget="badge" decoration-info="flage_category == 'fire'" decoration-warning="flage_category == 'gas'" decoration-danger="flage_category == 'electrical'"/>
+                    <field name="validity_period" string="Validity (days)"/>
+                    <field name="warning_period" string="Warning (days)"/>
+                    <field name="certification_count"/>
+                    <field name="active" invisible="1"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_certification_type_search" model="ir.ui.view">
+            <field name="name">property_fielder.certification.type.search</field>
+            <field name="model">property_fielder.certification.type</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                    <separator/>
+                    <filter string="Fire Safety" name="fire" domain="[('flage_category', '=', 'fire')]"/>
+                    <filter string="Legionella" name="legionella" domain="[('flage_category', '=', 'legionella')]"/>
+                    <filter string="Asbestos" name="asbestos" domain="[('flage_category', '=', 'asbestos')]"/>
+                    <filter string="Gas Safety" name="gas" domain="[('flage_category', '=', 'gas')]"/>
+                    <filter string="Electrical" name="electrical" domain="[('flage_category', '=', 'electrical')]"/>
+                    <filter string="Other" name="other" domain="[('flage_category', '=', 'other')]"/>
+                    <filter string="FLAGE+ Category" name="group_category" context="{'group_by': 'flage_category'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_certification_type_kanban" model="ir.ui.view">
+            <field name="name">property_fielder.certification.type.kanban</field>
+            <field name="model">property_fielder.certification.type</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="flage_category"/>
+                    <field name="validity_period"/>
+                    <field name="warning_period"/>
+                    <field name="certification_count"/>
+                    <field name="color"/>
+                    <templates>
+                        <t t-name="card">
+                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                    </div>
+                                    <span class="badge badge-pill"><field name="code"/></span>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="flage_category" widget="badge"/>
+                                    <div class="text-muted">
+                                        <i class="fa fa-clock-o"/> Valid for <field name="validity_period"/> days
+                                    </div>
+                                    <div class="text-muted">
+                                        <i class="fa fa-bell-o"/> Warning at <field name="warning_period"/> days
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span class="badge badge-secondary">
+                                            <i class="fa fa-certificate"/> <field name="certification_count"/> Certifications
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+        <record id="view_certification_type_form" model="ir.ui.view">
+            <field name="name">property_fielder.certification.type.form</field>
+            <field name="model">property_fielder.certification.type</field>
+            <field name="arch" type="xml">
+                <form string="Certification Type">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="%(action_property_certification)d" type="action" class="oe_stat_button" icon="fa-certificate" context="{'search_default_certification_type_id': id}">
+                                <field name="certification_count" widget="statbutton" string="Certifications"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1>
+                                <field name="name" placeholder="e.g., Boiler Service Certificate"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Basic Information">
+                                <field name="code" placeholder="e.g., BOILER"/>
+                                <field name="flage_category" widget="radio"/>
+                                <field name="sequence"/>
+                                <field name="active"/>
+                            </group>
+                            <group string="Validity Configuration">
+                                <label for="validity_period"/>
+                                <div class="o_row">
+                                    <field name="validity_period" class="oe_inline"/>
+                                    <span class="oe_inline">days</span>
+                                </div>
+                                <label for="warning_period"/>
+                                <div class="o_row">
+                                    <field name="warning_period" class="oe_inline"/>
+                                    <span class="oe_inline">days before expiry</span>
+                                </div>
+                                <field name="color" widget="color_picker"/>
+                            </group>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1" placeholder="Describe what this certification covers, legal requirements, etc."/>
+                        </group>
+                        <notebook>
+                            <page string="Compliance Requirements" name="requirements">
+                                <field name="requirement_ids">
+                                    <list editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="is_mandatory"/>
+                                        <field name="inspection_frequency"/>
+                                        <field name="custom_frequency_days" invisible="inspection_frequency != 'custom'" required="inspection_frequency == 'custom'"/>
+                                        <field name="legal_reference"/>
+                                        <field name="document_required"/>
+                                    </list>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="name"/>
+                                                <field name="is_mandatory"/>
+                                                <field name="legal_reference"/>
+                                            </group>
+                                            <group>
+                                                <field name="inspection_frequency"/>
+                                                <field name="custom_frequency_days" invisible="inspection_frequency != 'custom'" required="inspection_frequency == 'custom'"/>
+                                                <field name="document_required"/>
+                                                <field name="sequence"/>
+                                            </group>
+                                        </group>
+                                        <group>
+                                            <field name="description" placeholder="Detailed description of this requirement..."/>
+                                        </group>
+                                        <group string="Document Template">
+                                            <field name="document_template" filename="document_template_filename"/>
+                                            <field name="document_template_filename" invisible="1"/>
+                                        </group>
+                                        <group>
+                                            <field name="notes" placeholder="Additional notes..."/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Help &amp; Examples" name="help">
+                                <div class="alert alert-info" role="alert">
+                                    <h4>Creating Custom Certification Types</h4>
+                                    <p>You can create custom certification types for any property compliance requirement beyond the standard FLAGE+ certifications.</p>
+
+                                    <h5>Examples of Custom Certifications:</h5>
+                                    <ul>
+                                        <li><strong>Boiler Service</strong> - Annual boiler maintenance (365 days validity)</li>
+                                        <li><strong>Lift Inspection</strong> - 6-monthly lift safety checks (180 days validity)</li>
+                                        <li><strong>Fire Extinguisher Service</strong> - Annual fire extinguisher checks (365 days validity)</li>
+                                        <li><strong>Emergency Lighting</strong> - Annual emergency lighting tests (365 days validity)</li>
+                                        <li><strong>Water Tank Cleaning</strong> - Annual water tank cleaning (365 days validity)</li>
+                                        <li><strong>Playground Inspection</strong> - Annual playground safety inspection (365 days validity)</li>
+                                        <li><strong>CCTV Maintenance</strong> - Annual CCTV system check (365 days validity)</li>
+                                        <li><strong>Gutter Cleaning</strong> - Bi-annual gutter cleaning (180 days validity)</li>
+                                    </ul>
+
+                                    <h5>Configuration Tips:</h5>
+                                    <ul>
+                                        <li><strong>Code:</strong> Use short, uppercase codes (e.g., BOILER, LIFT, FIRE_EXT)</li>
+                                        <li><strong>FLAGE+ Category:</strong> Select "Other" for non-FLAGE+ certifications</li>
+                                        <li><strong>Validity Period:</strong> Set based on legal or manufacturer requirements</li>
+                                        <li><strong>Warning Period:</strong> Set to give enough time to schedule renewal (typically 30-90 days)</li>
+                                        <li><strong>Requirements:</strong> Add specific inspection tasks or checks required</li>
+                                    </ul>
+                                </div>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record id="action_certification_type" model="ir.actions.act_window">
+            <field name="name">Certification Types</field>
+            <field name="res_model">property_fielder.certification.type</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new certification type
+                </p>
+                <p>
+                    Define custom certification types for property compliance tracking.
+                    You can create certifications for boiler services, lift inspections,
+                    fire extinguisher checks, and any other property compliance requirements.
+                </p>
+            </field>
+        </record>
+        
+        <!-- Property Certification Views -->
+        <record id="view_property_certification_tree" model="ir.ui.view">
+            <field name="name">property_fielder.property.certification.tree</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="arch" type="xml">
+                <list string="Certifications" decoration-danger="status == 'expired'" decoration-warning="status == 'expiring_soon'">
+                    <field name="name"/>
+                    <field name="property_id"/>
+                    <field name="certification_type_id"/>
+                    <field name="flage_category" widget="badge"/>
+                    <field name="issue_date"/>
+                    <field name="expiry_date"/>
+                    <field name="days_until_expiry"/>
+                    <field name="status" widget="badge"/>
+                    <field name="inspector_id"/>
+                </list>
+            </field>
+        </record>
+        
+        <record id="view_property_certification_form" model="ir.ui.view">
+            <field name="name">property_fielder.property.certification.form</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="arch" type="xml">
+                <form string="Property Certification">
+                    <header>
+                        <button name="action_renew" string="Renew" type="object" class="btn-primary" invisible="status not in ['expiring_soon', 'expired']"/>
+                        <button name="action_cancel" string="Cancel" type="object" invisible="status == 'cancelled'"/>
+                        <field name="status" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="property_id"/>
+                                <field name="certification_type_id"/>
+                                <field name="flage_category"/>
+                            </group>
+                            <group>
+                                <field name="issue_date"/>
+                                <field name="expiry_date"/>
+                                <field name="days_until_expiry"/>
+                                <field name="is_compliant"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Inspector Details">
+                                <field name="inspector_id"/>
+                                <field name="inspector_company"/>
+                                <field name="inspector_license"/>
+                            </group>
+                            <group string="Certificate">
+                                <field name="certificate_file" filename="certificate_filename"/>
+                                <field name="certificate_filename" invisible="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="compliance_notes"/>
+                            <field name="notes"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_property_certification_search" model="ir.ui.view">
+            <field name="name">property_fielder.property.certification.search</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="property_id"/>
+                    <field name="certification_type_id"/>
+                    <filter string="Valid" name="valid" domain="[('status', '=', 'valid')]"/>
+                    <filter string="Expiring Soon" name="expiring_soon" domain="[('status', '=', 'expiring_soon')]"/>
+                    <filter string="Expired" name="expired" domain="[('status', '=', 'expired')]"/>
+                    <separator/>
+                    <filter string="Fire" name="fire" domain="[('flage_category', '=', 'fire')]"/>
+                    <filter string="Gas" name="gas" domain="[('flage_category', '=', 'gas')]"/>
+                    <filter string="Electrical" name="electrical" domain="[('flage_category', '=', 'electrical')]"/>
+                    <filter string="Property" name="group_property" context="{'group_by': 'property_id'}"/>
+                        <filter string="Type" name="group_type" context="{'group_by': 'certification_type_id'}"/>
+                        <filter string="Status" name="group_status" context="{'group_by': 'status'}"/></search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

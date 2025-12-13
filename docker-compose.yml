@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    container_name: property_fielder_db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    networks:
+      - property_fielder_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Odoo 19
+  odoo:
+    image: odoo:19.0
+    container_name: property_fielder_odoo
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+      - PORT=5432
+    volumes:
+      # Mount our custom addons
+      - ./addons:/mnt/extra-addons
+      # Persist Odoo data
+      - odoo-web-data:/var/lib/odoo
+      # Odoo config file
+      - ./odoo.conf:/etc/odoo/odoo.conf
+    ports:
+      - "8069:8069"
+      - "8072:8072"  # Longpolling
+    networks:
+      - property_fielder_network
+    restart: unless-stopped
+    command: odoo --config=/etc/odoo/odoo.conf --dev=all
+
+volumes:
+  odoo-db-data:
+    name: property_fielder_db_data
+  odoo-web-data:
+    name: property_fielder_web_data
+
+networks:
+  property_fielder_network:
+    name: property_fielder_network
+    driver: bridge
+

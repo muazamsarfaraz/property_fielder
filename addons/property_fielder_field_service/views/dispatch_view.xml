@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dispatch View - Main dispatch interface with Mapbox map and Vis-Timeline -->
+
+    <!-- Dispatch Client Action (basic implementation with map + timeline) -->
+    <record id="action_field_service_dispatch_basic" model="ir.actions.client">
+        <field name="name">Dispatch (Basic)</field>
+        <field name="tag">property_fielder_field_service.dispatch_action</field>
+        <field name="target">fullscreen</field>
+    </record>
+
+    <!-- Enhanced Dispatch Client Action (3-tab layout with floating panels) -->
+    <record id="action_field_service_dispatch_new" model="ir.actions.client">
+        <field name="name">Dispatch &amp; Scheduling</field>
+        <field name="tag">property_fielder_field_service.enhanced_dispatch_action</field>
+        <field name="target">fullscreen</field>
+    </record>
+
+</odoo>
+

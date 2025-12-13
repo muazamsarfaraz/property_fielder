@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Dashboard Action (Placeholder - will be enhanced with custom widget) -->
+    <record id="action_field_service_dashboard" model="ir.actions.act_window">
+        <field name="name">Field Service Dashboard</field>
+        <field name="res_model">property_fielder.job</field>
+        <field name="view_mode">kanban</field>
+        <field name="context">{'search_default_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Welcome to Field Service
+            </p>
+            <p>
+                Your dashboard for managing jobs, inspectors, and routes.
+            </p>
+        </field>
+    </record>
+
+    <!-- Settings Action (Placeholder) -->
+    <record id="action_field_service_settings" model="ir.actions.act_window">
+        <field name="name">Field Service Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'module': 'property_fielder_field_service'}</field>
+    </record>
+</odoo>
+

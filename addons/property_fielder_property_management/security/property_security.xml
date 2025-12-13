@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Property Management Privilege -->
+        <record id="res_groups_privilege_property_management" model="res.groups.privilege">
+            <field name="name">Property Management</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="base.module_category_services"/>
+        </record>
+
+        <!-- User Group -->
+        <record id="group_property_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="comment">Property management user - can view properties and certifications</field>
+            <field name="sequence">10</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="privilege_id" ref="res_groups_privilege_property_management"/>
+        </record>
+
+        <!-- Manager Group -->
+        <record id="group_property_manager" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="comment">Property management manager - full access to properties, certifications, and inspections</field>
+            <field name="sequence">20</field>
+            <field name="implied_ids" eval="[(4, ref('group_property_user'))]"/>
+            <field name="privilege_id" ref="res_groups_privilege_property_management"/>
+            <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <!-- Record Rules -->
+        
+        <!-- Properties: Users can see all -->
+        <record id="property_rule_user" model="ir.rule">
+            <field name="name">Property: User - All</field>
+            <field name="model_id" ref="model_property_fielder_property"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_property_user'))]"/>
+        </record>
+        
+        <!-- Certifications: Users can see all -->
+        <record id="certification_rule_user" model="ir.rule">
+            <field name="name">Certification: User - All</field>
+            <field name="model_id" ref="model_property_fielder_property_certification"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_property_user'))]"/>
+        </record>
+        
+        <!-- Inspections: Users can see all -->
+        <record id="inspection_rule_user" model="ir.rule">
+            <field name="name">Inspection: User - All</field>
+            <field name="model_id" ref="model_property_fielder_property_inspection"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_property_user'))]"/>
+        </record>
+        
+    </data>
+</odoo>
+

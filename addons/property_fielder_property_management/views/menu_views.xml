@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Root Menu -->
+        <menuitem id="menu_property_management_root"
+                  name="Property Management"
+                  sequence="10"
+                  web_icon="property_fielder_property_management,static/description/icon.png"/>
+        
+        <!-- Properties Menu -->
+        <menuitem id="menu_property_management_properties"
+                  name="Properties"
+                  parent="menu_property_management_root"
+                  sequence="10"/>
+        
+        <menuitem id="menu_property"
+                  name="Properties"
+                  parent="menu_property_management_properties"
+                  action="action_property"
+                  sequence="10"/>
+        
+        <!-- Certifications Menu -->
+        <menuitem id="menu_property_management_certifications"
+                  name="Certifications"
+                  parent="menu_property_management_root"
+                  sequence="20"/>
+        
+        <menuitem id="menu_property_certification"
+                  name="Certifications"
+                  parent="menu_property_management_certifications"
+                  action="action_property_certification"
+                  sequence="10"/>
+        
+        <!-- Inspections Menu -->
+        <menuitem id="menu_property_management_inspections"
+                  name="Inspections"
+                  parent="menu_property_management_root"
+                  sequence="30"/>
+        
+        <menuitem id="menu_property_inspection"
+                  name="Inspections"
+                  parent="menu_property_management_inspections"
+                  action="action_property_inspection"
+                  sequence="10"/>
+        
+        <!-- Compliance Menu -->
+        <menuitem id="menu_property_management_compliance"
+                  name="Compliance"
+                  parent="menu_property_management_root"
+                  sequence="40"/>
+        
+        <menuitem id="menu_compliance_dashboard"
+                  name="Compliance Dashboard"
+                  parent="menu_property_management_compliance"
+                  action="action_compliance_dashboard"
+                  sequence="10"/>
+        
+        <!-- Configuration Menu -->
+        <menuitem id="menu_property_management_configuration"
+                  name="Configuration"
+                  parent="menu_property_management_root"
+                  sequence="100"
+                  groups="group_property_manager"/>
+        
+        <menuitem id="menu_certification_type"
+                  name="Certification Types"
+                  parent="menu_property_management_configuration"
+                  action="action_certification_type"
+                  sequence="10"/>
+
+        <menuitem id="menu_certification_type_wizard"
+                  name="Quick Create Certification Type"
+                  parent="menu_property_management_configuration"
+                  action="action_certification_type_wizard"
+                  sequence="15"/>
+
+        <menuitem id="menu_compliance_requirement"
+                  name="Compliance Requirements"
+                  parent="menu_property_management_configuration"
+                  action="action_compliance_requirement"
+                  sequence="20"/>
+        
+        <!-- Reports Menu -->
+        <menuitem id="menu_property_management_reports"
+                  name="Reports"
+                  parent="menu_property_management_root"
+                  sequence="90"/>
+        
+    </data>
+</odoo>
+

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Field Service Privilege -->
+        <record id="res_groups_privilege_field_service" model="res.groups.privilege">
+            <field name="name">Field Service</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="base.module_category_services"/>
+        </record>
+
+        <!-- Field Service User Group -->
+        <record id="group_field_service_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="comment">User can manage field service operations</field>
+            <field name="sequence">10</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="privilege_id" ref="res_groups_privilege_field_service"/>
+        </record>
+
+        <!-- Field Service Manager Group -->
+        <record id="group_field_service_manager" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="comment">Administrator can manage all field service operations</field>
+            <field name="sequence">20</field>
+            <field name="implied_ids" eval="[(4, ref('group_field_service_user'))]"/>
+            <field name="privilege_id" ref="res_groups_privilege_field_service"/>
+            <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+        
+        <!-- Record Rules -->
+        
+        <!-- Jobs: Users can see all jobs -->
+        <record id="field_service_job_rule_user" model="ir.rule">
+            <field name="name">Field Service Job: User - All</field>
+            <field name="model_id" ref="model_property_fielder_job"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_field_service_user'))]"/>
+        </record>
+        
+        <!-- Inspectors: Users can see all inspectors -->
+        <record id="field_service_inspector_rule_user" model="ir.rule">
+            <field name="name">Field Service Inspector: User - All</field>
+            <field name="model_id" ref="model_property_fielder_inspector"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_field_service_user'))]"/>
+        </record>
+        
+        <!-- Routes: Users can see all routes -->
+        <record id="field_service_route_rule_user" model="ir.rule">
+            <field name="name">Field Service Route: User - All</field>
+            <field name="model_id" ref="model_property_fielder_route"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_field_service_user'))]"/>
+        </record>
+        
+        <!-- Skills: Users can see all skills -->
+        <record id="field_service_skill_rule_user" model="ir.rule">
+            <field name="name">Field Service Skill: User - All</field>
+            <field name="model_id" ref="model_property_fielder_skill"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_field_service_user'))]"/>
+        </record>
+        
+        <!-- Optimizations: Users can see all optimizations -->
+        <record id="field_service_optimization_rule_user" model="ir.rule">
+            <field name="name">Field Service Optimization: User - All</field>
+            <field name="model_id" ref="model_property_fielder_optimization"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_field_service_user'))]"/>
+        </record>
+        
+    </data>
+</odoo>
+

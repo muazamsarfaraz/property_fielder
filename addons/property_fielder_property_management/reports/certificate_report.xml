@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Certificate Report Template -->
+        <template id="report_certificate_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="cert">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="text-center">
+                                <h2>Certificate of Compliance</h2>
+                                <h3><span t-field="cert.certification_type_id.name"/></h3>
+                            </div>
+                            
+                            <div class="row mt32 mb32">
+                                <div class="col-12">
+                                    <p class="text-center">
+                                        This is to certify that the property at:
+                                    </p>
+                                    <h4 class="text-center">
+                                        <span t-field="cert.property_id.name"/><br/>
+                                        <span t-field="cert.property_id.street"/>, <span t-field="cert.property_id.city"/>
+                                    </h4>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt32 mb32">
+                                <div class="col-6">
+                                    <strong>Certificate Number:</strong> <span t-field="cert.name"/><br/>
+                                    <strong>Issue Date:</strong> <span t-field="cert.issue_date"/><br/>
+                                    <strong>Expiry Date:</strong> <span t-field="cert.expiry_date"/><br/>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Inspector:</strong> <span t-field="cert.inspector_id"/><br/>
+                                    <strong>Company:</strong> <span t-field="cert.inspector_company"/><br/>
+                                    <strong>License:</strong> <span t-field="cert.inspector_license"/><br/>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <p>
+                                        Has been inspected and found to comply with the requirements of:
+                                    </p>
+                                    <p>
+                                        <strong><span t-field="cert.certification_type_id.description"/></strong>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt32" t-if="cert.notes">
+                                <div class="col-12">
+                                    <strong>Notes:</strong><br/>
+                                    <span t-field="cert.notes"/>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt64">
+                                <div class="col-6">
+                                    <p>
+                                        _______________________<br/>
+                                        Inspector Signature
+                                    </p>
+                                </div>
+                                <div class="col-6">
+                                    <p>
+                                        Date: <span t-field="cert.issue_date"/>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        
+        <!-- Report Action -->
+        <record id="action_report_certificate" model="ir.actions.report">
+            <field name="name">Certificate</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">property_fielder_property_management.report_certificate_document</field>
+            <field name="report_file">property_fielder_property_management.report_certificate_document</field>
+            <field name="binding_model_id" ref="model_property_fielder_property_certification"/>
+            <field name="binding_type">report</field>
+        </record>
+        
+    </data>
+</odoo>
+

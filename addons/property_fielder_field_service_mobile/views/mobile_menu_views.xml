@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Mobile App Menu -->
+        <menuitem id="menu_mobile_root"
+                  name="Field Service Mobile"
+                  sequence="100"
+                  web_icon="property_fielder_field_service_mobile,static/description/icon.png"
+                  groups="group_mobile_user"/>
+        
+        <!-- My Jobs -->
+        <menuitem id="menu_mobile_my_jobs"
+                  name="My Jobs"
+                  parent="menu_mobile_root"
+                  action="action_mobile_my_jobs"
+                  sequence="10"/>
+        
+        <!-- My Routes -->
+        <menuitem id="menu_mobile_my_routes"
+                  name="My Routes"
+                  parent="menu_mobile_root"
+                  action="action_mobile_my_routes"
+                  sequence="20"/>
+        
+        <!-- Dashboard -->
+        <menuitem id="menu_mobile_dashboard"
+                  name="Dashboard"
+                  parent="menu_mobile_root"
+                  action="action_mobile_dashboard"
+                  sequence="5"/>
+        
+        <!-- History -->
+        <menuitem id="menu_mobile_history"
+                  name="History"
+                  parent="menu_mobile_root"
+                  sequence="30"/>
+        
+        <menuitem id="menu_mobile_checkins"
+                  name="Check-Ins"
+                  parent="menu_mobile_history"
+                  action="action_mobile_checkins"
+                  sequence="10"/>
+        
+        <menuitem id="menu_mobile_photos"
+                  name="Photos"
+                  parent="menu_mobile_history"
+                  action="action_mobile_photos"
+                  sequence="20"/>
+        
+        <menuitem id="menu_mobile_signatures"
+                  name="Signatures"
+                  parent="menu_mobile_history"
+                  action="action_mobile_signatures"
+                  sequence="30"/>
+        
+        <menuitem id="menu_mobile_notes"
+                  name="Notes"
+                  parent="menu_mobile_history"
+                  action="action_mobile_notes"
+                  sequence="40"/>
+        
+    </data>
+</odoo>
+

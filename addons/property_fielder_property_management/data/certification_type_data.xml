@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- F - Fire Safety (90 min - comprehensive risk assessment) -->
+        <record id="cert_type_fire" model="property_fielder.certification.type">
+            <field name="name">Fire Safety Certificate</field>
+            <field name="code">FIRE</field>
+            <field name="flage_category">fire</field>
+            <field name="description">Fire Risk Assessment and Fire Safety Certificate as required by the Regulatory Reform (Fire Safety) Order 2005</field>
+            <field name="validity_period">365</field>
+            <field name="warning_period">60</field>
+            <field name="default_duration_minutes">90</field>
+            <field name="sequence">10</field>
+            <field name="color">1</field>
+        </record>
+
+        <!-- L - Legionella Control (45 min - water system inspection) -->
+        <record id="cert_type_legionella" model="property_fielder.certification.type">
+            <field name="name">Legionella Risk Assessment</field>
+            <field name="code">LEGIONELLA</field>
+            <field name="flage_category">legionella</field>
+            <field name="description">Legionella Risk Assessment as required by the Health and Safety at Work Act 1974 and ACOP L8</field>
+            <field name="validity_period">730</field>
+            <field name="warning_period">90</field>
+            <field name="default_duration_minutes">45</field>
+            <field name="sequence">20</field>
+            <field name="color">5</field>
+        </record>
+
+        <!-- A - Asbestos Management (120 min - thorough survey required) -->
+        <record id="cert_type_asbestos" model="property_fielder.certification.type">
+            <field name="name">Asbestos Management Survey</field>
+            <field name="code">ASBESTOS</field>
+            <field name="flage_category">asbestos</field>
+            <field name="description">Asbestos Management Survey as required by the Control of Asbestos Regulations 2012</field>
+            <field name="validity_period">365</field>
+            <field name="warning_period">60</field>
+            <field name="default_duration_minutes">120</field>
+            <field name="sequence">30</field>
+            <field name="color">8</field>
+        </record>
+
+        <!-- G - Gas Safety (30 min - boiler and appliance check) -->
+        <record id="cert_type_gas" model="property_fielder.certification.type">
+            <field name="name">Gas Safety Certificate (CP12)</field>
+            <field name="code">GAS</field>
+            <field name="flage_category">gas</field>
+            <field name="description">Landlord Gas Safety Certificate (CP12) as required by the Gas Safety (Installation and Use) Regulations 1998</field>
+            <field name="validity_period">365</field>
+            <field name="warning_period">30</field>
+            <field name="default_duration_minutes">30</field>
+            <field name="sequence">40</field>
+            <field name="color">3</field>
+        </record>
+
+        <!-- E - Electrical Safety (90 min - full circuit testing) -->
+        <record id="cert_type_electrical" model="property_fielder.certification.type">
+            <field name="name">Electrical Installation Condition Report (EICR)</field>
+            <field name="code">ELECTRICAL</field>
+            <field name="flage_category">electrical</field>
+            <field name="description">Electrical Installation Condition Report (EICR) as required by the Electrical Safety Standards in the Private Rented Sector (England) Regulations 2020</field>
+            <field name="validity_period">1825</field>
+            <field name="warning_period">90</field>
+            <field name="default_duration_minutes">90</field>
+            <field name="sequence">50</field>
+            <field name="color">4</field>
+        </record>
+
+        <!-- EPC - Energy Performance (45 min - measurements and assessment) -->
+        <record id="cert_type_epc" model="property_fielder.certification.type">
+            <field name="name">Energy Performance Certificate (EPC)</field>
+            <field name="code">EPC</field>
+            <field name="flage_category">other</field>
+            <field name="description">Energy Performance Certificate as required by the Energy Performance of Buildings Regulations 2012</field>
+            <field name="validity_period">3650</field>
+            <field name="warning_period">180</field>
+            <field name="default_duration_minutes">45</field>
+            <field name="sequence">60</field>
+            <field name="color">2</field>
+        </record>
+
+        <!-- PAT - Portable Appliance (30 min - quick appliance testing) -->
+        <record id="cert_type_pat" model="property_fielder.certification.type">
+            <field name="name">Portable Appliance Testing (PAT)</field>
+            <field name="code">PAT</field>
+            <field name="flage_category">electrical</field>
+            <field name="description">Portable Appliance Testing for electrical safety</field>
+            <field name="validity_period">365</field>
+            <field name="warning_period">30</field>
+            <field name="default_duration_minutes">30</field>
+            <field name="sequence">70</field>
+            <field name="color">4</field>
+        </record>
+        
+    </data>
+</odoo>
+

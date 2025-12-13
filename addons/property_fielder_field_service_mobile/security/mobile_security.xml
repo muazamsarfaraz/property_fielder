@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Mobile User Group -->
+        <record id="group_mobile_user" model="res.groups">
+            <field name="name">Mobile User</field>
+            <field name="comment">Field inspectors using mobile app</field>
+            <field name="sequence">15</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="privilege_id" ref="property_fielder_field_service.res_groups_privilege_field_service"/>
+        </record>
+        
+        <!-- Record Rules -->
+        
+        <!-- Job Check-Ins: Users can only see their own -->
+        <record id="job_checkin_rule_user" model="ir.rule">
+            <field name="name">Job Check-In: User - Own Only</field>
+            <field name="model_id" ref="model_property_fielder_job_checkin"/>
+            <field name="domain_force">[('inspector_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_mobile_user'))]"/>
+        </record>
+        
+        <!-- Job Photos: Users can only see their own -->
+        <record id="job_photo_rule_user" model="ir.rule">
+            <field name="name">Job Photo: User - Own Only</field>
+            <field name="model_id" ref="model_property_fielder_job_photo"/>
+            <field name="domain_force">[('inspector_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_mobile_user'))]"/>
+        </record>
+        
+        <!-- Job Signatures: Users can only see their own -->
+        <record id="job_signature_rule_user" model="ir.rule">
+            <field name="name">Job Signature: User - Own Only</field>
+            <field name="model_id" ref="model_property_fielder_job_signature"/>
+            <field name="domain_force">[('inspector_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_mobile_user'))]"/>
+        </record>
+        
+        <!-- Job Notes: Users can only see their own -->
+        <record id="job_note_rule_user" model="ir.rule">
+            <field name="name">Job Note: User - Own Only</field>
+            <field name="model_id" ref="model_property_fielder_job_note"/>
+            <field name="domain_force">[('inspector_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_mobile_user'))]"/>
+        </record>
+        
+        <!-- Mobile Sync: Users can only see their own -->
+        <record id="mobile_sync_rule_user" model="ir.rule">
+            <field name="name">Mobile Sync: User - Own Only</field>
+            <field name="model_id" ref="model_property_fielder_mobile_sync"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_mobile_user'))]"/>
+        </record>
+        
+        <!-- Mobile Device: Users can only see their own -->
+        <record id="mobile_device_rule_user" model="ir.rule">
+            <field name="name">Mobile Device: User - Own Only</field>
+            <field name="model_id" ref="model_property_fielder_mobile_device"/>
+            <field name="domain_force">[('inspector_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_mobile_user'))]"/>
+        </record>
+        
+        <!-- Managers can see all -->
+        <record id="job_checkin_rule_manager" model="ir.rule">
+            <field name="name">Job Check-In: Manager - All</field>
+            <field name="model_id" ref="model_property_fielder_job_checkin"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_field_service.group_field_service_manager'))]"/>
+        </record>
+        
+        <record id="job_photo_rule_manager" model="ir.rule">
+            <field name="name">Job Photo: Manager - All</field>
+            <field name="model_id" ref="model_property_fielder_job_photo"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_field_service.group_field_service_manager'))]"/>
+        </record>
+        
+        <record id="job_signature_rule_manager" model="ir.rule">
+            <field name="name">Job Signature: Manager - All</field>
+            <field name="model_id" ref="model_property_fielder_job_signature"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_field_service.group_field_service_manager'))]"/>
+        </record>
+        
+        <record id="job_note_rule_manager" model="ir.rule">
+            <field name="name">Job Note: Manager - All</field>
+            <field name="model_id" ref="model_property_fielder_job_note"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_field_service.group_field_service_manager'))]"/>
+        </record>
+        
+        <record id="mobile_sync_rule_manager" model="ir.rule">
+            <field name="name">Mobile Sync: Manager - All</field>
+            <field name="model_id" ref="model_property_fielder_mobile_sync"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_field_service.group_field_service_manager'))]"/>
+        </record>
+        
+        <record id="mobile_device_rule_manager" model="ir.rule">
+            <field name="name">Mobile Device: Manager - All</field>
+            <field name="model_id" ref="model_property_fielder_mobile_device"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_field_service.group_field_service_manager'))]"/>
+        </record>
+        
+    </data>
+</odoo>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Common Field Service Skills -->
+        
+        <record id="skill_electrical" model="property_fielder.skill">
+            <field name="name">Electrical</field>
+            <field name="code">ELEC</field>
+            <field name="description">Electrical systems and wiring</field>
+            <field name="color">1</field>
+        </record>
+        
+        <record id="skill_plumbing" model="property_fielder.skill">
+            <field name="name">Plumbing</field>
+            <field name="code">PLUMB</field>
+            <field name="description">Plumbing systems and fixtures</field>
+            <field name="color">2</field>
+        </record>
+        
+        <record id="skill_hvac" model="property_fielder.skill">
+            <field name="name">HVAC</field>
+            <field name="code">HVAC</field>
+            <field name="description">Heating, ventilation, and air conditioning</field>
+            <field name="color">3</field>
+        </record>
+        
+        <record id="skill_structural" model="property_fielder.skill">
+            <field name="name">Structural</field>
+            <field name="code">STRUCT</field>
+            <field name="description">Structural inspection and assessment</field>
+            <field name="color">4</field>
+        </record>
+        
+        <record id="skill_roofing" model="property_fielder.skill">
+            <field name="name">Roofing</field>
+            <field name="code">ROOF</field>
+            <field name="description">Roof inspection and repair</field>
+            <field name="color">5</field>
+        </record>
+        
+        <record id="skill_general" model="property_fielder.skill">
+            <field name="name">General Inspection</field>
+            <field name="code">GEN</field>
+            <field name="description">General property inspection</field>
+            <field name="color">6</field>
+        </record>
+        
+    </data>
+</odoo>
+

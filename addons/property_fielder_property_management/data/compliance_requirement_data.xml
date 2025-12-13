@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Fire Safety Requirements -->
+        <record id="req_fire_risk_assessment" model="property_fielder.compliance.requirement">
+            <field name="name">Fire Risk Assessment</field>
+            <field name="certification_type_id" ref="cert_type_fire"/>
+            <field name="description">Comprehensive fire risk assessment of the property</field>
+            <field name="is_mandatory">True</field>
+            <field name="legal_reference">Regulatory Reform (Fire Safety) Order 2005</field>
+            <field name="inspection_frequency">annual</field>
+            <field name="document_required">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="req_fire_alarm_test" model="property_fielder.compliance.requirement">
+            <field name="name">Fire Alarm System Test</field>
+            <field name="certification_type_id" ref="cert_type_fire"/>
+            <field name="description">Test and inspection of fire alarm system</field>
+            <field name="is_mandatory">True</field>
+            <field name="inspection_frequency">annual</field>
+            <field name="document_required">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="req_emergency_lighting" model="property_fielder.compliance.requirement">
+            <field name="name">Emergency Lighting Test</field>
+            <field name="certification_type_id" ref="cert_type_fire"/>
+            <field name="description">Test emergency lighting systems</field>
+            <field name="is_mandatory">True</field>
+            <field name="inspection_frequency">annual</field>
+            <field name="document_required">True</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <!-- Legionella Requirements -->
+        <record id="req_legionella_risk" model="property_fielder.compliance.requirement">
+            <field name="name">Legionella Risk Assessment</field>
+            <field name="certification_type_id" ref="cert_type_legionella"/>
+            <field name="description">Assessment of water systems for legionella risk</field>
+            <field name="is_mandatory">True</field>
+            <field name="legal_reference">Health and Safety at Work Act 1974, ACOP L8</field>
+            <field name="inspection_frequency">biannual</field>
+            <field name="document_required">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="req_water_temp_check" model="property_fielder.compliance.requirement">
+            <field name="name">Water Temperature Checks</field>
+            <field name="certification_type_id" ref="cert_type_legionella"/>
+            <field name="description">Regular monitoring of hot and cold water temperatures</field>
+            <field name="is_mandatory">True</field>
+            <field name="inspection_frequency">monthly</field>
+            <field name="document_required">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <!-- Asbestos Requirements -->
+        <record id="req_asbestos_survey" model="property_fielder.compliance.requirement">
+            <field name="name">Asbestos Management Survey</field>
+            <field name="certification_type_id" ref="cert_type_asbestos"/>
+            <field name="description">Survey to identify and assess asbestos-containing materials</field>
+            <field name="is_mandatory">True</field>
+            <field name="legal_reference">Control of Asbestos Regulations 2012</field>
+            <field name="inspection_frequency">annual</field>
+            <field name="document_required">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="req_asbestos_register" model="property_fielder.compliance.requirement">
+            <field name="name">Asbestos Register Maintenance</field>
+            <field name="certification_type_id" ref="cert_type_asbestos"/>
+            <field name="description">Maintain up-to-date asbestos register</field>
+            <field name="is_mandatory">True</field>
+            <field name="inspection_frequency">annual</field>
+            <field name="document_required">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <!-- Gas Safety Requirements -->
+        <record id="req_gas_appliance_check" model="property_fielder.compliance.requirement">
+            <field name="name">Gas Appliance Safety Check</field>
+            <field name="certification_type_id" ref="cert_type_gas"/>
+            <field name="description">Annual gas safety check of all gas appliances</field>
+            <field name="is_mandatory">True</field>
+            <field name="legal_reference">Gas Safety (Installation and Use) Regulations 1998</field>
+            <field name="inspection_frequency">annual</field>
+            <field name="document_required">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="req_gas_flue_check" model="property_fielder.compliance.requirement">
+            <field name="name">Flue and Ventilation Check</field>
+            <field name="certification_type_id" ref="cert_type_gas"/>
+            <field name="description">Check flues and ventilation for gas appliances</field>
+            <field name="is_mandatory">True</field>
+            <field name="inspection_frequency">annual</field>
+            <field name="document_required">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <!-- Electrical Safety Requirements -->
+        <record id="req_electrical_inspection" model="property_fielder.compliance.requirement">
+            <field name="name">Electrical Installation Inspection</field>
+            <field name="certification_type_id" ref="cert_type_electrical"/>
+            <field name="description">Inspection and testing of electrical installations</field>
+            <field name="is_mandatory">True</field>
+            <field name="legal_reference">Electrical Safety Standards in the Private Rented Sector Regulations 2020</field>
+            <field name="inspection_frequency">custom</field>
+            <field name="custom_frequency_days">1825</field>
+            <field name="document_required">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="req_electrical_remedial" model="property_fielder.compliance.requirement">
+            <field name="name">Remedial Works Completion</field>
+            <field name="certification_type_id" ref="cert_type_electrical"/>
+            <field name="description">Complete any remedial works identified in EICR</field>
+            <field name="is_mandatory">True</field>
+            <field name="inspection_frequency">custom</field>
+            <field name="custom_frequency_days">28</field>
+            <field name="document_required">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <!-- EPC Requirements -->
+        <record id="req_epc_assessment" model="property_fielder.compliance.requirement">
+            <field name="name">Energy Performance Assessment</field>
+            <field name="certification_type_id" ref="cert_type_epc"/>
+            <field name="description">Energy efficiency assessment of the property</field>
+            <field name="is_mandatory">True</field>
+            <field name="legal_reference">Energy Performance of Buildings Regulations 2012</field>
+            <field name="inspection_frequency">custom</field>
+            <field name="custom_frequency_days">3650</field>
+            <field name="document_required">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+    </data>
+</odoo>
+

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="property_fielder_field_service.DispatchView">
+        <div class="o_dispatch_view" style="height: 100%; display: flex; flex-direction: column;">
+            <!-- Toolbar -->
+            <div class="o_dispatch_toolbar" style="padding: 12px; background: white; border-bottom: 1px solid #dee2e6; display: flex; align-items: center; gap: 12px;">
+                <div class="o_dispatch_title" style="flex: 1; font-size: 18px; font-weight: 600; color: #714B67;">
+                    <i class="fa fa-map-marked-alt me-2"></i>
+                    Dispatch &amp; Scheduling
+                </div>
+
+                <!-- Date Selector -->
+                <div class="o_dispatch_date">
+                    <label class="me-2" style="margin-bottom: 0;">Date:</label>
+                    <input type="date" 
+                           class="form-control form-control-sm" 
+                           style="width: 160px;"
+                           t-model="state.selectedDate"
+                           t-on-change="onDateChange"/>
+                </div>
+
+                <!-- View Mode Buttons -->
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" 
+                            class="btn btn-outline-secondary"
+                            t-att-class="{ 'active': state.viewMode === 'split' }"
+                            t-on-click="() => this.setViewMode('split')">
+                        <i class="fa fa-columns"></i> Split
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-secondary"
+                            t-att-class="{ 'active': state.viewMode === 'map' }"
+                            t-on-click="() => this.setViewMode('map')">
+                        <i class="fa fa-map"></i> Map
+                    </button>
+                    <button type="button" 
+                            class="btn btn-outline-secondary"
+                            t-att-class="{ 'active': state.viewMode === 'timeline' }"
+                            t-on-click="() => this.setViewMode('timeline')">
+                        <i class="fa fa-clock"></i> Timeline
+                    </button>
+                </div>
+
+                <!-- Action Buttons -->
+                <button type="button" 
+                        class="btn btn-sm btn-primary"
+                        t-on-click="onOptimize">
+                    <i class="fa fa-magic"></i> Optimize Routes
+                </button>
+                <button type="button" 
+                        class="btn btn-sm btn-secondary"
+                        t-on-click="onRefresh">
+                    <i class="fa fa-sync"></i> Refresh
+                </button>
+            </div>
+
+            <!-- Empty State Message -->
+            <div t-if="!state.loading and state.jobs.length === 0" class="o_dispatch_empty_state" style="flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+                <div class="text-center" style="max-width: 600px; padding: 40px;">
+                    <i class="fa fa-calendar-plus fa-4x text-muted mb-4"></i>
+                    <h3 class="mb-3">No Jobs Scheduled for This Date</h3>
+                    <p class="text-muted mb-4">
+                        The dispatch view shows scheduled inspection jobs. You currently have no jobs scheduled for
+                        <strong t-esc="state.selectedDate"></strong>.
+                    </p>
+                    <div class="alert alert-info" style="text-align: left;">
+                        <h5><i class="fa fa-info-circle"></i> How to Create Jobs:</h5>
+                        <ol class="mb-0">
+                            <li>Go to <strong>Property Management › Properties</strong></li>
+                            <li>Filter properties with inspections due in the next 14-30 days</li>
+                            <li>Select the properties you want to schedule</li>
+                            <li>Click <strong>Action › Create Inspection Jobs</strong></li>
+                            <li>Choose the inspection date and confirm</li>
+                            <li>Return here to view and optimize the schedule</li>
+                        </ol>
+                    </div>
+                    <div class="mt-4">
+                        <button type="button" class="btn btn-primary btn-lg me-2" t-on-click="onGoToProperties">
+                            <i class="fa fa-building"></i> Go to Properties
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-lg" t-on-click="onRefresh">
+                            <i class="fa fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div t-if="state.loading" class="o_dispatch_loading" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                <div class="text-center">
+                    <i class="fa fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+                    <p class="text-muted">Loading dispatch data...</p>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div t-else="" class="o_dispatch_content" style="flex: 1; display: flex; overflow: hidden;">
+                <!-- Split View -->
+                <t t-if="state.viewMode === 'split'">
+                    <div class="o_dispatch_map_panel" style="flex: 1; border-right: 1px solid #dee2e6; overflow: hidden;">
+                        <DispatchMapWidget 
+                            jobs="state.jobs"
+                            routes="state.routes"
+                            inspectors="state.inspectors"
+                            onJobClick.bind="onJobClick"
+                            onRouteClick.bind="onRouteClick"/>
+                    </div>
+                    <div class="o_dispatch_timeline_panel" style="flex: 1; overflow: hidden;">
+                        <DispatchTimelineWidget 
+                            jobs="state.jobs"
+                            routes="state.routes"
+                            inspectors="state.inspectors"
+                            date="state.selectedDate"
+                            onJobClick.bind="onJobClick"/>
+                    </div>
+                </t>
+
+                <!-- Map Only View -->
+                <t t-if="state.viewMode === 'map'">
+                    <div class="o_dispatch_map_panel" style="flex: 1; overflow: hidden;">
+                        <DispatchMapWidget 
+                            jobs="state.jobs"
+                            routes="state.routes"
+                            inspectors="state.inspectors"
+                            onJobClick.bind="onJobClick"
+                            onRouteClick.bind="onRouteClick"/>
+                    </div>
+                </t>
+
+                <!-- Timeline Only View -->
+                <t t-if="state.viewMode === 'timeline'">
+                    <div class="o_dispatch_timeline_panel" style="flex: 1; overflow: hidden;">
+                        <DispatchTimelineWidget 
+                            jobs="state.jobs"
+                            routes="state.routes"
+                            inspectors="state.inspectors"
+                            date="state.selectedDate"
+                            onJobClick.bind="onJobClick"/>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Stats Footer -->
+            <div class="o_dispatch_stats" style="padding: 8px 12px; background: #f8f9fa; border-top: 1px solid #dee2e6; display: flex; gap: 24px; font-size: 13px;">
+                <div>
+                    <i class="fa fa-tasks text-primary"></i>
+                    <strong t-esc="state.jobs.length"/> Jobs
+                </div>
+                <div>
+                    <i class="fa fa-route text-success"></i>
+                    <strong t-esc="state.routes.length"/> Routes
+                </div>
+                <div>
+                    <i class="fa fa-user text-info"></i>
+                    <strong t-esc="state.inspectors.length"/> Inspectors
+                </div>
+                <div t-if="state.jobs.length > 0">
+                    <i class="fa fa-check-circle text-success"></i>
+                    <strong t-esc="state.jobs.filter(j => j.state === 'completed').length"/> Completed
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
+

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_field_service_root"
+              name="Field Service"
+              sequence="10"
+              web_icon="property_fielder_field_service,static/description/icon.png"/>
+
+    <!-- Dashboard -->
+    <menuitem id="menu_field_service_dashboard"
+              name="Dashboard"
+              parent="menu_field_service_root"
+              action="action_field_service_dashboard"
+              sequence="1"/>
+
+    <!-- Dispatch (Map + Timeline View) -->
+    <menuitem id="menu_field_service_dispatch"
+              name="Dispatch"
+              parent="menu_field_service_root"
+              action="action_field_service_dispatch_new"
+              sequence="2"/>
+
+    <!-- Jobs -->
+    <menuitem id="menu_field_service_jobs"
+              name="Jobs"
+              parent="menu_field_service_root"
+              sequence="10"/>
+
+    <menuitem id="menu_field_service_jobs_all"
+              name="All Jobs"
+              parent="menu_field_service_jobs"
+              action="action_field_service_job"
+              sequence="1"/>
+
+    <menuitem id="menu_field_service_jobs_today"
+              name="Today's Jobs"
+              parent="menu_field_service_jobs"
+              action="action_field_service_job_today"
+              sequence="2"/>
+
+    <menuitem id="menu_field_service_jobs_unassigned"
+              name="Unassigned Jobs"
+              parent="menu_field_service_jobs"
+              action="action_field_service_job_unassigned"
+              sequence="3"/>
+
+    <!-- Inspectors -->
+    <menuitem id="menu_field_service_inspectors"
+              name="Inspectors"
+              parent="menu_field_service_root"
+              action="action_field_service_inspector"
+              sequence="20"/>
+
+    <!-- Routes -->
+    <menuitem id="menu_field_service_routes"
+              name="Routes"
+              parent="menu_field_service_root"
+              sequence="30"/>
+
+    <menuitem id="menu_field_service_routes_all"
+              name="All Routes"
+              parent="menu_field_service_routes"
+              action="action_field_service_route"
+              sequence="1"/>
+
+    <menuitem id="menu_field_service_routes_today"
+              name="Today's Routes"
+              parent="menu_field_service_routes"
+              action="action_field_service_route_today"
+              sequence="2"/>
+
+    <!-- Change Requests -->
+    <menuitem id="menu_field_service_change_requests"
+              name="Change Requests"
+              parent="menu_field_service_root"
+              action="action_change_request"
+              sequence="35"/>
+
+    <!-- Optimization -->
+    <menuitem id="menu_field_service_optimization"
+              name="Optimization"
+              parent="menu_field_service_root"
+              sequence="40"/>
+
+    <menuitem id="menu_field_service_optimization_new"
+              name="Run Optimization"
+              parent="menu_field_service_optimization"
+              action="action_field_service_optimization_wizard"
+              sequence="1"/>
+
+    <menuitem id="menu_field_service_optimization_history"
+              name="Optimization History"
+              parent="menu_field_service_optimization"
+              action="action_field_service_optimization"
+              sequence="2"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_field_service_config"
+              name="Configuration"
+              parent="menu_field_service_root"
+              sequence="100"/>
+
+    <menuitem id="menu_field_service_config_skills"
+              name="Skills"
+              parent="menu_field_service_config"
+              action="action_field_service_skill"
+              sequence="1"/>
+
+    <menuitem id="menu_field_service_config_settings"
+              name="Settings"
+              parent="menu_field_service_config"
+              action="action_field_service_settings"
+              sequence="100"/>
+</odoo>
+

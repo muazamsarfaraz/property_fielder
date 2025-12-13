@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Mobile Dashboard Action -->
+        <record id="action_mobile_dashboard" model="ir.actions.client">
+            <field name="name">Dashboard</field>
+            <field name="tag">property_fielder_mobile_dashboard</field>
+        </record>
+        
+        <!-- Action: My Jobs -->
+        <record id="action_mobile_my_jobs" model="ir.actions.act_window">
+            <field name="name">My Jobs</field>
+            <field name="res_model">property_fielder.job</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('inspector_id.user_id', '=', uid)]</field>
+            <field name="context">{'search_default_today': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No jobs assigned yet
+                </p>
+                <p>
+                    Jobs assigned to you will appear here.
+                </p>
+            </field>
+        </record>
+        
+        <!-- Action: My Routes -->
+        <record id="action_mobile_my_routes" model="ir.actions.act_window">
+            <field name="name">My Routes</field>
+            <field name="res_model">property_fielder.route</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('inspector_id.user_id', '=', uid)]</field>
+            <field name="context">{'search_default_today': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No routes assigned yet
+                </p>
+                <p>
+                    Routes assigned to you will appear here.
+                </p>
+            </field>
+        </record>
+        
+        <!-- Action: Check-Ins -->
+        <record id="action_mobile_checkins" model="ir.actions.act_window">
+            <field name="name">My Check-Ins</field>
+            <field name="res_model">property_fielder.job.checkin</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('inspector_id.user_id', '=', uid)]</field>
+        </record>
+        
+        <!-- Action: Photos -->
+        <record id="action_mobile_photos" model="ir.actions.act_window">
+            <field name="name">My Photos</field>
+            <field name="res_model">property_fielder.job.photo</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[('inspector_id.user_id', '=', uid)]</field>
+        </record>
+        
+        <!-- Action: Signatures -->
+        <record id="action_mobile_signatures" model="ir.actions.act_window">
+            <field name="name">My Signatures</field>
+            <field name="res_model">property_fielder.job.signature</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('inspector_id.user_id', '=', uid)]</field>
+        </record>
+        
+        <!-- Action: Notes -->
+        <record id="action_mobile_notes" model="ir.actions.act_window">
+            <field name="name">My Notes</field>
+            <field name="res_model">property_fielder.job.note</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('inspector_id.user_id', '=', uid)]</field>
+        </record>
+        
+    </data>
+</odoo>
+

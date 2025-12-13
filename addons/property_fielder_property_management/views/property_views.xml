@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        
+        <!-- Property Tree View -->
+        <record id="view_property_tree" model="ir.ui.view">
+            <field name="name">property_fielder.property.tree</field>
+            <field name="model">property_fielder.property</field>
+            <field name="arch" type="xml">
+                <list string="Properties" decoration-danger="compliance_status == 'expired'" decoration-warning="compliance_status == 'expiring_soon'" decoration-success="compliance_status == 'compliant'">
+                    <field name="property_number"/>
+                    <field name="name"/>
+                    <field name="property_type"/>
+                    <field name="city"/>
+                    <field name="zip"/>
+                    <field name="partner_id"/>
+                    <field name="tenant_id"/>
+                    <field name="state" widget="badge"/>
+                    <field name="compliance_status" widget="badge" decoration-success="compliance_status == 'compliant'" decoration-warning="compliance_status == 'expiring_soon'" decoration-danger="compliance_status in ['expired', 'non_compliant']"/>
+                    <field name="flage_fire_status" widget="badge"/>
+                    <field name="flage_gas_status" widget="badge"/>
+                    <field name="flage_electrical_status" widget="badge"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- Property Form View -->
+        <record id="view_property_form" model="ir.ui.view">
+            <field name="name">property_fielder.property.form</field>
+            <field name="model">property_fielder.property</field>
+            <field name="arch" type="xml">
+                <form string="Property">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,active,vacant"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="%(action_property_certification)d" type="action" class="oe_stat_button" icon="fa-certificate" context="{'default_property_id': id}">
+                                <field name="certification_count" widget="statbutton" string="Certificates"/>
+                            </button>
+                            <button name="%(action_property_inspection)d" type="action" class="oe_stat_button" icon="fa-clipboard-check" context="{'default_property_id': id}">
+                                <field name="inspection_count" widget="statbutton" string="Inspections"/>
+                            </button>
+                            <button name="%(action_property_certification)d" type="action" class="oe_stat_button" icon="fa-exclamation-triangle" invisible="expired_certification_count == 0" context="{'default_property_id': id, 'search_default_expired': 1}">
+                                <field name="expired_certification_count" widget="statbutton" string="Expired"/>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="property_number" readonly="1"/>
+                            </h1>
+                            <label for="name"/>
+                            <h2>
+                                <field name="name" placeholder="Property Name"/>
+                            </h2>
+                        </div>
+                        
+                        <group>
+                            <group name="property_info" string="Property Information">
+                                <field name="property_type"/>
+                                <field name="bedrooms"/>
+                                <field name="bathrooms"/>
+                                <field name="floor_area"/>
+                                <field name="year_built"/>
+                            </group>
+                            <group name="ownership" string="Ownership">
+                                <field name="partner_id"/>
+                                <field name="tenant_id"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <group name="address" string="Address">
+                                <field name="street"/>
+                                <field name="street2"/>
+                                <field name="city"/>
+                                <field name="state"/>
+                                <field name="zip"/>
+                                <field name="country_id"/>
+                            </group>
+                            <group name="location" string="GPS Location">
+                                <field name="latitude"/>
+                                <field name="longitude"/>
+                            </group>
+                        </group>
+                        
+                        <group name="compliance" string="FLAGE+ Compliance Status">
+                            <group>
+                                <field name="flage_fire_status" widget="badge"/>
+                                <field name="flage_legionella_status" widget="badge"/>
+                                <field name="flage_asbestos_status" widget="badge"/>
+                            </group>
+                            <group>
+                                <field name="flage_gas_status" widget="badge"/>
+                                <field name="flage_electrical_status" widget="badge"/>
+                                <field name="compliance_status" widget="badge"/>
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Certifications" name="certifications">
+                                <field name="certification_ids">
+                                    <list decoration-danger="status == 'expired'" decoration-warning="status == 'expiring_soon'">
+                                        <field name="certification_type_id"/>
+                                        <field name="flage_category" widget="badge"/>
+                                        <field name="issue_date"/>
+                                        <field name="expiry_date"/>
+                                        <field name="days_until_expiry"/>
+                                        <field name="status" widget="badge"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Inspections" name="inspections">
+                                <field name="inspection_ids">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="certification_type_id"/>
+                                        <field name="scheduled_date"/>
+                                        <field name="inspector_id"/>
+                                        <field name="state" widget="badge"/>
+                                        <field name="result" widget="badge"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Notes" name="notes">
+                                <field name="notes" placeholder="Additional notes about this property..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Property Kanban View -->
+        <record id="view_property_kanban" model="ir.ui.view">
+            <field name="name">property_fielder.property.kanban</field>
+            <field name="model">property_fielder.property</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="property_number"/>
+                    <field name="name"/>
+                    <field name="property_type"/>
+                    <field name="city"/>
+                    <field name="compliance_status"/>
+                    <field name="flage_fire_status"/>
+                    <field name="flage_gas_status"/>
+                    <field name="flage_electrical_status"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <strong><field name="property_number"/> - <field name="name"/></strong>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="property_type"/>
+                                    <br/>
+                                    <field name="city"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="compliance_status" widget="label_selection"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+        <!-- Property Search View -->
+        <record id="view_property_search" model="ir.ui.view">
+            <field name="name">property_fielder.property.search</field>
+            <field name="model">property_fielder.property</field>
+            <field name="arch" type="xml">
+                <search string="Properties">
+                    <field name="name"/>
+                    <field name="property_number"/>
+                    <field name="city"/>
+                    <field name="zip"/>
+                    <field name="partner_id"/>
+                    <field name="tenant_id"/>
+                    <filter string="Active" name="active" domain="[('state', '=', 'active')]"/>
+                    <filter string="Vacant" name="vacant" domain="[('state', '=', 'vacant')]"/>
+                    <separator/>
+                    <filter string="Compliant" name="compliant" domain="[('compliance_status', '=', 'compliant')]"/>
+                    <filter string="Expiring Soon" name="expiring_soon" domain="[('compliance_status', '=', 'expiring_soon')]"/>
+                    <filter string="Expired" name="expired" domain="[('compliance_status', '=', 'expired')]"/>
+                    <filter string="Non-Compliant" name="non_compliant" domain="[('compliance_status', '=', 'non_compliant')]"/>
+                    <filter string="Property Type" name="group_property_type" context="{'group_by': 'property_type'}"/>
+                        <filter string="City" name="group_city" context="{'group_by': 'city'}"/>
+                        <filter string="Owner" name="group_owner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Compliance Status" name="group_compliance" context="{'group_by': 'compliance_status'}"/></search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

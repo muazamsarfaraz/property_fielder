@@ -1,0 +1,36 @@
+{
+  "name": "property-fielder-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end Playwright tests for Property Fielder Odoo application",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:ui": "npx playwright test --ui",
+    "test:debug": "npx playwright test --debug",
+    "test:auth": "npx playwright test tests/auth/",
+    "test:properties": "npx playwright test tests/property-management/",
+    "test:field-service": "npx playwright test tests/field-service/",
+    "test:dispatch": "npx playwright test tests/dispatch/",
+    "test:smoke": "npx playwright test --grep @smoke",
+    "test:regression": "npx playwright test --grep @regression",
+    "test:critical": "npx playwright test --grep @critical",
+    "test:workflow": "npx playwright test tests/workflow/",
+    "test:stress": "npx playwright test tests/stress/stress-test.spec.ts --timeout=600000",
+    "test:stress:10": "PROPERTY_COUNT=10 npx playwright test tests/stress/stress-test.spec.ts --timeout=300000",
+    "test:stress:20": "PROPERTY_COUNT=20 npx playwright test tests/stress/stress-test.spec.ts --timeout=600000",
+    "test:stress:50": "PROPERTY_COUNT=50 npx playwright test tests/stress/stress-test.spec.ts --timeout=900000",
+    "test:cleanup": "npx playwright test tests/stress/cleanup-all.spec.ts --timeout=600000",
+    "test:dispatch-data": "npx playwright test tests/stress/dispatch-test-data.spec.ts --timeout=180000",
+    "report": "npx playwright show-report",
+    "codegen": "npx playwright codegen http://localhost:8069"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "dotenv": "^16.3.0"
+  },
+  "author": "Property Fielder Team",
+  "license": "LGPL-3.0"
+}
+

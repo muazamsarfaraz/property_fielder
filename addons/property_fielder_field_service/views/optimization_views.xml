@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Optimization List View -->
+    <record id="view_field_service_optimization_list" model="ir.ui.view">
+        <field name="name">property_fielder.optimization.list</field>
+        <field name="model">property_fielder.optimization</field>
+        <field name="arch" type="xml">
+            <list string="Optimizations" create="0">
+                <field name="name"/>
+                <field name="optimization_date"/>
+                <field name="total_jobs_assigned"/>
+                <field name="total_routes"/>
+                <field name="score"/>
+                <field name="solver_time_seconds"/>
+                <field name="state" widget="badge" decoration-success="state == 'completed'" decoration-danger="state == 'failed'" decoration-info="state == 'running'" decoration-muted="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Optimization Form View -->
+    <record id="view_field_service_optimization_form" model="ir.ui.view">
+        <field name="name">property_fielder.optimization.form</field>
+        <field name="model">property_fielder.optimization</field>
+        <field name="arch" type="xml">
+            <form string="Optimization" create="0">
+                <header>
+                    <button name="action_run_optimization" string="Run Optimization" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,running,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="config">
+                            <field name="optimization_date"/>
+                            <field name="use_osrm"/>
+                            <field name="solver_time_seconds"/>
+                        </group>
+                        <group name="results">
+                            <field name="score" readonly="1"/>
+                            <field name="total_jobs_assigned" readonly="1"/>
+                            <field name="total_routes" readonly="1"/>
+                        </group>
+                    </group>
+                    <group invisible="state != 'failed'">
+                        <field name="error_message" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Statistics" name="statistics">
+                            <group>
+                                <group>
+                                    <field name="total_distance_km" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Technical Details" name="technical" groups="base.group_no_one">
+                            <group>
+                                <field name="request_json" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                <field name="response_json" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Optimization Action -->
+    <record id="action_field_service_optimization" model="ir.actions.act_window">
+        <field name="name">Optimization History</field>
+        <field name="res_model">property_fielder.optimization</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No optimizations yet
+            </p>
+            <p>
+                Run route optimization to create optimized routes for your inspectors.
+            </p>
+        </field>
+    </record>
+
+    <!-- Optimization Wizard -->
+    <record id="action_field_service_optimization_wizard" model="ir.actions.act_window">
+        <field name="name">Run Route Optimization</field>
+        <field name="res_model">property_fielder.optimization</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_state': 'draft'}</field>
+    </record>
+</odoo>
+

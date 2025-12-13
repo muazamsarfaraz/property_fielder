@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Change Request List View -->
+    <record id="view_change_request_list" model="ir.ui.view">
+        <field name="name">property_fielder.change.request.list</field>
+        <field name="model">property_fielder.change.request</field>
+        <field name="arch" type="xml">
+            <list string="Change Requests" decoration-danger="state == 'rejected'" 
+                  decoration-success="state in ('approved', 'completed')"
+                  decoration-warning="priority == 'urgent'">
+                <field name="name"/>
+                <field name="request_type"/>
+                <field name="requester_type"/>
+                <field name="requester_id"/>
+                <field name="job_id"/>
+                <field name="current_date"/>
+                <field name="requested_date"/>
+                <field name="priority" widget="badge"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state in ('approved', 'completed')"
+                       decoration-danger="state == 'rejected'"
+                       decoration-info="state == 'pending'"
+                       decoration-muted="state in ('draft', 'cancelled')"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Change Request Form View -->
+    <record id="view_change_request_form" model="ir.ui.view">
+        <field name="name">property_fielder.change.request.form</field>
+        <field name="model">property_fielder.change.request</field>
+        <field name="arch" type="xml">
+            <form string="Change Request">
+                <header>
+                    <button name="action_submit" string="Submit" type="object" 
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve" type="object" 
+                            class="btn-success" invisible="state != 'pending'"/>
+                    <button name="action_reject" string="Reject" type="object" 
+                            class="btn-danger" invisible="state != 'pending'"/>
+                    <button name="action_cancel" string="Cancel" type="object" 
+                            invisible="state not in ('draft', 'pending')"/>
+                    <field name="state" widget="statusbar" 
+                           statusbar_visible="draft,pending,approved,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Request Details">
+                            <field name="request_type" readonly="state != 'draft'"/>
+                            <field name="priority" readonly="state != 'draft'"/>
+                            <field name="requester_type" readonly="state != 'draft'"/>
+                            <field name="requester_id" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Job Information">
+                            <field name="job_id" readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="route_id" readonly="1"/>
+                            <field name="inspector_id" readonly="1"/>
+                            <field name="current_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Requested Change">
+                            <field name="requested_date" readonly="state != 'draft'"
+                                   invisible="request_type != 'reschedule'"/>
+                        </group>
+                        <group string="Resolution" invisible="state not in ('approved', 'rejected', 'completed')">
+                            <field name="resolved_by" readonly="1"/>
+                            <field name="resolved_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Reason">
+                        <field name="reason" nolabel="1" readonly="state != 'draft'" 
+                               placeholder="Please explain the reason for this change request..."/>
+                    </group>
+                    <group string="Resolution Notes" invisible="state not in ('approved', 'rejected', 'completed')">
+                        <field name="resolution_notes" nolabel="1" 
+                               placeholder="Add notes about how the request was resolved..."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Change Request Kanban View -->
+    <record id="view_change_request_kanban" model="ir.ui.view">
+        <field name="name">property_fielder.change.request.kanban</field>
+        <field name="model">property_fielder.change.request</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="request_type"/>
+                <field name="job_id"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <strong><field name="name"/></strong>
+                            <div><field name="request_type"/></div>
+                            <div><field name="job_id"/></div>
+                            <div class="o_kanban_record_bottom">
+                                <field name="priority" widget="priority"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Change Request Action -->
+    <record id="action_change_request" model="ir.actions.act_window">
+        <field name="name">Change Requests</field>
+        <field name="res_model">property_fielder.change.request</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{'default_requester_type': 'internal'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No change requests yet
+            </p>
+            <p>
+                Change requests allow inspectors and property owners to request 
+                schedule changes. Create a new request to reschedule, cancel, or 
+                modify an appointment.
+            </p>
+        </field>
+    </record>
+
+    <!-- Pending Requests Action (for dashboard) -->
+    <record id="action_change_request_pending" model="ir.actions.act_window">
+        <field name="name">Pending Requests</field>
+        <field name="res_model">property_fielder.change.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'pending')]</field>
+    </record>
+</odoo>
+

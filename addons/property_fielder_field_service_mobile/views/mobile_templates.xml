@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Mobile Web App Template -->
+        <template id="mobile_app_template" name="Mobile App">
+            <t t-call="web.layout">
+                <div class="Property Fielder-mobile-app">
+                    <div class="mobile-header">
+                        <h1>Field Service Mobile</h1>
+                    </div>
+                    <div class="mobile-content">
+                        <!-- Mobile app content will be rendered here by JavaScript -->
+                    </div>
+                </div>
+            </t>
+        </template>
+        
+    </data>
+</odoo>
+

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Email Template: Inspector Route Schedule -->
+    <record id="email_template_inspector_schedule" model="mail.template">
+        <field name="name">Inspector Route Schedule</field>
+        <field name="model_id" ref="model_property_fielder_route"/>
+        <field name="email_from">{{ user.email_formatted }}</field>
+        <field name="email_to">{{ object.inspector_id.email }}</field>
+        <field name="subject">Your Route Schedule for {{ object.route_date }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 14px;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family: 'Lato', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h1 style="color: #875A7B;">Your Route Schedule</h1>
+                            <p>Hello {{ object.inspector_id.name }},</p>
+                            <p>Here is your route schedule for <strong>{{ object.route_date }}</strong>:</p>
+                            
+                            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-top: 16px;">
+                                <tr style="background-color: #875A7B; color: white;">
+                                    <th style="padding: 10px; text-align: left;">Route</th>
+                                    <th style="padding: 10px; text-align: left;">Jobs</th>
+                                    <th style="padding: 10px; text-align: left;">Total Time</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px;">{{ object.name }}</td>
+                                    <td style="padding: 10px;">{{ object.job_count }} jobs</td>
+                                    <td style="padding: 10px;">{{ object.total_time_minutes }} minutes</td>
+                                </tr>
+                            </table>
+                            
+                            <h3 style="margin-top: 24px;">Job Details:</h3>
+                            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+                                <tr style="background-color: #f2f2f2;">
+                                    <th style="padding: 8px;">#</th>
+                                    <th style="padding: 8px;">Job</th>
+                                    <th style="padding: 8px;">Address</th>
+                                    <th style="padding: 8px;">Duration</th>
+                                </tr>
+                                <t t-set="counter" t-value="1"/>
+                                <t t-foreach="object.job_ids.sorted('sequence_in_route')" t-as="job">
+                                    <tr>
+                                        <td style="padding: 8px;">{{ counter }}</td>
+                                        <td style="padding: 8px;">{{ job.name }}</td>
+                                        <td style="padding: 8px;">{{ job.street }}, {{ job.city }}</td>
+                                        <td style="padding: 8px;">{{ job.duration_minutes }} min</td>
+                                    </tr>
+                                    <t t-set="counter" t-value="counter + 1"/>
+                                </t>
+                            </table>
+                            
+                            <t t-if="ctx.get('custom_message')">
+                                <p style="margin-top: 20px; font-style: italic; color: #666;">
+                                    {{ ctx.get('custom_message') }}
+                                </p>
+                            </t>
+                            
+                            <p style="margin-top: 24px;">Have a great day!</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Email Template: Property Owner Appointment -->
+    <record id="email_template_owner_appointment" model="mail.template">
+        <field name="name">Property Owner Inspection Appointment</field>
+        <field name="model_id" ref="model_property_fielder_job"/>
+        <field name="email_from">{{ user.email_formatted }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="subject">Inspection Scheduled at {{ object.street }} - {{ object.scheduled_date }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 14px;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family: 'Lato', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h1 style="color: #875A7B;">Inspection Scheduled</h1>
+                            <p>Dear {{ object.partner_id.name }},</p>
+                            <p>We are writing to confirm that an inspection has been scheduled at your property:</p>
+                            
+                            <table style="margin: 20px 0; width: 100%;">
+                                <tr>
+                                    <td style="padding: 10px; background-color: #f9f9f9; width: 150px;"><strong>Property:</strong></td>
+                                    <td style="padding: 10px; background-color: #f9f9f9;">{{ object.street }}, {{ object.city }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; width: 150px;"><strong>Date:</strong></td>
+                                    <td style="padding: 10px;">{{ object.scheduled_date }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; background-color: #f9f9f9; width: 150px;"><strong>Duration:</strong></td>
+                                    <td style="padding: 10px; background-color: #f9f9f9;">Approximately {{ object.duration_minutes }} minutes</td>
+                                </tr>
+                                <t t-if="object.inspector_id">
+                                    <tr>
+                                        <td style="padding: 10px; width: 150px;"><strong>Inspector:</strong></td>
+                                        <td style="padding: 10px;">{{ object.inspector_id.name }}</td>
+                                    </tr>
+                                </t>
+                            </table>
+                            
+                            <t t-if="ctx.get('custom_message')">
+                                <p style="margin-top: 20px; font-style: italic; color: #666;">
+                                    {{ ctx.get('custom_message') }}
+                                </p>
+                            </t>
+                            
+                            <p style="margin-top: 24px;">
+                                <strong>Need to reschedule?</strong><br/>
+                                Please contact us as soon as possible if this time doesn't work for you.
+                            </p>
+                            
+                            <p>Best regards,<br/>The Property Fielder Team</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>
+

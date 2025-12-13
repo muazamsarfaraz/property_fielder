@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ============================================ -->
+        <!-- DEMO DATA: 50 Properties, 3 Inspectors      -->
+        <!-- Multi-Day Test Scenario (5 Days)            -->
+        <!-- ============================================ -->
+        
+        <!-- ============================================ -->
+        <!-- 1. INSPECTORS (3 Field Service Workers)     -->
+        <!-- ============================================ -->
+        
+        <!-- Inspector 1: Alice Johnson -->
+        <record id="demo_inspector_alice" model="res.partner">
+            <field name="name">Alice Johnson</field>
+            <field name="company_type">person</field>
+            <field name="street">Central London</field>
+            <field name="city">London</field>
+            <field name="zip">SW1A 1AA</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="phone">+44 20 7123 4567</field>
+            <field name="email">alice.johnson@fielder.one</field>
+            <field name="is_company">False</field>
+        </record>
+        
+        <!-- Inspector 2: Bob Smith -->
+        <record id="demo_inspector_bob" model="res.partner">
+            <field name="name">Bob Smith</field>
+            <field name="company_type">person</field>
+            <field name="street">North London</field>
+            <field name="city">London</field>
+            <field name="zip">N1 9AG</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="phone">+44 20 7123 4568</field>
+            <field name="email">bob.smith@fielder.one</field>
+            <field name="is_company">False</field>
+        </record>
+        
+        <!-- Inspector 3: Carol Davis -->
+        <record id="demo_inspector_carol" model="res.partner">
+            <field name="name">Carol Davis</field>
+            <field name="company_type">person</field>
+            <field name="street">West London</field>
+            <field name="city">London</field>
+            <field name="zip">W1D 3QU</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="phone">+44 20 7123 4569</field>
+            <field name="email">carol.davis@fielder.one</field>
+            <field name="is_company">False</field>
+        </record>
+        
+        <!-- ============================================ -->
+        <!-- 2. PROPERTIES (50 London Properties)        -->
+        <!-- ============================================ -->
+        
+        <!-- Property 1: Camden -->
+        <record id="demo_property_001" model="property_fielder.property">
+            <field name="name">Camden Office Building</field>
+            <field name="property_type">commercial</field>
+            <field name="street">123 Camden High Street</field>
+            <field name="city">London</field>
+            <field name="zip">NW1 7JR</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5390</field>
+            <field name="longitude">-0.1426</field>
+        </record>
+        
+        <!-- Property 2: Islington -->
+        <record id="demo_property_002" model="property_fielder.property">
+            <field name="name">Islington Residential Complex</field>
+            <field name="property_type">residential</field>
+            <field name="street">45 Upper Street</field>
+            <field name="city">London</field>
+            <field name="zip">N1 0NY</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5465</field>
+            <field name="longitude">-0.1058</field>
+        </record>
+        
+        <!-- Property 3: Westminster -->
+        <record id="demo_property_003" model="property_fielder.property">
+            <field name="name">Westminster Commercial Center</field>
+            <field name="property_type">commercial</field>
+            <field name="street">78 Victoria Street</field>
+            <field name="city">London</field>
+            <field name="zip">SW1E 5JL</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4975</field>
+            <field name="longitude">-0.1357</field>
+        </record>
+        
+        <!-- Property 4: Kensington -->
+        <record id="demo_property_004" model="property_fielder.property">
+            <field name="name">Kensington Apartments</field>
+            <field name="property_type">residential</field>
+            <field name="street">12 Kensington High Street</field>
+            <field name="city">London</field>
+            <field name="zip">W8 5NP</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4991</field>
+            <field name="longitude">-0.1938</field>
+        </record>
+        
+        <!-- Property 5: Chelsea -->
+        <record id="demo_property_005" model="property_fielder.property">
+            <field name="name">Chelsea Retail Space</field>
+            <field name="property_type">commercial</field>
+            <field name="street">89 King's Road</field>
+            <field name="city">London</field>
+            <field name="zip">SW3 4NX</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4875</field>
+            <field name="longitude">-0.1687</field>
+        </record>
+        
+        <!-- Property 6: Hammersmith -->
+        <record id="demo_property_006" model="property_fielder.property">
+            <field name="name">Hammersmith Business Park</field>
+            <field name="property_type">commercial</field>
+            <field name="street">56 Hammersmith Road</field>
+            <field name="city">London</field>
+            <field name="zip">W6 7JP</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4927</field>
+            <field name="longitude">-0.2339</field>
+        </record>
+
+        <!-- Property 7: Wandsworth -->
+        <record id="demo_property_007" model="property_fielder.property">
+            <field name="name">Wandsworth Residential Tower</field>
+            <field name="property_type">residential</field>
+            <field name="street">34 Wandsworth High Street</field>
+            <field name="city">London</field>
+            <field name="zip">SW18 2PP</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4571</field>
+            <field name="longitude">-0.1910</field>
+        </record>
+
+        <!-- Property 8: Battersea -->
+        <record id="demo_property_008" model="property_fielder.property">
+            <field name="name">Battersea Office Complex</field>
+            <field name="property_type">commercial</field>
+            <field name="street">91 Battersea Park Road</field>
+            <field name="city">London</field>
+            <field name="zip">SW11 4NB</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4760</field>
+            <field name="longitude">-0.1545</field>
+        </record>
+
+        <!-- Property 9: Clapham -->
+        <record id="demo_property_009" model="property_fielder.property">
+            <field name="name">Clapham Apartments</field>
+            <field name="property_type">residential</field>
+            <field name="street">67 Clapham High Street</field>
+            <field name="city">London</field>
+            <field name="zip">SW4 7TG</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4618</field>
+            <field name="longitude">-0.1384</field>
+        </record>
+
+        <!-- Property 10: Brixton -->
+        <record id="demo_property_010" model="property_fielder.property">
+            <field name="name">Brixton Market Building</field>
+            <field name="property_type">commercial</field>
+            <field name="street">23 Brixton Road</field>
+            <field name="city">London</field>
+            <field name="zip">SW9 6DE</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4613</field>
+            <field name="longitude">-0.1157</field>
+        </record>
+
+        <!-- Property 11: Southwark -->
+        <record id="demo_property_011" model="property_fielder.property">
+            <field name="name">Southwark Commercial Hub</field>
+            <field name="property_type">commercial</field>
+            <field name="street">45 Southwark Street</field>
+            <field name="city">London</field>
+            <field name="zip">SE1 1UN</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5035</field>
+            <field name="longitude">-0.0804</field>
+        </record>
+
+        <!-- Property 12: Tower Hamlets -->
+        <record id="demo_property_012" model="property_fielder.property">
+            <field name="name">Tower Hamlets Office Tower</field>
+            <field name="property_type">commercial</field>
+            <field name="street">78 Commercial Road</field>
+            <field name="city">London</field>
+            <field name="zip">E1 1RD</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5099</field>
+            <field name="longitude">-0.0059</field>
+        </record>
+
+        <!-- Property 13: Hackney -->
+        <record id="demo_property_013" model="property_fielder.property">
+            <field name="name">Hackney Residential Estate</field>
+            <field name="property_type">residential</field>
+            <field name="street">12 Mare Street</field>
+            <field name="city">London</field>
+            <field name="zip">E8 4RP</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5450</field>
+            <field name="longitude">-0.0553</field>
+        </record>
+
+        <!-- Property 14: Shoreditch -->
+        <record id="demo_property_014" model="property_fielder.property">
+            <field name="name">Shoreditch Tech Hub</field>
+            <field name="property_type">commercial</field>
+            <field name="street">89 Shoreditch High Street</field>
+            <field name="city">London</field>
+            <field name="zip">E1 6JE</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5252</field>
+            <field name="longitude">-0.0778</field>
+        </record>
+
+        <!-- Property 15: Bethnal Green -->
+        <record id="demo_property_015" model="property_fielder.property">
+            <field name="name">Bethnal Green Apartments</field>
+            <field name="property_type">residential</field>
+            <field name="street">34 Bethnal Green Road</field>
+            <field name="city">London</field>
+            <field name="zip">E2 6DG</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5273</field>
+            <field name="longitude">-0.0552</field>
+        </record>
+
+        <!-- Property 16: Stratford -->
+        <record id="demo_property_016" model="property_fielder.property">
+            <field name="name">Stratford Shopping Center</field>
+            <field name="property_type">commercial</field>
+            <field name="street">56 Stratford High Street</field>
+            <field name="city">London</field>
+            <field name="zip">E15 1AZ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5416</field>
+            <field name="longitude">-0.0022</field>
+        </record>
+
+        <!-- Property 17: Newham -->
+        <record id="demo_property_017" model="property_fielder.property">
+            <field name="name">Newham Business Park</field>
+            <field name="property_type">commercial</field>
+            <field name="street">91 Barking Road</field>
+            <field name="city">London</field>
+            <field name="zip">E16 4HQ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5255</field>
+            <field name="longitude">0.0352</field>
+        </record>
+
+        <!-- Property 18: Barking -->
+        <record id="demo_property_018" model="property_fielder.property">
+            <field name="name">Barking Residential Complex</field>
+            <field name="property_type">residential</field>
+            <field name="street">23 Ripple Road</field>
+            <field name="city">London</field>
+            <field name="zip">IG11 7PG</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5362</field>
+            <field name="longitude">0.0804</field>
+        </record>
+
+        <!-- Property 19: Greenwich -->
+        <record id="demo_property_019" model="property_fielder.property">
+            <field name="name">Greenwich Office Building</field>
+            <field name="property_type">commercial</field>
+            <field name="street">45 Greenwich High Road</field>
+            <field name="city">London</field>
+            <field name="zip">SE10 8JL</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4826</field>
+            <field name="longitude">0.0077</field>
+        </record>
+
+        <!-- Property 20: Lewisham -->
+        <record id="demo_property_020" model="property_fielder.property">
+            <field name="name">Lewisham Shopping Mall</field>
+            <field name="property_type">commercial</field>
+            <field name="street">78 Lewisham High Street</field>
+            <field name="city">London</field>
+            <field name="zip">SE13 6JZ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4415</field>
+            <field name="longitude">-0.0117</field>
+        </record>
+
+        <!-- Property 21: Croydon -->
+        <record id="demo_property_021" model="property_fielder.property">
+            <field name="name">Croydon Commercial Tower</field>
+            <field name="property_type">commercial</field>
+            <field name="street">12 North End</field>
+            <field name="city">Croydon</field>
+            <field name="zip">CR0 1TY</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.3762</field>
+            <field name="longitude">-0.0982</field>
+        </record>
+
+        <!-- Property 22: Bromley -->
+        <record id="demo_property_022" model="property_fielder.property">
+            <field name="name">Bromley Retail Park</field>
+            <field name="property_type">commercial</field>
+            <field name="street">89 Bromley High Street</field>
+            <field name="city">Bromley</field>
+            <field name="zip">BR1 1JQ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4039</field>
+            <field name="longitude">0.0198</field>
+        </record>
+
+        <!-- Property 23: Sutton -->
+        <record id="demo_property_023" model="property_fielder.property">
+            <field name="name">Sutton Office Complex</field>
+            <field name="property_type">commercial</field>
+            <field name="street">34 Sutton High Street</field>
+            <field name="city">Sutton</field>
+            <field name="zip">SM1 1DF</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.3618</field>
+            <field name="longitude">-0.1945</field>
+        </record>
+
+        <!-- Property 24: Kingston -->
+        <record id="demo_property_024" model="property_fielder.property">
+            <field name="name">Kingston Apartments</field>
+            <field name="property_type">residential</field>
+            <field name="street">56 Kingston High Street</field>
+            <field name="city">Kingston upon Thames</field>
+            <field name="zip">KT1 1EU</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4123</field>
+            <field name="longitude">-0.3007</field>
+        </record>
+
+        <!-- Property 25: Richmond -->
+        <record id="demo_property_025" model="property_fielder.property">
+            <field name="name">Richmond Residential Estate</field>
+            <field name="property_type">residential</field>
+            <field name="street">91 Richmond Hill</field>
+            <field name="city">Richmond</field>
+            <field name="zip">TW10 6RN</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4613</field>
+            <field name="longitude">-0.3037</field>
+        </record>
+
+        <!-- Property 26: Ealing -->
+        <record id="demo_property_026" model="property_fielder.property">
+            <field name="name">Ealing Business Center</field>
+            <field name="property_type">commercial</field>
+            <field name="street">23 Ealing Broadway</field>
+            <field name="city">London</field>
+            <field name="zip">W5 2NU</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5130</field>
+            <field name="longitude">-0.3089</field>
+        </record>
+
+        <!-- Property 27: Brent -->
+        <record id="demo_property_027" model="property_fielder.property">
+            <field name="name">Brent Office Tower</field>
+            <field name="property_type">commercial</field>
+            <field name="street">45 Wembley High Road</field>
+            <field name="city">London</field>
+            <field name="zip">HA9 6AG</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5588</field>
+            <field name="longitude">-0.2817</field>
+        </record>
+
+        <!-- Property 28: Harrow -->
+        <record id="demo_property_028" model="property_fielder.property">
+            <field name="name">Harrow Residential Complex</field>
+            <field name="property_type">residential</field>
+            <field name="street">78 Station Road</field>
+            <field name="city">Harrow</field>
+            <field name="zip">HA1 2TR</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5898</field>
+            <field name="longitude">-0.3346</field>
+        </record>
+
+        <!-- Property 29: Barnet -->
+        <record id="demo_property_029" model="property_fielder.property">
+            <field name="name">Barnet Shopping Center</field>
+            <field name="property_type">commercial</field>
+            <field name="street">12 High Street</field>
+            <field name="city">Barnet</field>
+            <field name="zip">EN5 5XQ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.6252</field>
+            <field name="longitude">-0.1517</field>
+        </record>
+
+        <!-- Property 30: Enfield -->
+        <record id="demo_property_030" model="property_fielder.property">
+            <field name="name">Enfield Business Park</field>
+            <field name="property_type">commercial</field>
+            <field name="street">89 Church Street</field>
+            <field name="city">Enfield</field>
+            <field name="zip">EN2 6AJ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.6523</field>
+            <field name="longitude">-0.0808</field>
+        </record>
+
+        <!-- Property 31: Haringey -->
+        <record id="demo_property_031" model="property_fielder.property">
+            <field name="name">Haringey Office Complex</field>
+            <field name="property_type">commercial</field>
+            <field name="street">34 Wood Green High Road</field>
+            <field name="city">London</field>
+            <field name="zip">N22 6YD</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5906</field>
+            <field name="longitude">-0.1110</field>
+        </record>
+
+        <!-- Property 32: Waltham Forest -->
+        <record id="demo_property_032" model="property_fielder.property">
+            <field name="name">Waltham Forest Apartments</field>
+            <field name="property_type">residential</field>
+            <field name="street">56 Hoe Street</field>
+            <field name="city">London</field>
+            <field name="zip">E17 4QS</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5886</field>
+            <field name="longitude">-0.0117</field>
+        </record>
+
+        <!-- Property 33: Redbridge -->
+        <record id="demo_property_033" model="property_fielder.property">
+            <field name="name">Redbridge Shopping Mall</field>
+            <field name="property_type">commercial</field>
+            <field name="street">91 Ilford High Road</field>
+            <field name="city">Ilford</field>
+            <field name="zip">IG1 1RS</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5590</field>
+            <field name="longitude">0.0741</field>
+        </record>
+
+        <!-- Property 34: Havering -->
+        <record id="demo_property_034" model="property_fielder.property">
+            <field name="name">Havering Business Center</field>
+            <field name="property_type">commercial</field>
+            <field name="street">23 South Street</field>
+            <field name="city">Romford</field>
+            <field name="zip">RM1 1NX</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5779</field>
+            <field name="longitude">0.2120</field>
+        </record>
+
+        <!-- Property 35: Bexley -->
+        <record id="demo_property_035" model="property_fielder.property">
+            <field name="name">Bexley Residential Estate</field>
+            <field name="property_type">residential</field>
+            <field name="street">45 Broadway</field>
+            <field name="city">Bexleyheath</field>
+            <field name="zip">DA6 7JZ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4549</field>
+            <field name="longitude">0.1505</field>
+        </record>
+
+        <!-- Property 36: Merton -->
+        <record id="demo_property_036" model="property_fielder.property">
+            <field name="name">Merton Office Tower</field>
+            <field name="property_type">commercial</field>
+            <field name="street">78 Merton High Street</field>
+            <field name="city">London</field>
+            <field name="zip">SW19 1DD</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4098</field>
+            <field name="longitude">-0.2108</field>
+        </record>
+
+        <!-- Property 37: Lambeth -->
+        <record id="demo_property_037" model="property_fielder.property">
+            <field name="name">Lambeth Commercial Hub</field>
+            <field name="property_type">commercial</field>
+            <field name="street">12 Brixton Road</field>
+            <field name="city">London</field>
+            <field name="zip">SW9 6BU</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4607</field>
+            <field name="longitude">-0.1163</field>
+        </record>
+
+        <!-- Property 38: Southwark East -->
+        <record id="demo_property_038" model="property_fielder.property">
+            <field name="name">Southwark East Apartments</field>
+            <field name="property_type">residential</field>
+            <field name="street">89 Old Kent Road</field>
+            <field name="city">London</field>
+            <field name="zip">SE1 5LX</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4741</field>
+            <field name="longitude">-0.0545</field>
+        </record>
+
+        <!-- Property 39: Woolwich -->
+        <record id="demo_property_039" model="property_fielder.property">
+            <field name="name">Woolwich Shopping Center</field>
+            <field name="property_type">commercial</field>
+            <field name="street">34 Powis Street</field>
+            <field name="city">London</field>
+            <field name="zip">SE18 6LQ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4892</field>
+            <field name="longitude">0.0648</field>
+        </record>
+
+        <!-- Property 40: Hillingdon -->
+        <record id="demo_property_040" model="property_fielder.property">
+            <field name="name">Hillingdon Business Park</field>
+            <field name="property_type">commercial</field>
+            <field name="street">56 Uxbridge Road</field>
+            <field name="city">Uxbridge</field>
+            <field name="zip">UB8 1UW</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.5441</field>
+            <field name="longitude">-0.4760</field>
+        </record>
+
+        <!-- Property 41: Hounslow -->
+        <record id="demo_property_041" model="property_fielder.property">
+            <field name="name">Hounslow Office Complex</field>
+            <field name="property_type">commercial</field>
+            <field name="street">91 High Street</field>
+            <field name="city">Hounslow</field>
+            <field name="zip">TW3 1RH</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4746</field>
+            <field name="longitude">-0.3580</field>
+        </record>
+
+        <!-- Property 42: Fulham -->
+        <record id="demo_property_042" model="property_fielder.property">
+            <field name="name">Fulham Residential Tower</field>
+            <field name="property_type">residential</field>
+            <field name="street">23 Fulham Road</field>
+            <field name="city">London</field>
+            <field name="zip">SW6 1BY</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4827</field>
+            <field name="longitude">-0.1947</field>
+        </record>
+
+        <!-- Property 43: Putney -->
+        <record id="demo_property_043" model="property_fielder.property">
+            <field name="name">Putney Apartments</field>
+            <field name="property_type">residential</field>
+            <field name="street">45 Putney High Street</field>
+            <field name="city">London</field>
+            <field name="zip">SW15 1SL</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4634</field>
+            <field name="longitude">-0.2156</field>
+        </record>
+
+        <!-- Property 44: Wimbledon -->
+        <record id="demo_property_044" model="property_fielder.property">
+            <field name="name">Wimbledon Shopping Center</field>
+            <field name="property_type">commercial</field>
+            <field name="street">78 The Broadway</field>
+            <field name="city">London</field>
+            <field name="zip">SW19 1RH</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4214</field>
+            <field name="longitude">-0.2064</field>
+        </record>
+
+        <!-- Property 45: Tooting -->
+        <record id="demo_property_045" model="property_fielder.property">
+            <field name="name">Tooting Business Center</field>
+            <field name="property_type">commercial</field>
+            <field name="street">12 Tooting High Street</field>
+            <field name="city">London</field>
+            <field name="zip">SW17 0RG</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4275</field>
+            <field name="longitude">-0.1687</field>
+        </record>
+
+        <!-- Property 46: Balham -->
+        <record id="demo_property_046" model="property_fielder.property">
+            <field name="name">Balham Office Tower</field>
+            <field name="property_type">commercial</field>
+            <field name="street">89 Balham High Road</field>
+            <field name="city">London</field>
+            <field name="zip">SW12 9AP</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4431</field>
+            <field name="longitude">-0.1525</field>
+        </record>
+
+        <!-- Property 47: Streatham -->
+        <record id="demo_property_047" model="property_fielder.property">
+            <field name="name">Streatham Residential Complex</field>
+            <field name="property_type">residential</field>
+            <field name="street">34 Streatham High Road</field>
+            <field name="city">London</field>
+            <field name="zip">SW16 1DB</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4318</field>
+            <field name="longitude">-0.1255</field>
+        </record>
+
+        <!-- Property 48: Dulwich -->
+        <record id="demo_property_048" model="property_fielder.property">
+            <field name="name">Dulwich Apartments</field>
+            <field name="property_type">residential</field>
+            <field name="street">56 Lordship Lane</field>
+            <field name="city">London</field>
+            <field name="zip">SE22 8HJ</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4484</field>
+            <field name="longitude">-0.0857</field>
+        </record>
+
+        <!-- Property 49: Peckham -->
+        <record id="demo_property_049" model="property_fielder.property">
+            <field name="name">Peckham Shopping Mall</field>
+            <field name="property_type">commercial</field>
+            <field name="street">91 Rye Lane</field>
+            <field name="city">London</field>
+            <field name="zip">SE15 4ST</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4741</field>
+            <field name="longitude">-0.0690</field>
+        </record>
+
+        <!-- Property 50: Deptford -->
+        <record id="demo_property_050" model="property_fielder.property">
+            <field name="name">Deptford Office Complex</field>
+            <field name="property_type">commercial</field>
+            <field name="street">23 Deptford High Street</field>
+            <field name="city">London</field>
+            <field name="zip">SE8 4AG</field>
+            <field name="country_id" ref="base.uk"/>
+            <field name="latitude">51.4781</field>
+            <field name="longitude">-0.0298</field>
+        </record>
+
+    </data>
+</odoo>
+

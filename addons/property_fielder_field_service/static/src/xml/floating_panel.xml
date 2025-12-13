@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="property_fielder_field_service.FloatingPanel">
+        <div t-ref="panel" 
+             class="floating-panel" 
+             t-att-class="{ 'collapsed': state.collapsed, 'dragging': state.isDragging, 'resizing': state.isResizing }"
+             t-att-style="panelStyle"
+             t-on-mousedown="bringToFront">
+            
+            <!-- Panel Header (Draggable) -->
+            <div t-ref="header" 
+                 class="floating-panel-header"
+                 t-on-mousedown="onDragStart">
+                <div class="panel-title">
+                    <i t-att-class="'fa ' + props.icon + ' me-2'" title="Panel icon"></i>
+                    <span t-esc="props.title"/>
+                </div>
+                <div class="panel-controls">
+                    <button t-if="props.collapsible" 
+                            type="button" 
+                            class="btn btn-sm btn-link panel-btn"
+                            t-on-click.stop="toggleCollapse"
+                            t-att-title="state.collapsed ? 'Expand' : 'Collapse'">
+                        <i t-att-class="'fa ' + (state.collapsed ? 'fa-chevron-down' : 'fa-chevron-up')" title="Toggle collapse"></i>
+                    </button>
+                    <button t-if="props.onClose"
+                            type="button"
+                            class="btn btn-sm btn-link panel-btn"
+                            t-on-click.stop="onClose"
+                            title="Close panel">
+                        <i class="fa fa-times" title="Close"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Content -->
+            <div class="floating-panel-content" t-att-class="{ 'd-none': state.collapsed }">
+                <t t-slot="default"/>
+            </div>
+
+            <!-- Resize Handle -->
+            <div t-if="props.resizable and !state.collapsed"
+                 class="panel-resize-handle"
+                 t-on-mousedown="onResizeStart"
+                 title="Resize panel">
+                <i class="fa fa-expand-arrows-alt" title="Resize"></i>
+            </div>
+        </div>
+    </t>
+</templates>
+

@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+
+        <!-- Inspection Tree View -->
+        <record id="view_property_inspection_tree" model="ir.ui.view">
+            <field name="name">property_fielder.property.inspection.tree</field>
+            <field name="model">property_fielder.property.inspection</field>
+            <field name="arch" type="xml">
+                <list string="Inspections">
+                    <field name="name"/>
+                    <field name="property_id"/>
+                    <field name="certification_type_id"/>
+                    <field name="flage_category" widget="badge"/>
+                    <field name="scheduled_date"/>
+                    <field name="completed_date"/>
+                    <field name="inspector_id"/>
+                    <field name="state" widget="badge"/>
+                    <field name="result" widget="badge"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- Inspection Form View -->
+        <record id="view_property_inspection_form" model="ir.ui.view">
+            <field name="name">property_fielder.property.inspection.form</field>
+            <field name="model">property_fielder.property.inspection</field>
+            <field name="arch" type="xml">
+                <form string="Property Inspection">
+                    <header>
+                        <!--TODO: Result from converting "states='draft'" attribute into an 'invisible' attribute
+                             Manually combine states condition into any 'invisible' overrides in inheriting views as well-->
+                        <button name="action_schedule" string="Schedule" type="object" invisible="state not in ['draft']" class="btn-primary"/>
+                        <!--TODO: Result from converting "states='scheduled'" attribute into an 'invisible' attribute
+                             Manually combine states condition into any 'invisible' overrides in inheriting views as well-->
+                        <button name="action_start" string="Start" type="object" invisible="state not in ['scheduled']" class="btn-primary"/>
+                        <!--TODO: Result from converting "states='in_progress'" attribute into an 'invisible' attribute
+                             Manually combine states condition into any 'invisible' overrides in inheriting views as well-->
+                        <button name="action_complete" string="Complete" type="object" invisible="state not in ['in_progress']" class="btn-success"/>
+                        <!--TODO: Result from converting "states='in_progress'" attribute into an 'invisible' attribute
+                             Manually combine states condition into any 'invisible' overrides in inheriting views as well-->
+                        <button name="action_fail" string="Mark as Failed" type="object" invisible="state not in ['in_progress']" class="btn-danger"/>
+                        <!--TODO: Result from converting "states='draft,scheduled'" attribute into an 'invisible' attribute
+                             Manually combine states condition into any 'invisible' overrides in inheriting views as well-->
+                        <button name="action_cancel" string="Cancel" type="object" invisible="state not in ['draft', 'scheduled']"/>
+                        <button name="action_create_field_service_job" string="Create Field Service Job" type="object" class="btn-secondary" invisible="job_id"/>
+                        <button name="action_generate_certificate" string="Generate Certificate" type="object" class="btn-primary" invisible="result != 'pass' or certification_id"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,scheduled,in_progress,completed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="property_id"/>
+                                <field name="certification_type_id"/>
+                                <field name="flage_category"/>
+                            </group>
+                            <group>
+                                <field name="scheduled_date"/>
+                                <field name="completed_date"/>
+                                <field name="inspector_id"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Results">
+                                <field name="result"/>
+                                <field name="certification_id" readonly="1"/>
+                                <field name="job_id" readonly="1"/>
+                            </group>
+                            <group string="Documents">
+                                <field name="report_file" filename="report_filename"/>
+                                <field name="report_filename" invisible="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Findings">
+                                <field name="findings" placeholder="Record inspection findings..."/>
+                            </page>
+                            <page string="Recommendations">
+                                <field name="recommendations" placeholder="Record recommendations..."/>
+                            </page>
+                            <page string="Photos">
+                                <field name="photo_ids" widget="many2many_binary"/>
+                            </page>
+                            <page string="Notes">
+                                <field name="notes" placeholder="Additional notes..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Inspection Search View -->
+        <record id="view_property_inspection_search" model="ir.ui.view">
+            <field name="name">property_fielder.property.inspection.search</field>
+            <field name="model">property_fielder.property.inspection</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="property_id"/>
+                    <field name="certification_type_id"/>
+                    <field name="inspector_id"/>
+                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Scheduled" name="scheduled" domain="[('state', '=', 'scheduled')]"/>
+                    <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                    <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+                    <separator/>
+                    <filter string="Passed" name="passed" domain="[('result', '=', 'pass')]"/>
+                    <filter string="Failed" name="failed" domain="[('result', '=', 'fail')]"/>
+                    <filter string="Property" name="group_property" context="{'group_by': 'property_id'}"/>
+                        <filter string="Type" name="group_type" context="{'group_by': 'certification_type_id'}"/>
+                        <filter string="Inspector" name="group_inspector" context="{'group_by': 'inspector_id'}"/>
+                        <filter string="Status" name="group_status" context="{'group_by': 'state'}"/></search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

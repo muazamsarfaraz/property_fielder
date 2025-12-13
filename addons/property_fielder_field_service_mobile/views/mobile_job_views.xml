@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        
+        <!-- Mobile Job List View -->
+        <record id="view_mobile_job_list" model="ir.ui.view">
+            <field name="name">property_fielder.job.mobile.list</field>
+            <field name="model">property_fielder.job</field>
+            <field name="arch" type="xml">
+                <list string="My Jobs" create="false" delete="false">
+                    <field name="job_number"/>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="scheduled_date"/>
+                    <field name="earliest_start"/>
+                    <field name="priority" widget="priority"/>
+                    <field name="state" widget="badge" decoration-success="state=='completed'" decoration-info="state=='in_progress'" decoration-warning="state=='assigned'"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- Mobile Job Form View -->
+        <record id="view_mobile_job_form" model="ir.ui.view">
+            <field name="name">property_fielder.job.mobile.form</field>
+            <field name="model">property_fielder.job</field>
+            <field name="arch" type="xml">
+                <form string="Job Details" create="false" delete="false">
+                    <header>
+                        <button name="action_mobile_checkin" string="Check In" type="object" class="btn-primary" invisible="state in ['in_progress', 'completed']"/>
+                        <button name="action_mobile_checkout" string="Check Out" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_location_map" type="object" class="oe_stat_button" icon="fa-map-marker">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">Navigate</span>
+                                </div>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="job_number"/>
+                                <field name="name"/>
+                                <field name="partner_id"/>
+                                <field name="priority" widget="priority"/>
+                            </group>
+                            <group>
+                                <field name="scheduled_date"/>
+                                <field name="earliest_start"/>
+                                <field name="latest_end"/>
+                                <field name="duration_minutes"/>
+                            </group>
+                        </group>
+                        <group string="Location">
+                            <field name="street"/>
+                            <field name="city"/>
+                            <field name="state_id"/>
+                            <field name="zip"/>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                        </group>
+                        <group string="Skills Required">
+                            <field name="skill_ids" widget="many2many_tags"/>
+                        </group>
+                        <notebook>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                            <page string="Photos">
+                                <button name="action_capture_photo" string="Capture Photo" type="object" class="btn-primary"/>
+                                <!-- Photo gallery will go here -->
+                            </page>
+                            <page string="Signature">
+                                <button name="action_capture_signature" string="Capture Signature" type="object" class="btn-primary"/>
+                                <!-- Signature pad will go here -->
+                            </page>
+                            <page string="Check-Ins">
+                                <!-- Check-in history will go here -->
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Mobile Job Kanban View -->
+        <record id="view_mobile_job_kanban" model="ir.ui.view">
+            <field name="name">property_fielder.job.mobile.kanban</field>
+            <field name="model">property_fielder.job</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" create="false" delete="false">
+                    <field name="job_number"/>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="scheduled_date"/>
+                    <field name="earliest_start"/>
+                    <field name="state"/>
+                    <field name="priority"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title"><field name="job_number"/> - <field name="name"/></strong>
+                                        <div class="o_kanban_record_subtitle">
+                                            <field name="partner_id"/>
+                                        </div>
+                                    </div>
+                                    <field name="priority" widget="priority"/>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="scheduled_date"/>
+                                    <field name="earliest_start" widget="datetime"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'pending': 'info', 'assigned': 'warning', 'in_progress': 'primary', 'completed': 'success', 'cancelled': 'danger'}}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+    </data>
+</odoo>

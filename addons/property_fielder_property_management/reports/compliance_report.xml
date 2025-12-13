@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Compliance Report Template -->
+        <template id="report_compliance_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="property">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2>FLAGE+ Compliance Report</h2>
+                            <h3><span t-field="property.name"/></h3>
+                            
+                            <div class="row mt32 mb32">
+                                <div class="col-6">
+                                    <strong>Property Number:</strong> <span t-field="property.property_number"/><br/>
+                                    <strong>Address:</strong> <span t-field="property.street"/>, <span t-field="property.city"/><br/>
+                                    <strong>Owner:</strong> <span t-field="property.partner_id"/><br/>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Report Date:</strong> <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/><br/>
+                                    <strong>Compliance Status:</strong> <span t-field="property.compliance_status"/><br/>
+                                </div>
+                            </div>
+                            
+                            <h4>FLAGE+ Status</h4>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>F - Fire Safety</td>
+                                        <td><span t-field="property.flage_fire_status"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>L - Legionella</td>
+                                        <td><span t-field="property.flage_legionella_status"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>A - Asbestos</td>
+                                        <td><span t-field="property.flage_asbestos_status"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>G - Gas Safety</td>
+                                        <td><span t-field="property.flage_gas_status"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>E - Electrical</td>
+                                        <td><span t-field="property.flage_electrical_status"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <h4>Certifications</h4>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Certificate Number</th>
+                                        <th>Issue Date</th>
+                                        <th>Expiry Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="property.certification_ids" t-as="cert">
+                                        <tr>
+                                            <td><span t-field="cert.certification_type_id"/></td>
+                                            <td><span t-field="cert.name"/></td>
+                                            <td><span t-field="cert.issue_date"/></td>
+                                            <td><span t-field="cert.expiry_date"/></td>
+                                            <td><span t-field="cert.status"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        
+        <!-- Report Action -->
+        <record id="action_report_compliance" model="ir.actions.report">
+            <field name="name">Compliance Report</field>
+            <field name="model">property_fielder.property</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">property_fielder_property_management.report_compliance_document</field>
+            <field name="report_file">property_fielder_property_management.report_compliance_document</field>
+            <field name="binding_model_id" ref="model_property_fielder_property"/>
+            <field name="binding_type">report</field>
+        </record>
+        
+    </data>
+</odoo>
+

@@ -1,0 +1,223 @@
+/* Dispatch View Styles */
+
+.o_dispatch_view {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.o_dispatch_toolbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.o_dispatch_title {
+    color: #714B67;
+}
+
+/* Map Widget Styles */
+.dispatch-map-widget {
+    position: relative;
+}
+
+.map-container {
+    background: #f8f9fa;
+}
+
+.job-marker {
+    transition: transform 0.2s ease;
+}
+
+.job-marker:hover {
+    transform: scale(1.2);
+    z-index: 1000;
+}
+
+/* Mapbox Popup Customization */
+.mapboxgl-popup-content {
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mapboxgl-popup-close-button {
+    font-size: 20px;
+    padding: 4px 8px;
+}
+
+/* Timeline Widget Styles */
+.dispatch-timeline-widget {
+    position: relative;
+    background: white;
+    padding: 12px;
+}
+
+.timeline-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Timeline Item Styles */
+.vis-item {
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.timeline-job {
+    border-width: 2px;
+}
+
+.timeline-travel {
+    border-style: dashed !important;
+    opacity: 0.7;
+}
+
+.timeline-job-draft {
+    background-color: #ecf0f1 !important;
+    border-color: #95a5a6 !important;
+}
+
+.timeline-job-scheduled {
+    background-color: #d1ecf1 !important;
+    border-color: #17a2b8 !important;
+}
+
+.timeline-job-assigned {
+    background-color: #fff3cd !important;
+    border-color: #ffc107 !important;
+}
+
+.timeline-job-in_progress {
+    background-color: #cce5ff !important;
+    border-color: #007bff !important;
+}
+
+.timeline-job-completed {
+    background-color: #d4edda !important;
+    border-color: #28a745 !important;
+}
+
+.timeline-job-cancelled {
+    background-color: #f8d7da !important;
+    border-color: #dc3545 !important;
+}
+
+/* Vis-Timeline Customization */
+.vis-timeline {
+    border: none;
+}
+
+.vis-time-axis .vis-text {
+    color: #6c757d;
+    font-size: 11px;
+}
+
+.vis-labelset .vis-label {
+    color: #212529;
+    font-weight: 500;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.vis-current-time {
+    background-color: #dc3545;
+    width: 2px;
+}
+
+/* Loading State */
+.o_dispatch_loading {
+    background: white;
+}
+
+/* Stats Footer */
+.o_dispatch_stats {
+    color: #6c757d;
+}
+
+.o_dispatch_stats i {
+    margin-right: 4px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .o_dispatch_content {
+        flex-direction: column !important;
+    }
+    
+    .o_dispatch_map_panel,
+    .o_dispatch_timeline_panel {
+        flex: none !important;
+        height: 50% !important;
+        border-right: none !important;
+        border-bottom: 1px solid #dee2e6;
+    }
+}
+
+/* Button Styles */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.btn-outline-secondary.active {
+    background-color: #714B67;
+    border-color: #714B67;
+    color: white;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #8a5f7a;
+    border-color: #714B67;
+    color: white;
+}
+
+/* Optimization Progress */
+.optimization-progress {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid #dee2e6;
+}
+
+.optimization-progress .progress {
+    background-color: #dee2e6;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.optimization-progress .progress-bar {
+    transition: width 0.3s ease;
+}
+
+.optimization-status {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.optimization-status .fa-spinner {
+    color: #007bff;
+}
+
+/* Pulse animation for active optimization */
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); }
+    50% { box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); }
+    100% { box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); }
+}
+
+.optimization-progress {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Time statistics display */
+.time-stat {
+    min-width: 80px;
+}
+
+.time-stat .fw-bold {
+    font-size: 1.1em;
+    color: #495057;
+}
+
+.optimization-status .fw-medium {
+    color: #495057;
+}
+

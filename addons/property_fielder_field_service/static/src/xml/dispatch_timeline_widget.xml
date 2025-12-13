@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="property_fielder_field_service.DispatchTimelineWidget">
+        <div class="dispatch-timeline-widget" style="width: 100%; height: 100%;">
+            <div t-ref="timelineContainer" class="timeline-container" style="width: 100%; height: 100%;"></div>
+        </div>
+    </t>
+</templates>
+
