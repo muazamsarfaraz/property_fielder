@@ -23,21 +23,25 @@ export class EnhancedDispatchView extends Component {
         this.state = useState({
             // Current tab
             activeTab: 'plan', // 'plan', 'optimize', 'schedule'
-            
+
             // Data
             jobs: [],
             routes: [],
             inspectors: [],
             selectedDate: new Date().toISOString().split('T')[0],
             loading: false,
-            
-            // Panel visibility
+
+            // Panel visibility (legacy, kept for compatibility)
             panels: {
                 resources: true,
                 settings: true,
                 optimization: true,
                 routeDetails: true,
             },
+
+            // Sidebar state (new docked layout)
+            sidebarCollapsed: false,
+            settingsExpanded: false,
 
             // Legend visibility
             legendCollapsed: false,
@@ -46,6 +50,12 @@ export class EnhancedDispatchView extends Component {
             selectedJobIds: [],
             selectedInspectorIds: [],
             selectedRouteId: null,
+
+            // Hover state for map highlighting
+            hoveredJobId: null,
+
+            // Search filters
+            jobSearchQuery: '',
 
             // Optimization state
             optimizationRunning: false,
@@ -57,7 +67,7 @@ export class EnhancedDispatchView extends Component {
         });
 
         onWillStart(async () => {
-            await this.loadData();
+            await this.loadData(true); // Auto-select date with jobs on initial load
         });
 
         onMounted(() => {
@@ -77,11 +87,60 @@ export class EnhancedDispatchView extends Component {
     }
 
     onSetActiveTabOptimize() {
+        if (!this.canAccessOptimize()) {
+            this.notification.add("Select jobs and inspectors first", { type: "warning" });
+            return;
+        }
         this.setActiveTab('optimize');
     }
 
     onSetActiveTabSchedule() {
+        if (!this.canAccessSchedule()) {
+            this.notification.add("Run optimization first to create routes", { type: "warning" });
+            return;
+        }
         this.setActiveTab('schedule');
+    }
+
+    // Progressive stepper validation
+    canAccessOptimize() {
+        return this.state.selectedJobIds.length > 0 && this.state.selectedInspectorIds.length > 0;
+    }
+
+    canAccessSchedule() {
+        // Can access schedule if there are routes OR if optimization has been run
+        return this.state.routes.length > 0 || this.state.optimizationResult !== null;
+    }
+
+    // Filtered jobs based on search query
+    get filteredJobs() {
+        const query = (this.state.jobSearchQuery || '').toLowerCase().trim();
+        if (!query) return this.state.jobs;
+
+        return this.state.jobs.filter(job => {
+            const name = (job.name || job.job_number || '').toLowerCase();
+            const address = (job.street || '').toLowerCase();
+            const city = (job.city || '').toLowerCase();
+            const partner = (job.partner_id?.[1] || '').toLowerCase();
+
+            return name.includes(query) ||
+                   address.includes(query) ||
+                   city.includes(query) ||
+                   partner.includes(query);
+        });
+    }
+
+    onJobSearchInput(ev) {
+        this.state.jobSearchQuery = ev.target.value;
+    }
+
+    clearJobSearch() {
+        this.state.jobSearchQuery = '';
+    }
+
+    // Handle job hover for map highlighting
+    onJobHover(jobId) {
+        this.state.hoveredJobId = jobId;
     }
 
     updatePanelsForTab(tab) {
@@ -129,8 +188,16 @@ export class EnhancedDispatchView extends Component {
         this.state.legendCollapsed = !this.state.legendCollapsed;
     }
 
+    toggleSidebar() {
+        this.state.sidebarCollapsed = !this.state.sidebarCollapsed;
+    }
+
+    toggleSettingsSection() {
+        this.state.settingsExpanded = !this.state.settingsExpanded;
+    }
+
     // Data Loading
-    async loadData() {
+    async loadData(autoSelectDate = false) {
         this.state.loading = true;
         try {
             const [jobs, routes, inspectors] = await Promise.all([
@@ -159,11 +226,69 @@ export class EnhancedDispatchView extends Component {
             this.state.jobs = jobs;
             this.state.routes = routes;
             this.state.inspectors = inspectors;
+
+            // Auto-select a date with jobs if current date has none
+            if (autoSelectDate && jobs.length === 0) {
+                await this.findDateWithJobs();
+            }
         } catch (error) {
             console.error("Failed to load data:", error);
-            this.notification.add("Failed to load dispatch data", { type: "danger" });
+            this.notification.add(this.formatErrorMessage(error, "Unable to load jobs"), { type: "danger" });
         } finally {
             this.state.loading = false;
+        }
+    }
+
+    /**
+     * Find a date with jobs and switch to it
+     * Searches within ±14 days of today
+     */
+    async findDateWithJobs() {
+        try {
+            // Get dates with jobs in the next 14 days
+            const today = new Date();
+            const futureDate = new Date();
+            futureDate.setDate(today.getDate() + 14);
+            const pastDate = new Date();
+            pastDate.setDate(today.getDate() - 7);
+
+            const jobsWithDates = await this.orm.searchRead(
+                "property_fielder.job",
+                [
+                    ["scheduled_date", ">=", pastDate.toISOString().split('T')[0]],
+                    ["scheduled_date", "<=", futureDate.toISOString().split('T')[0]],
+                ],
+                ["scheduled_date"],
+                { limit: 100 }
+            );
+
+            if (jobsWithDates.length > 0) {
+                // Count jobs per date and find the date with most jobs
+                const dateCounts = {};
+                for (const job of jobsWithDates) {
+                    const date = job.scheduled_date;
+                    dateCounts[date] = (dateCounts[date] || 0) + 1;
+                }
+
+                // Find date with most jobs
+                let bestDate = null;
+                let maxCount = 0;
+                for (const [date, count] of Object.entries(dateCounts)) {
+                    if (count > maxCount) {
+                        maxCount = count;
+                        bestDate = date;
+                    }
+                }
+
+                if (bestDate && bestDate !== this.state.selectedDate) {
+                    this.state.selectedDate = bestDate;
+                    this.notification.add(`Switched to ${bestDate} (${maxCount} jobs)`, { type: "info" });
+                    // Reload data for the new date
+                    await this.loadData(false);
+                }
+            }
+        } catch (error) {
+            console.warn("Failed to find date with jobs:", error);
         }
     }
 
@@ -247,16 +372,68 @@ export class EnhancedDispatchView extends Component {
 
     // Helper to format datetime for display
     formatTime(datetimeStr) {
-        if (!datetimeStr) return '';
+        if (!datetimeStr) return '--';
         try {
             const date = new Date(datetimeStr);
+            if (isNaN(date.getTime())) return '--';
             return date.toLocaleTimeString('en-GB', {
                 hour: '2-digit',
                 minute: '2-digit'
             });
         } catch (e) {
-            return '';
+            return '--';
         }
+    }
+
+    // Helper to format duration in seconds for display
+    formatDuration(seconds) {
+        if (seconds === null || seconds === undefined || isNaN(seconds)) return '--';
+        if (seconds < 60) {
+            return `${Math.round(seconds)}s`;
+        }
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.round(seconds % 60);
+        return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
+    }
+
+    // Helper to format distance in km for display
+    formatDistance(distanceKm) {
+        if (distanceKm === null || distanceKm === undefined || isNaN(distanceKm)) return '--';
+        if (distanceKm < 1) {
+            return `${Math.round(distanceKm * 1000)}m`;
+        }
+        return `${distanceKm.toFixed(1)}km`;
+    }
+
+    // Helper to format error messages for users
+    formatErrorMessage(error, context = '') {
+        // Extract the most useful error message
+        let message = '';
+
+        if (typeof error === 'string') {
+            message = error;
+        } else if (error?.data?.message) {
+            // Odoo RPC error format
+            message = error.data.message;
+        } else if (error?.message) {
+            message = error.message;
+        } else if (error?.data?.arguments?.[0]) {
+            // Odoo validation error format
+            message = error.data.arguments[0];
+        } else {
+            message = 'An unexpected error occurred';
+        }
+
+        // Clean up technical error messages
+        if (message.includes('RPC_ERROR') || message.includes('Traceback')) {
+            message = 'Server error - please try again or contact support';
+        }
+
+        // Add context if provided
+        if (context) {
+            return `${context}: ${message}`;
+        }
+        return message;
     }
 
     // Optimization
@@ -378,7 +555,7 @@ export class EnhancedDispatchView extends Component {
         } catch (error) {
             console.error("[Optimization] Failed:", error);
             this.state.optimizationStatus = 'Optimization failed';
-            this.notification.add("❌ Optimization failed: " + (error.message || error.data?.message || "Unknown error"), { type: "danger" });
+            this.notification.add("❌ " + this.formatErrorMessage(error, "Route optimization failed"), { type: "danger" });
         } finally {
             clearInterval(elapsedInterval);
             this.state.optimizationRunning = false;
@@ -388,16 +565,6 @@ export class EnhancedDispatchView extends Component {
 
     _sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    // Public method for template access
-    formatTime(seconds) {
-        if (seconds < 60) {
-            return `${seconds}s`;
-        }
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return secs > 0 ? `${mins}m ${secs}s` : `${mins}m`;
     }
 
     // Navigation Actions
@@ -467,7 +634,7 @@ export class EnhancedDispatchView extends Component {
             }
         } catch (error) {
             console.error("Failed to create test data:", error);
-            this.notification.add(`Error: ${error.message || error}`, { type: "danger" });
+            this.notification.add(this.formatErrorMessage(error, "Unable to create test data"), { type: "danger" });
         } finally {
             this.state.loading = false;
         }
@@ -510,7 +677,7 @@ export class EnhancedDispatchView extends Component {
             }
         } catch (error) {
             console.error("Failed to delete test data:", error);
-            this.notification.add(`Error: ${error.message || error}`, { type: "danger" });
+            this.notification.add(this.formatErrorMessage(error, "Unable to delete test data"), { type: "danger" });
         } finally {
             this.state.loading = false;
         }
@@ -527,6 +694,23 @@ export class EnhancedDispatchView extends Component {
 
     get availableInspectors() {
         return this.state.inspectors.filter(i => i.available);
+    }
+
+    // Dynamic button text based on selection state
+    get optimizeButtonText() {
+        const jobCount = this.state.selectedJobIds.length;
+        const inspectorCount = this.state.selectedInspectorIds.length;
+
+        if (jobCount === 0) return "Select Jobs to Optimize";
+        if (inspectorCount === 0) return "Select Inspectors";
+
+        return `Optimize ${jobCount} Job${jobCount !== 1 ? 's' : ''}`;
+    }
+
+    get optimizeButtonDisabled() {
+        return this.state.selectedJobIds.length === 0 ||
+               this.state.selectedInspectorIds.length === 0 ||
+               this.state.optimizationRunning;
     }
 
     get selectedRoute() {

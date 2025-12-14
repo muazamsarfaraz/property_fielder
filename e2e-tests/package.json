@@ -21,16 +21,18 @@
     "test:stress:50": "PROPERTY_COUNT=50 npx playwright test tests/stress/stress-test.spec.ts --timeout=900000",
     "test:cleanup": "npx playwright test tests/stress/cleanup-all.spec.ts --timeout=600000",
     "test:dispatch-data": "npx playwright test tests/stress/dispatch-test-data.spec.ts --timeout=180000",
+    "test:ux-analysis": "npx playwright test tests/ux-analysis/dispatch-ux-analysis.spec.ts --timeout=300000 --headed",
+    "test:ux-analysis:headless": "npx playwright test tests/ux-analysis/dispatch-ux-analysis.spec.ts --timeout=300000",
     "report": "npx playwright show-report",
     "codegen": "npx playwright codegen http://localhost:8069"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
     "@types/node": "^20.10.0",
-    "typescript": "^5.3.0",
-    "dotenv": "^16.3.0"
+    "dotenv": "^16.3.0",
+    "sharp": "^0.34.5",
+    "typescript": "^5.3.0"
   },
   "author": "Property Fielder Team",
   "license": "LGPL-3.0"
 }
-

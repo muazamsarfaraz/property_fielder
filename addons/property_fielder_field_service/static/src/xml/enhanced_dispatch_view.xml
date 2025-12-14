@@ -36,14 +36,22 @@
                         <i class="fa fa-list-check" title="Plan"/> Plan
                     </button>
                     <button type="button"
-                            t-attf-class="dispatch-tab {{ state.activeTab === 'optimize' ? 'active' : '' }}"
-                            t-on-click="onSetActiveTabOptimize">
-                        <i class="fa fa-magic" title="Optimize"/> Optimize
+                            t-attf-class="dispatch-tab {{ state.activeTab === 'optimize' ? 'active' : '' }} {{ !canAccessOptimize() ? 'disabled' : '' }}"
+                            t-on-click="onSetActiveTabOptimize"
+                            t-att-title="!canAccessOptimize() ? 'Select jobs and inspectors first' : 'Optimize routes'">
+                        <i class="fa fa-magic"/> Optimize
+                        <span class="tab-prereq-badge" t-if="!canAccessOptimize()">
+                            <i class="fa fa-lock"/>
+                        </span>
                     </button>
                     <button type="button"
-                            t-attf-class="dispatch-tab {{ state.activeTab === 'schedule' ? 'active' : '' }}"
-                            t-on-click="onSetActiveTabSchedule">
-                        <i class="fa fa-calendar-check" title="Schedule"/> Schedule
+                            t-attf-class="dispatch-tab {{ state.activeTab === 'schedule' ? 'active' : '' }} {{ !canAccessSchedule() ? 'disabled' : '' }}"
+                            t-on-click="onSetActiveTabSchedule"
+                            t-att-title="!canAccessSchedule() ? 'Run optimization first' : 'View schedule'">
+                        <i class="fa fa-calendar-check"/> Schedule
+                        <span class="tab-prereq-badge" t-if="!canAccessSchedule()">
+                            <i class="fa fa-lock"/>
+                        </span>
                     </button>
                 </div>
 
@@ -77,83 +85,62 @@
                 </div>
             </div>
 
-            <!-- Main Content Area -->
-            <div class="dispatch-content">
-                <!-- Persistent Map (Always Visible) -->
-                <div class="dispatch-map-container">
-                    <DispatchMapWidget
-                        jobs="state.jobs"
-                        routes="state.routes"
-                        inspectors="state.inspectors"
-                        dataVersion="state.jobs.length + '-' + state.routes.length"/>
-                </div>
+            <!-- Main Content Area - CSS Grid Layout -->
+            <div t-attf-class="dispatch-content {{ state.sidebarCollapsed ? 'sidebar-collapsed' : '' }}">
+                <!-- Expand button (visible when sidebar collapsed) -->
+                <button class="sidebar-expand-button" t-on-click="toggleSidebar" title="Expand sidebar">
+                    <i class="fa fa-chevron-right"/>
+                </button>
 
-                <!-- Loading Overlay -->
-                <div t-if="state.loading" class="dispatch-loading-overlay">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                <!-- DOCKED SIDEBAR (Slides in/out) -->
+                <div class="dispatch-sidebar">
+                    <!-- Sidebar Header with Toggle -->
+                    <div class="sidebar-header">
+                        <span class="sidebar-title">
+                            <i t-if="state.activeTab === 'plan'" class="fa fa-list-check"/>
+                            <i t-if="state.activeTab === 'optimize'" class="fa fa-magic"/>
+                            <i t-if="state.activeTab === 'schedule'" class="fa fa-calendar-check"/>
+                            <t t-if="state.activeTab === 'plan'">Plan Resources</t>
+                            <t t-if="state.activeTab === 'optimize'">Optimize Routes</t>
+                            <t t-if="state.activeTab === 'schedule'">Schedule View</t>
+                        </span>
+                        <button class="btn btn-sm btn-sidebar-collapse" t-on-click="toggleSidebar" t-att-title="state.sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+                            <i t-attf-class="fa fa-chevron-{{ state.sidebarCollapsed ? 'right' : 'left' }}"/>
+                        </button>
                     </div>
-                </div>
 
-                <!-- Map Legend (Bottom Right, Collapsible) -->
-                <div t-attf-class="map-legend {{ state.legendCollapsed ? 'collapsed' : '' }}">
-                    <div class="map-legend-header" t-on-click="toggleLegend">
-                        <i class="fa fa-info-circle"/> Legend
-                        <i t-attf-class="fa fa-chevron-{{ state.legendCollapsed ? 'up' : 'down' }} legend-toggle"/>
-                    </div>
-                    <div class="map-legend-body" t-if="!state.legendCollapsed">
-                        <div class="legend-section-title">Job Status</div>
-                        <div class="legend-item">
-                            <span class="legend-marker" style="background: #8B5CF6; border: 2px solid #fff;"/>
-                            <span>Draft (Unscheduled)</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-marker" style="background: #17a2b8;"/>
-                            <span>Scheduled</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-marker" style="background: #ffc107;"/>
-                            <span>Assigned</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-marker" style="background: #007bff;"/>
-                            <span>In Progress</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-marker" style="background: #28a745;"/>
-                            <span>Completed</span>
-                        </div>
-                        <div class="legend-divider"/>
-                        <div class="legend-section-title">Map Symbols</div>
-                        <div class="legend-item">
-                            <span class="legend-cluster"/>
-                            <span>Cluster (# jobs)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PLAN Tab Panels -->
-                <t t-if="state.activeTab === 'plan'">
-                    <!-- Resources Panel -->
-                    <div t-if="state.panels.resources" class="floating-panel" style="left: 20px; top: 80px; width: 320px;">
-                        <div class="floating-panel-header">
-                            <i class="fa fa-users" title="Resources"/>
-                            <span>Resources</span>
-                            <button class="btn btn-sm btn-link" t-on-click="() => togglePanel('resources')">
-                                <i class="fa fa-times" title="Close"/>
-                            </button>
-                        </div>
-                        <div class="floating-panel-body">
-                            <div class="panel-section">
-                                <h6><i class="fa fa-briefcase" title="Jobs"/> Jobs (<t t-esc="state.jobs.length"/>)</h6>
-                                <div class="d-flex gap-1 mb-2">
-                                    <button class="btn btn-xs btn-outline-primary" t-on-click="selectAllJobs">Select All</button>
-                                    <button class="btn btn-xs btn-outline-secondary" t-on-click="clearJobSelection">Clear</button>
+                    <!-- Sidebar Content (scrollable) -->
+                    <div class="sidebar-content" t-if="!state.sidebarCollapsed">
+                        <!-- PLAN Tab Content -->
+                        <t t-if="state.activeTab === 'plan'">
+                            <!-- Jobs Section -->
+                            <div class="sidebar-section">
+                                <div class="section-header">
+                                    <h6><i class="fa fa-briefcase"/> Jobs (<t t-esc="filteredJobs.length"/>/<t t-esc="state.jobs.length"/>)</h6>
+                                    <div class="section-actions">
+                                        <button class="btn btn-xs btn-outline-primary" t-on-click="selectAllJobs">Select All</button>
+                                        <button class="btn btn-xs btn-outline-secondary" t-on-click="clearJobSelection">Clear</button>
+                                    </div>
+                                </div>
+                                <!-- Search Filter -->
+                                <div class="search-filter">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text"><i class="fa fa-search"/></span>
+                                        <input type="text" class="form-control" placeholder="Search jobs..."
+                                               t-att-value="state.jobSearchQuery"
+                                               t-on-input="onJobSearchInput"/>
+                                        <button class="btn btn-outline-secondary" type="button" t-on-click="clearJobSearch"
+                                                t-if="state.jobSearchQuery">
+                                            <i class="fa fa-times"/>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="resource-list">
-                                    <t t-foreach="state.jobs" t-as="job" t-key="job.id">
-                                        <div t-attf-class="resource-item job-item {{ state.selectedJobIds.includes(job.id) ? 'selected' : '' }}"
-                                             t-on-click="() => toggleJobSelection(job.id)">
+                                    <t t-foreach="filteredJobs" t-as="job" t-key="job.id">
+                                        <div t-attf-class="resource-item job-item {{ state.selectedJobIds.includes(job.id) ? 'selected' : '' }} {{ state.hoveredJobId === job.id ? 'hovered' : '' }}"
+                                             t-on-click="() => this.toggleJobSelection(job.id)"
+                                             t-on-mouseenter="() => this.onJobHover(job.id)"
+                                             t-on-mouseleave="() => this.onJobHover(null)">
                                             <div class="job-item-main">
                                                 <input type="checkbox" t-att-checked="state.selectedJobIds.includes(job.id)"/>
                                                 <span class="resource-name" t-esc="job.name || job.job_number"/>
@@ -169,18 +156,29 @@
                                             </div>
                                         </div>
                                     </t>
+                                    <!-- Empty state for jobs -->
+                                    <t t-if="state.jobs.length === 0">
+                                        <div class="empty-list-notice">
+                                            <i class="fa fa-inbox"/>
+                                            <span>No jobs for this date</span>
+                                        </div>
+                                    </t>
                                 </div>
                             </div>
-                            <div class="panel-section">
-                                <h6><i class="fa fa-user-tie" title="Inspectors"/> Inspectors (<t t-esc="state.inspectors.length"/>)</h6>
-                                <div class="d-flex gap-1 mb-2">
-                                    <button class="btn btn-xs btn-outline-primary" t-on-click="selectAllInspectors">Select All</button>
-                                    <button class="btn btn-xs btn-outline-secondary" t-on-click="clearInspectorSelection">Clear</button>
+
+                            <!-- Inspectors Section -->
+                            <div class="sidebar-section">
+                                <div class="section-header">
+                                    <h6><i class="fa fa-user-tie"/> Inspectors (<t t-esc="state.inspectors.length"/>)</h6>
+                                    <div class="section-actions">
+                                        <button class="btn btn-xs btn-outline-primary" t-on-click="selectAllInspectors">Select All</button>
+                                        <button class="btn btn-xs btn-outline-secondary" t-on-click="clearInspectorSelection">Clear</button>
+                                    </div>
                                 </div>
                                 <div class="resource-list">
                                     <t t-foreach="state.inspectors" t-as="inspector" t-key="inspector.id">
                                         <div t-attf-class="resource-item {{ state.selectedInspectorIds.includes(inspector.id) ? 'selected' : '' }} {{ !inspector.available ? 'unavailable' : '' }}"
-                                             t-on-click="() => toggleInspectorSelection(inspector.id)">
+                                             t-on-click="() => this.toggleInspectorSelection(inspector.id)">
                                             <input type="checkbox" t-att-checked="state.selectedInspectorIds.includes(inspector.id)"/>
                                             <span class="resource-name" t-esc="inspector.name"/>
                                             <span t-if="!inspector.available" class="badge bg-secondary">Unavailable</span>
@@ -188,217 +186,293 @@
                                     </t>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Settings Panel -->
-                    <div t-if="state.panels.settings" class="floating-panel" style="left: 360px; top: 80px; width: 300px;">
-                        <div class="floating-panel-header">
-                            <i class="fa fa-cog" title="Settings"/>
-                            <span>Optimization Settings</span>
-                            <button class="btn btn-sm btn-link" t-on-click="() => togglePanel('settings')">
-                                <i class="fa fa-times" title="Close"/>
-                            </button>
-                        </div>
-                        <div class="floating-panel-body">
-                            <div class="panel-section">
-                                <label class="form-label">Solver Time Limit</label>
-                                <select class="form-select form-select-sm">
-                                    <option value="30">30 seconds</option>
-                                    <option value="60" selected="">1 minute</option>
-                                    <option value="180">3 minutes</option>
-                                    <option value="300">5 minutes</option>
-                                </select>
-                            </div>
-                            <div class="panel-section">
-                                <label class="form-label">Optimization Mode</label>
-                                <select class="form-select form-select-sm">
-                                    <option value="balanced">Balanced</option>
-                                    <option value="minimize_distance">Minimize Distance</option>
-                                    <option value="minimize_time">Minimize Time</option>
-                                    <option value="maximize_jobs">Maximize Jobs</option>
-                                </select>
-                            </div>
-                            <div class="panel-section">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="useOsrm" checked=""/>
-                                    <label class="form-check-label" for="useOsrm">Use OSRM for routing</label>
+                            <!-- Optimization Settings (collapsed by default) -->
+                            <div class="sidebar-section collapsible">
+                                <div class="section-header clickable" t-on-click="toggleSettingsSection">
+                                    <h6><i class="fa fa-cog"/> Settings</h6>
+                                    <i t-attf-class="fa fa-chevron-{{ state.settingsExpanded ? 'up' : 'down' }}"/>
                                 </div>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="respectTimeWindows" checked=""/>
-                                    <label class="form-check-label" for="respectTimeWindows">Respect time windows</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </t>
-
-                <!-- OPTIMIZE Tab Panels -->
-                <t t-if="state.activeTab === 'optimize'">
-                    <div t-if="state.panels.optimization" class="floating-panel" style="left: 20px; top: 80px; width: 380px;">
-                        <div class="floating-panel-header">
-                            <i class="fa fa-magic" title="Optimization"/>
-                            <span>Optimization Control</span>
-                            <button class="btn btn-sm btn-link" t-on-click="() => togglePanel('optimization')">
-                                <i class="fa fa-times" title="Close"/>
-                            </button>
-                        </div>
-                        <div class="floating-panel-body">
-                            <div class="panel-section">
-                                <h6>Selected Resources</h6>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span><i class="fa fa-briefcase" title="Jobs"/> <t t-esc="state.selectedJobIds.length"/> jobs</span>
-                                    <span><i class="fa fa-user-tie" title="Inspectors"/> <t t-esc="state.selectedInspectorIds.length"/> inspectors</span>
-                                </div>
-                                <t t-if="state.selectedJobIds.length === 0 || state.selectedInspectorIds.length === 0">
-                                    <div class="alert alert-warning">
-                                        <i class="fa fa-exclamation-triangle" title="Warning"/>
-                                        Go to PLAN tab to select jobs and inspectors first.
+                                <div class="section-body" t-if="state.settingsExpanded">
+                                    <div class="setting-group">
+                                        <label class="form-label">Solver Time Limit</label>
+                                        <select class="form-select form-select-sm">
+                                            <option value="30">30 seconds</option>
+                                            <option value="60" selected="">1 minute</option>
+                                            <option value="180">3 minutes</option>
+                                            <option value="300">5 minutes</option>
+                                        </select>
                                     </div>
-                                </t>
+                                    <div class="setting-group">
+                                        <label class="form-label">Optimization Mode</label>
+                                        <select class="form-select form-select-sm">
+                                            <option value="balanced">Balanced</option>
+                                            <option value="minimize_distance">Minimize Distance</option>
+                                            <option value="minimize_time">Minimize Time</option>
+                                            <option value="maximize_jobs">Maximize Jobs</option>
+                                        </select>
+                                    </div>
+                                    <div class="setting-group">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="useOsrm" checked=""/>
+                                            <label class="form-check-label" for="useOsrm">Use OSRM for routing</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="respectTimeWindows" checked=""/>
+                                            <label class="form-check-label" for="respectTimeWindows">Respect time windows</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="panel-section">
+                            <!-- Quick Optimize Button (always visible in Plan tab) -->
+                            <div class="sidebar-footer">
                                 <button type="button"
-                                        class="btn btn-primary btn-lg w-100"
-                                        t-att-disabled="state.optimizationRunning || state.selectedJobIds.length === 0 || state.selectedInspectorIds.length === 0"
-                                        t-on-click="startOptimization">
+                                        t-attf-class="btn btn-primary btn-lg w-100 {{ optimizeButtonDisabled ? 'disabled-with-reason' : '' }}"
+                                        t-att-disabled="optimizeButtonDisabled"
+                                        t-on-click="startOptimization"
+                                        t-att-title="state.selectedJobIds.length === 0 ? 'Select jobs first' : state.selectedInspectorIds.length === 0 ? 'Select inspectors first' : 'Run route optimization'">
                                     <t t-if="state.optimizationRunning">
                                         <span class="spinner-border spinner-border-sm me-2" role="status"/>
                                         Optimizing...
                                     </t>
                                     <t t-else="">
-                                        <i class="fa fa-play me-2" title="Start"/> Start Optimization
+                                        <i class="fa fa-magic me-2"/> <t t-esc="optimizeButtonText"/>
+                                    </t>
+                                </button>
+                                <div class="selection-summary" t-if="state.selectedJobIds.length > 0 || state.selectedInspectorIds.length > 0">
+                                    <span><t t-esc="state.selectedJobIds.length"/> jobs</span>
+                                    <span class="separator">•</span>
+                                    <span><t t-esc="state.selectedInspectorIds.length"/> inspectors</span>
+                                </div>
+                                <div class="prereq-hint" t-if="state.selectedJobIds.length === 0 || state.selectedInspectorIds.length === 0">
+                                    <i class="fa fa-info-circle"/>
+                                    <t t-if="state.selectedJobIds.length === 0 &amp;&amp; state.selectedInspectorIds.length === 0">
+                                        Select jobs and inspectors to optimize
+                                    </t>
+                                    <t t-elif="state.selectedJobIds.length === 0">
+                                        Select at least one job
+                                    </t>
+                                    <t t-else="">
+                                        Select at least one inspector
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- OPTIMIZE Tab Content -->
+                        <t t-if="state.activeTab === 'optimize'">
+                            <div class="sidebar-section">
+                                <div class="section-header">
+                                    <h6><i class="fa fa-check-circle"/> Selected Resources</h6>
+                                </div>
+                                <div class="selection-cards">
+                                    <div class="selection-card">
+                                        <i class="fa fa-briefcase"/>
+                                        <span class="count"><t t-esc="state.selectedJobIds.length"/></span>
+                                        <span class="label">Jobs</span>
+                                    </div>
+                                    <div class="selection-card">
+                                        <i class="fa fa-user-tie"/>
+                                        <span class="count"><t t-esc="state.selectedInspectorIds.length"/></span>
+                                        <span class="label">Inspectors</span>
+                                    </div>
+                                </div>
+                                <t t-if="state.selectedJobIds.length === 0 || state.selectedInspectorIds.length === 0">
+                                    <div class="prereq-warning">
+                                        <i class="fa fa-exclamation-triangle"/>
+                                        <span>Go to <strong>Plan</strong> tab to select jobs and inspectors</span>
+                                        <button class="btn btn-sm btn-outline-primary mt-2" t-on-click="onSetActiveTabPlan">
+                                            <i class="fa fa-arrow-left me-1"/> Back to Plan
+                                        </button>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <!-- Optimization Progress -->
+                            <t t-if="state.optimizationRunning">
+                                <div class="sidebar-section optimization-progress">
+                                    <div class="progress mb-3" style="height: 12px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                                             role="progressbar"
+                                             t-attf-style="width: {{ state.optimizationProgress }}%"/>
+                                    </div>
+                                    <div class="optimization-status text-center mb-3">
+                                        <i class="fa fa-spinner fa-spin me-2 text-primary"/>
+                                        <span class="fw-medium"><t t-esc="state.optimizationStatus"/></span>
+                                    </div>
+                                    <div class="time-stats">
+                                        <div class="time-stat">
+                                            <small>Elapsed</small>
+                                            <strong><t t-esc="formatDuration(state.optimizationElapsed)"/></strong>
+                                        </div>
+                                        <div class="progress-badge">
+                                            <t t-esc="state.optimizationProgress"/>%
+                                        </div>
+                                        <div class="time-stat text-end">
+                                            <small>Remaining</small>
+                                            <strong><t t-esc="formatDuration(Math.max(0, state.optimizationEstimate - state.optimizationElapsed))"/></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- Optimization Results -->
+                            <t t-if="state.optimizationResult">
+                                <div class="sidebar-section">
+                                    <div class="section-header">
+                                        <h6><i class="fa fa-check-circle text-success"/> Results</h6>
+                                    </div>
+                                    <div class="result-stats">
+                                        <div class="stat-item">
+                                            <span class="stat-value" t-esc="state.optimizationResult.routes_created || 0"/>
+                                            <span class="stat-label">Routes</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value" t-esc="state.optimizationResult.jobs_assigned || 0"/>
+                                            <span class="stat-label">Jobs</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value"><t t-esc="formatDistance(state.optimizationResult.total_distance)"/></span>
+                                            <span class="stat-label">Distance</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- Start Optimization Button -->
+                            <div class="sidebar-footer">
+                                <button type="button"
+                                        t-attf-class="btn btn-primary btn-lg w-100 {{ optimizeButtonDisabled ? 'disabled-with-reason' : '' }}"
+                                        t-att-disabled="optimizeButtonDisabled"
+                                        t-on-click="startOptimization"
+                                        t-att-title="state.selectedJobIds.length === 0 ? 'Select jobs first' : state.selectedInspectorIds.length === 0 ? 'Select inspectors first' : 'Run route optimization'">
+                                    <t t-if="state.optimizationRunning">
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"/>
+                                        Optimizing...
+                                    </t>
+                                    <t t-else="">
+                                        <i class="fa fa-play me-2"/> <t t-esc="optimizeButtonText"/>
                                     </t>
                                 </button>
                             </div>
+                        </t>
 
-                            <t t-if="state.optimizationRunning">
-                                <div class="panel-section optimization-progress">
-                                    <!-- Progress bar -->
-                                    <div class="progress mb-2" style="height: 10px;">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-                                             role="progressbar"
-                                             t-attf-style="width: {{ state.optimizationProgress }}%"
-                                             t-att-aria-valuenow="state.optimizationProgress"
-                                             aria-valuemin="0"
-                                             aria-valuemax="100">
-                                        </div>
-                                    </div>
-
-                                    <!-- Status message -->
-                                    <div class="optimization-status text-center mb-2">
-                                        <i class="fa fa-spinner fa-spin me-1 text-primary"/>
-                                        <span class="fw-medium"><t t-esc="state.optimizationStatus"/></span>
-                                    </div>
-
-                                    <!-- Time info -->
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="time-stat">
-                                            <small class="text-muted">Elapsed</small>
-                                            <div class="fw-bold">
-                                                <t t-esc="formatTime(state.optimizationElapsed)"/>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <span class="badge bg-primary fs-6">
-                                                <t t-esc="state.optimizationProgress"/>%
-                                            </span>
-                                        </div>
-                                        <div class="time-stat text-end">
-                                            <small class="text-muted">Est. Remaining</small>
-                                            <div class="fw-bold">
-                                                <t t-set="remaining" t-value="Math.max(0, state.optimizationEstimate - state.optimizationElapsed)"/>
-                                                <t t-esc="formatTime(remaining)"/>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <!-- SCHEDULE Tab Content -->
+                        <t t-if="state.activeTab === 'schedule'">
+                            <div class="sidebar-section">
+                                <div class="section-header">
+                                    <h6><i class="fa fa-route"/> Routes for <t t-esc="state.selectedDate"/></h6>
                                 </div>
-                            </t>
-
-                            <t t-if="state.optimizationResult">
-                                <div class="panel-section">
-                                    <h6><i class="fa fa-check-circle text-success" title="Success"/> Optimization Results</h6>
-                                    <div class="result-stats">
-                                        <div class="stat-item">
-                                            <span class="stat-label">Routes Created</span>
-                                            <span class="stat-value" t-esc="state.optimizationResult.routes_created || 0"/>
-                                        </div>
-                                        <div class="stat-item">
-                                            <span class="stat-label">Jobs Assigned</span>
-                                            <span class="stat-value" t-esc="state.optimizationResult.jobs_assigned || 0"/>
-                                        </div>
-                                        <div class="stat-item">
-                                            <span class="stat-label">Total Distance</span>
-                                            <span class="stat-value"><t t-esc="state.optimizationResult.total_distance || 0"/> km</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </t>
-                        </div>
-                    </div>
-                </t>
-
-                <!-- SCHEDULE Tab Panels -->
-                <t t-if="state.activeTab === 'schedule'">
-                    <!-- Route Details Panel -->
-                    <div t-if="state.panels.routeDetails" class="floating-panel" style="left: 20px; top: 80px; width: 400px;">
-                        <div class="floating-panel-header">
-                            <i class="fa fa-route" title="Routes"/>
-                            <span>Routes &amp; Schedule</span>
-                            <button class="btn btn-sm btn-link" t-on-click="() => togglePanel('routeDetails')">
-                                <i class="fa fa-times" title="Close"/>
-                            </button>
-                        </div>
-                        <div class="floating-panel-body">
-                            <div class="panel-section">
-                                <h6>Routes for <t t-esc="state.selectedDate"/></h6>
                                 <t t-if="state.routes.length === 0">
-                                    <div class="alert alert-info">
-                                        <i class="fa fa-info-circle" title="Info"/>
-                                        No routes for this date. Run optimization first.
+                                    <div class="empty-list-notice">
+                                        <i class="fa fa-route"/>
+                                        <span>No routes for this date</span>
+                                        <button class="btn btn-sm btn-outline-primary mt-2" t-on-click="onSetActiveTabPlan">
+                                            <i class="fa fa-magic me-1"/> Create Routes
+                                        </button>
                                     </div>
                                 </t>
                                 <div class="route-list">
                                     <t t-foreach="state.routes" t-as="route" t-key="route.id">
                                         <div t-attf-class="route-item {{ state.selectedRouteId === route.id ? 'selected' : '' }}"
-                                             t-on-click="() => selectRoute(route.id)">
+                                             t-on-click="() => this.selectRoute(route.id)">
                                             <div class="route-header">
                                                 <span class="route-name" t-esc="route.name || route.route_number"/>
                                                 <span t-attf-class="badge bg-{{ route.state === 'completed' ? 'success' : route.state === 'in_progress' ? 'primary' : 'secondary' }}" t-esc="route.state"/>
                                             </div>
                                             <div class="route-meta">
-                                                <span><i class="fa fa-user" title="Inspector"/> <t t-esc="route.inspector_id ? route.inspector_id[1] : 'Unassigned'"/></span>
-                                                <span><i class="fa fa-tasks" title="Jobs"/> <t t-esc="route.job_ids ? route.job_ids.length : 0"/> jobs</span>
+                                                <span><i class="fa fa-user"/> <t t-esc="route.inspector_id ? route.inspector_id[1] : 'Unassigned'"/></span>
+                                                <span><i class="fa fa-tasks"/> <t t-esc="route.job_ids ? route.job_ids.length : 0"/> jobs</span>
                                             </div>
                                         </div>
                                     </t>
                                 </div>
                             </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- MAP AREA (Takes remaining space) -->
+                <div class="dispatch-map-area">
+                    <!-- Map Container -->
+                    <div class="dispatch-map-container">
+                        <DispatchMapWidget
+                            jobs="state.jobs"
+                            routes="state.routes"
+                            inspectors="state.inspectors"
+                            selectedInspectorIds="state.selectedInspectorIds"
+                            hoveredJobId="state.hoveredJobId"
+                            dataVersion="state.jobs.length + '-' + state.routes.length + '-' + (state.hoveredJobId || 'none')"/>
+                    </div>
+
+                    <!-- Loading Overlay -->
+                    <div t-if="state.loading" class="dispatch-loading-overlay">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
 
-                    <!-- Timeline Panel (Bottom) -->
+                    <!-- Map Legend (Bottom Right, Collapsible) -->
+                    <div t-attf-class="map-legend {{ state.legendCollapsed ? 'collapsed' : '' }}">
+                        <div class="map-legend-header" t-on-click="toggleLegend">
+                            <i class="fa fa-info-circle"/> Legend
+                            <i t-attf-class="fa fa-chevron-{{ state.legendCollapsed ? 'up' : 'down' }} legend-toggle"/>
+                        </div>
+                        <div class="map-legend-body" t-if="!state.legendCollapsed">
+                            <div class="legend-section-title">Job Status</div>
+                            <div class="legend-item">
+                                <span class="legend-marker" style="background: #8B5CF6; border: 2px solid #fff;"/>
+                                <span>Draft (Unscheduled)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-marker" style="background: #17a2b8;"/>
+                                <span>Scheduled</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-marker" style="background: #ffc107;"/>
+                                <span>Assigned</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-marker" style="background: #007bff;"/>
+                                <span>In Progress</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-marker" style="background: #28a745;"/>
+                                <span>Completed</span>
+                            </div>
+                            <div class="legend-divider"/>
+                            <div class="legend-section-title">Map Symbols</div>
+                            <div class="legend-item">
+                                <span class="legend-cluster"/>
+                                <span>Cluster (# jobs)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Corner Empty State Notice (non-blocking) -->
+                    <t t-if="state.jobs.length === 0 &amp;&amp; !state.loading">
+                        <div class="empty-state-corner">
+                            <i class="fa fa-calendar-plus"/>
+                            <div class="empty-text">
+                                <strong>No jobs for <t t-esc="state.selectedDate"/></strong>
+                                <span>Load test data or create jobs from properties</span>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" t-on-click="onGoToProperties">
+                                <i class="fa fa-building me-1"/> Create Jobs
+                            </button>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Timeline Panel (Bottom, only in Schedule tab) -->
+                <t t-if="state.activeTab === 'schedule'">
                     <div class="dispatch-timeline-container">
                         <DispatchTimelineWidget
                             jobs="state.jobs"
                             routes="state.routes"
                             inspectors="state.inspectors"
                             date="state.selectedDate"/>
-                    </div>
-                </t>
-
-                <!-- Empty State -->
-                <t t-if="state.jobs.length === 0 &amp;&amp; !state.loading">
-                    <div class="dispatch-empty-state">
-                        <div class="empty-state-content">
-                            <i class="fa fa-calendar-plus fa-4x text-muted mb-3" title="No jobs"/>
-                            <h4>No Jobs Scheduled</h4>
-                            <p class="text-muted">There are no jobs scheduled for <t t-esc="state.selectedDate"/>.</p>
-                            <button type="button" class="btn btn-primary" t-on-click="onGoToProperties">
-                                <i class="fa fa-building me-2" title="Properties"/> Create Jobs from Properties
-                            </button>
-                        </div>
                     </div>
                 </t>
             </div>

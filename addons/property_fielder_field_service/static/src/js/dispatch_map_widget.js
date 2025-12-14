@@ -15,6 +15,8 @@ export class DispatchMapWidget extends Component {
         jobs: { type: Array, optional: true },
         routes: { type: Array, optional: true },
         inspectors: { type: Array, optional: true },
+        selectedInspectorIds: { type: Array, optional: true }, // Highlight selected inspectors
+        hoveredJobId: { type: [Number, { value: null }], optional: true }, // Job to highlight on map
         onJobClick: { type: Function, optional: true },
         onRouteClick: { type: Function, optional: true },
         dataVersion: { type: String, optional: true }, // Used to trigger re-render on data changes
@@ -27,6 +29,7 @@ export class DispatchMapWidget extends Component {
 
         this.map = null;
         this.markers = [];
+        this.inspectorMarkers = []; // Inspector home location markers
         this.routeLayers = [];
         this.mapboxToken = null;
         this.clusterSourceId = 'job-clusters';
@@ -44,6 +47,9 @@ export class DispatchMapWidget extends Component {
                 const nextVersion = nextProps.dataVersion || '';
                 const jobsChanged = (this.props.jobs?.length || 0) !== (nextProps.jobs?.length || 0);
                 const routesChanged = (this.props.routes?.length || 0) !== (nextProps.routes?.length || 0);
+                const inspectorsChanged = JSON.stringify(this.props.selectedInspectorIds || []) !==
+                                          JSON.stringify(nextProps.selectedInspectorIds || []);
+                const hoveredJobChanged = this.props.hoveredJobId !== nextProps.hoveredJobId;
 
                 if (currentVersion !== nextVersion || jobsChanged || routesChanged) {
                     console.log('[MapWidget] Data changed, re-rendering...', {
@@ -53,10 +59,41 @@ export class DispatchMapWidget extends Component {
                     setTimeout(() => {
                         this.renderJobs();
                         this.renderRoutes();
+                        this.renderInspectorMarkers();
                     }, 50);
+                } else if (inspectorsChanged) {
+                    // Only inspector selection changed
+                    setTimeout(() => this.renderInspectorMarkers(), 50);
+                } else if (hoveredJobChanged) {
+                    // Only hovered job changed - highlight marker
+                    setTimeout(() => this.highlightJobMarker(nextProps.hoveredJobId), 10);
                 }
             }
         });
+    }
+
+    // Highlight a specific job marker on the map
+    highlightJobMarker(jobId) {
+        // Reset all markers to normal state
+        this.markers.forEach(marker => {
+            const el = marker.getElement();
+            if (el) {
+                el.classList.remove('highlighted');
+                el.style.zIndex = '1';
+            }
+        });
+
+        // If a job is hovered, highlight it
+        if (jobId) {
+            const marker = this.markers.find(m => m._jobId === jobId);
+            if (marker) {
+                const el = marker.getElement();
+                if (el) {
+                    el.classList.add('highlighted');
+                    el.style.zIndex = '100';
+                }
+            }
+        }
     }
 
     async initMap() {
@@ -91,6 +128,7 @@ export class DispatchMapWidget extends Component {
                 this.setupClusterSource();
                 this.renderJobs();
                 this.renderRoutes();
+                this.renderInspectorMarkers();
             });
 
         } catch (error) {
@@ -240,6 +278,9 @@ export class DispatchMapWidget extends Component {
                 .setLngLat([job.longitude, job.latitude])
                 .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(this.getJobPopupHTML(job)))
                 .addTo(this.map);
+
+            // Store job ID on marker for hover highlighting
+            marker._jobId = job.id;
 
             if (this.props.onJobClick) {
                 el.addEventListener('click', () => this.props.onJobClick(job));
@@ -446,6 +487,57 @@ export class DispatchMapWidget extends Component {
                 ${job.inspector_id ? `<p style="margin: 4px 0; font-size: 13px;"><strong>Inspector:</strong> ${job.inspector_id[1]}</p>` : ''}
             </div>
         `;
+    }
+
+    /**
+     * Render inspector home location markers for selected inspectors
+     */
+    renderInspectorMarkers() {
+        // Clear existing inspector markers
+        for (const marker of this.inspectorMarkers) {
+            marker.remove();
+        }
+        this.inspectorMarkers = [];
+
+        const inspectors = this.props.inspectors || [];
+        const selectedIds = this.props.selectedInspectorIds || [];
+
+        // Only show markers for selected inspectors
+        const selectedInspectors = inspectors.filter(i => selectedIds.includes(i.id));
+
+        for (const inspector of selectedInspectors) {
+            if (!inspector.home_latitude || !inspector.home_longitude) continue;
+
+            // Create a custom marker element for inspector home
+            const el = document.createElement('div');
+            el.className = 'inspector-home-marker';
+            el.innerHTML = `
+                <div class="inspector-marker-icon">
+                    <i class="fa fa-home"></i>
+                </div>
+                <div class="inspector-marker-label">${inspector.name.split(' ')[0]}</div>
+            `;
+
+            // Create popup
+            const popup = new mapboxgl.Popup({ offset: 25 })
+                .setHTML(`
+                    <div style="min-width: 150px;">
+                        <h6 style="margin: 0 0 8px 0; font-weight: 600;">
+                            <i class="fa fa-user-tie" style="color: #714B67;"></i> ${inspector.name}
+                        </h6>
+                        <p style="margin: 4px 0; font-size: 13px;"><strong>Home Base</strong></p>
+                        ${inspector.shift_start ? `<p style="margin: 4px 0; font-size: 13px;"><strong>Shift:</strong> ${inspector.shift_start} - ${inspector.shift_end || 'N/A'}</p>` : ''}
+                    </div>
+                `);
+
+            // Create marker
+            const marker = new mapboxgl.Marker(el)
+                .setLngLat([inspector.home_longitude, inspector.home_latitude])
+                .setPopup(popup)
+                .addTo(this.map);
+
+            this.inspectorMarkers.push(marker);
+        }
     }
 }
 
