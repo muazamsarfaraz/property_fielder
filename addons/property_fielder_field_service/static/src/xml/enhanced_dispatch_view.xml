@@ -32,17 +32,17 @@
                 <div class="dispatch-tabs">
                     <button type="button"
                             t-attf-class="dispatch-tab {{ state.activeTab === 'plan' ? 'active' : '' }}"
-                            t-on-click="() => this.setActiveTab('plan')">
+                            t-on-click="onSetActiveTabPlan">
                         <i class="fa fa-list-check" title="Plan"/> Plan
                     </button>
                     <button type="button"
                             t-attf-class="dispatch-tab {{ state.activeTab === 'optimize' ? 'active' : '' }}"
-                            t-on-click="() => this.setActiveTab('optimize')">
+                            t-on-click="onSetActiveTabOptimize">
                         <i class="fa fa-magic" title="Optimize"/> Optimize
                     </button>
                     <button type="button"
                             t-attf-class="dispatch-tab {{ state.activeTab === 'schedule' ? 'active' : '' }}"
-                            t-on-click="() => this.setActiveTab('schedule')">
+                            t-on-click="onSetActiveTabSchedule">
                         <i class="fa fa-calendar-check" title="Schedule"/> Schedule
                     </button>
                 </div>

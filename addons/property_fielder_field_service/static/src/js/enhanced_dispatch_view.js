@@ -71,6 +71,19 @@ export class EnhancedDispatchView extends Component {
         this.updatePanelsForTab(tab);
     }
 
+    // Tab click handlers for OWL 2 compatibility
+    onSetActiveTabPlan() {
+        this.setActiveTab('plan');
+    }
+
+    onSetActiveTabOptimize() {
+        this.setActiveTab('optimize');
+    }
+
+    onSetActiveTabSchedule() {
+        this.setActiveTab('schedule');
+    }
+
     updatePanelsForTab(tab) {
         // Adjust visible panels based on active tab
         if (tab === 'plan') {
