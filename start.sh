@@ -14,27 +14,46 @@ if [ -n "$DATABASE_URL" ]; then
 import os
 from urllib.parse import urlparse
 url = urlparse(os.environ.get('DATABASE_URL', ''))
-print(f"DB_HOST={url.hostname or 'db'}")
-print(f"DB_PORT={url.port or 5432}")
-print(f"DB_USER={url.username or 'odoo'}")
-print(f"DB_PASSWORD={url.password or 'odoo'}")
-print(f"DB_NAME={url.path.lstrip('/') or 'property_fielder'}")
+print(f"export DB_HOST={url.hostname or 'db'}")
+print(f"export DB_PORT={url.port or 5432}")
+print(f"export DB_USER={url.username or 'odoo'}")
+print(f"export DB_PASSWORD={url.password or 'odoo'}")
+print(f"export DB_NAME={url.path.lstrip('/') or 'property_fielder'}")
 EOF
 )
 else
     # Fallback to individual env vars
-    DB_HOST=${PGHOST:-db}
-    DB_PORT=${PGPORT:-5432}
-    DB_USER=${PGUSER:-odoo}
-    DB_PASSWORD=${PGPASSWORD:-odoo}
-    DB_NAME=${PGDATABASE:-property_fielder}
+    export DB_HOST=${PGHOST:-db}
+    export DB_PORT=${PGPORT:-5432}
+    export DB_USER=${PGUSER:-odoo}
+    export DB_PASSWORD=${PGPASSWORD:-odoo}
+    export DB_NAME=${PGDATABASE:-property_fielder}
 fi
 
 # Admin password
 ADMIN_PASSWD=${ODOO_ADMIN_PASSWORD:-admin}
 
-echo "Connecting to database: $DB_HOST:$DB_PORT/$DB_NAME"
+echo "Connecting to database: $DB_HOST:$DB_PORT/$DB_NAME as user: $DB_USER"
 echo "HTTP Port: $HTTP_PORT"
+
+# Check if using postgres superuser - Odoo blocks this by default
+if [ "$DB_USER" = "postgres" ]; then
+    echo "WARNING: Using postgres superuser. Creating 'odoo' user..."
+    # Try to create odoo user in PostgreSQL
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
+        "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'odoo') THEN CREATE ROLE odoo WITH LOGIN PASSWORD 'odoo' CREATEDB; END IF; END \$\$;" 2>/dev/null || true
+
+    # Grant privileges
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
+        "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO odoo;" 2>/dev/null || true
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
+        "ALTER DATABASE $DB_NAME OWNER TO odoo;" 2>/dev/null || true
+
+    # Switch to odoo user
+    DB_USER="odoo"
+    DB_PASSWORD="odoo"
+    echo "Switched to user: $DB_USER"
+fi
 
 # Create runtime config with database settings
 cat > /tmp/odoo-runtime.conf << EOF
@@ -45,6 +64,7 @@ db_user = $DB_USER
 db_password = $DB_PASSWORD
 db_name = $DB_NAME
 http_port = $HTTP_PORT
+http_interface = 0.0.0.0
 admin_passwd = $ADMIN_PASSWD
 addons_path = /usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
 proxy_mode = True
@@ -56,5 +76,9 @@ log_level = info
 EOF
 
 # Start Odoo with runtime configuration
-exec odoo --config=/tmp/odoo-runtime.conf
+# --no-database-list prevents listing databases (security)
+# Allow postgres user in Railway environment (no choice with Railway's managed PostgreSQL)
+export ODOO_ALLOW_SUPERUSER=1
+
+exec odoo --config=/tmp/odoo-runtime.conf --db-filter="^${DB_NAME}$"
 
