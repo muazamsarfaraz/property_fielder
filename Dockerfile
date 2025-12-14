@@ -5,7 +5,8 @@ FROM odoo:19.0
 USER root
 
 # Install additional Python packages if needed
-RUN pip3 install --no-cache-dir requests
+# Note: --break-system-packages required for Debian 12+ (Odoo 19 base image)
+RUN pip3 install --no-cache-dir --break-system-packages requests
 
 # Copy custom addons
 COPY ./addons /mnt/extra-addons
