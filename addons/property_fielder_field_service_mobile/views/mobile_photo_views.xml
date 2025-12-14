@@ -167,7 +167,7 @@
                 <!-- Add Photos page to notebook -->
                 <xpath expr="//notebook/page[@name='skills']" position="after">
                     <page string="Photos" name="photos">
-                        <field name="photo_ids" mode="kanban" context="{'default_job_id': active_id}">
+                        <field name="photo_ids" mode="kanban" context="{'default_job_id': id}">
                             <kanban class="o_kanban_small_column" create="0">
                                 <field name="id"/>
                                 <field name="name"/>
