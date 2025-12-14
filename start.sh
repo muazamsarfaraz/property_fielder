@@ -31,16 +31,25 @@ ADMIN_PASSWD=${ODOO_ADMIN_PASSWORD:-admin}
 echo "Connecting to database: $DB_HOST:$DB_PORT/$DB_NAME"
 echo "HTTP Port: $HTTP_PORT"
 
-# Start Odoo with environment-based configuration
-exec odoo \
-    --config=/etc/odoo/odoo.prod.conf \
-    --http-port=$HTTP_PORT \
-    --db_host=$DB_HOST \
-    --db_port=$DB_PORT \
-    --db_user=$DB_USER \
-    --db_password=$DB_PASSWORD \
-    --database=$DB_NAME \
-    --admin-passwd=$ADMIN_PASSWD \
-    --no-database-list \
-    --proxy-mode
+# Create runtime config with database settings
+cat > /tmp/odoo-runtime.conf << EOF
+[options]
+db_host = $DB_HOST
+db_port = $DB_PORT
+db_user = $DB_USER
+db_password = $DB_PASSWORD
+db_name = $DB_NAME
+http_port = $HTTP_PORT
+admin_passwd = $ADMIN_PASSWD
+addons_path = /usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
+proxy_mode = True
+list_db = False
+workers = 2
+limit_time_cpu = 600
+limit_time_real = 1200
+log_level = info
+EOF
+
+# Start Odoo with runtime configuration
+exec odoo --config=/tmp/odoo-runtime.conf
 
