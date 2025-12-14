@@ -43,11 +43,17 @@ if [ "$DB_USER" = "postgres" ]; then
     PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
         "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'odoo') THEN CREATE ROLE odoo WITH LOGIN PASSWORD 'odoo' CREATEDB; END IF; END \$\$;" 2>/dev/null || true
 
-    # Grant privileges
+    # Grant privileges on database
     PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
         "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO odoo;" 2>/dev/null || true
     PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
         "ALTER DATABASE $DB_NAME OWNER TO odoo;" 2>/dev/null || true
+
+    # Grant privileges on schema and tables (for existing data)
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
+        "GRANT ALL ON SCHEMA public TO odoo; GRANT ALL ON ALL TABLES IN SCHEMA public TO odoo; GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO odoo;" 2>/dev/null || true
+    PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -c \
+        "ALTER SCHEMA public OWNER TO odoo;" 2>/dev/null || true
 
     # Switch to odoo user
     DB_USER="odoo"
@@ -75,10 +81,18 @@ limit_time_real = 1200
 log_level = info
 EOF
 
-# Start Odoo with runtime configuration
-# --no-database-list prevents listing databases (security)
-# Allow postgres user in Railway environment (no choice with Railway's managed PostgreSQL)
-export ODOO_ALLOW_SUPERUSER=1
+# Check if database needs initialization
+echo "Checking if database $DB_NAME needs initialization..."
+DB_INITIALIZED=$(PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -tAc "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'ir_module_module');" 2>/dev/null || echo "false")
 
-exec odoo --config=/tmp/odoo-runtime.conf --db-filter="^${DB_NAME}$"
+if [ "$DB_INITIALIZED" = "t" ]; then
+    echo "Database is already initialized, starting Odoo normally..."
+    INIT_FLAG=""
+else
+    echo "Database needs initialization, will initialize base module..."
+    INIT_FLAG="-i base"
+fi
+
+# Start Odoo with runtime configuration
+exec odoo --config=/tmp/odoo-runtime.conf --db-filter="^${DB_NAME}$" $INIT_FLAG
 
