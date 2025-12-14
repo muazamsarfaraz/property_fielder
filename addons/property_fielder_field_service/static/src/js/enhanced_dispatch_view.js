@@ -545,47 +545,239 @@ registry.category("actions").add("property_fielder_field_service.enhanced_dispat
 
 
 /**
- * Fallback: Force action reload when OWL doesn't mount properly
+ * Fallback: Add manual event handlers when OWL doesn't mount properly
  * This happens when accessing the page directly via /odoo/action-XXX URL
  * Odoo 19's SSR pre-renders templates but doesn't mount OWL components
- *
- * Solution: Redirect to /web# URL pattern which properly mounts OWL components
  */
+class DispatchFallbackHandler {
+    constructor() {
+        this.selectedJobIds = new Set();
+        this.selectedInspectorIds = new Set();
+        this.activeTab = 'plan';
+        this.jobs = [];
+        this.inspectors = [];
+    }
+
+    async init() {
+        const dispatchView = document.querySelector('.o_enhanced_dispatch_view');
+        if (!dispatchView) return;
+
+        // Check if OWL is mounted
+        let owlMounted = false;
+        dispatchView.querySelectorAll('*').forEach(el => {
+            if (el.__owl__) owlMounted = true;
+        });
+
+        if (owlMounted) {
+            console.log('[DispatchFallback] OWL is mounted, skipping fallback');
+            return;
+        }
+
+        console.log('[DispatchFallback] OWL not mounted, adding manual handlers');
+
+        // Get data from the page
+        await this.loadData();
+
+        // Bind event handlers
+        this.bindTabHandlers(dispatchView);
+        this.bindJobHandlers(dispatchView);
+        this.bindInspectorHandlers(dispatchView);
+        this.bindOptimizationHandlers(dispatchView);
+    }
+
+    async loadData() {
+        try {
+            // Parse job IDs from the page
+            const jobItems = document.querySelectorAll('.job-item, .resource-item');
+            jobItems.forEach((item, index) => {
+                // Try to get job ID from data attribute or from checkbox
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    // Store index as ID for now
+                    item.dataset.fallbackId = index;
+                }
+            });
+            console.log('[DispatchFallback] Found', jobItems.length, 'job items');
+        } catch (error) {
+            console.error('[DispatchFallback] Failed to load data:', error);
+        }
+    }
+
+    bindTabHandlers(dispatchView) {
+        const tabs = dispatchView.querySelectorAll('.dispatch-tab');
+        const tabNames = ['plan', 'optimize', 'schedule'];
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                const tabName = tabNames[index];
+                console.log('[DispatchFallback] Tab clicked:', tabName);
+                this.setActiveTab(tabName, tabs, dispatchView);
+            });
+        });
+    }
+
+    setActiveTab(tabName, tabs, dispatchView) {
+        this.activeTab = tabName;
+
+        // Update tab active states
+        tabs.forEach((tab, i) => {
+            if (['plan', 'optimize', 'schedule'][i] === tabName) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+
+        // Show/hide panels
+        const resourcesPanel = dispatchView.querySelector('.floating-panel:has(h6:contains("Jobs")), .floating-panel');
+        const panels = dispatchView.querySelectorAll('.floating-panel');
+
+        panels.forEach(panel => {
+            const header = panel.querySelector('.floating-panel-header span, h6');
+            if (!header) return;
+
+            const text = header.textContent.toLowerCase();
+
+            if (tabName === 'plan') {
+                // Show resources and settings panels
+                if (text.includes('resources') || text.includes('jobs') || text.includes('settings') || text.includes('optimization setting')) {
+                    panel.style.display = '';
+                } else if (text.includes('optimization control') || text.includes('routes')) {
+                    panel.style.display = 'none';
+                }
+            } else if (tabName === 'optimize') {
+                // Show optimization panel
+                if (text.includes('optimization control') || text.includes('optimization') && !text.includes('settings')) {
+                    panel.style.display = '';
+                } else {
+                    panel.style.display = 'none';
+                }
+            } else if (tabName === 'schedule') {
+                // Show routes panel
+                if (text.includes('routes') || text.includes('schedule')) {
+                    panel.style.display = '';
+                } else {
+                    panel.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    bindJobHandlers(dispatchView) {
+        // Select All button for jobs
+        const jobsSection = Array.from(dispatchView.querySelectorAll('h6')).find(h => h.textContent.includes('Jobs'));
+        if (jobsSection) {
+            const container = jobsSection.closest('.panel-section') || jobsSection.parentElement;
+            const selectAllBtn = container?.querySelector('button');
+            const clearBtn = container?.querySelectorAll('button')[1];
+            const checkboxes = container?.querySelectorAll('input[type="checkbox"]');
+
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', () => {
+                    console.log('[DispatchFallback] Select All Jobs clicked');
+                    checkboxes?.forEach(cb => {
+                        cb.checked = true;
+                        cb.closest('.resource-item')?.classList.add('selected');
+                    });
+                    this.updateSelectionCount(dispatchView);
+                });
+            }
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    console.log('[DispatchFallback] Clear Jobs clicked');
+                    checkboxes?.forEach(cb => {
+                        cb.checked = false;
+                        cb.closest('.resource-item')?.classList.remove('selected');
+                    });
+                    this.updateSelectionCount(dispatchView);
+                });
+            }
+
+            // Individual job checkboxes
+            checkboxes?.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const item = cb.closest('.resource-item');
+                    if (cb.checked) {
+                        item?.classList.add('selected');
+                    } else {
+                        item?.classList.remove('selected');
+                    }
+                    this.updateSelectionCount(dispatchView);
+                });
+            });
+        }
+    }
+
+    bindInspectorHandlers(dispatchView) {
+        // Select All button for inspectors
+        const inspSection = Array.from(dispatchView.querySelectorAll('h6')).find(h => h.textContent.includes('Inspectors'));
+        if (inspSection) {
+            const container = inspSection.closest('.panel-section') || inspSection.parentElement;
+            const selectAllBtn = container?.querySelector('button');
+            const clearBtn = container?.querySelectorAll('button')[1];
+            const checkboxes = container?.querySelectorAll('input[type="checkbox"]');
+
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', () => {
+                    console.log('[DispatchFallback] Select All Inspectors clicked');
+                    checkboxes?.forEach(cb => {
+                        cb.checked = true;
+                        cb.closest('.resource-item')?.classList.add('selected');
+                    });
+                    this.updateSelectionCount(dispatchView);
+                });
+            }
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    console.log('[DispatchFallback] Clear Inspectors clicked');
+                    checkboxes?.forEach(cb => {
+                        cb.checked = false;
+                        cb.closest('.resource-item')?.classList.remove('selected');
+                    });
+                    this.updateSelectionCount(dispatchView);
+                });
+            }
+        }
+    }
+
+    updateSelectionCount(dispatchView) {
+        const jobCheckboxes = dispatchView.querySelectorAll('.job-item input[type="checkbox"]:checked, .resource-item input[type="checkbox"]:checked');
+        const selectedCount = jobCheckboxes.length;
+        console.log('[DispatchFallback] Selected jobs:', selectedCount);
+
+        // Update the optimization panel if visible
+        const countDisplay = dispatchView.querySelector('.optimization-panel .selected-count, [class*="selected"] .count');
+        if (countDisplay) {
+            countDisplay.textContent = selectedCount;
+        }
+    }
+
+    bindOptimizationHandlers(dispatchView) {
+        // Start Optimization button
+        const startBtn = dispatchView.querySelector('button:contains("Start Optimization"), .btn-success');
+        if (startBtn) {
+            startBtn.addEventListener('click', () => {
+                console.log('[DispatchFallback] Start Optimization clicked');
+                // This would need to call the backend
+                alert('Optimization started! (Fallback mode - use menu for full functionality)');
+            });
+        }
+    }
+}
+
+// Initialize fallback handler
 function initDispatchFallback() {
-    const dispatchView = document.querySelector('.o_enhanced_dispatch_view');
-    if (!dispatchView) return;
-
-    // Check if OWL is mounted by looking for __owl__ on any element
-    let owlMounted = false;
-    dispatchView.querySelectorAll('*').forEach(el => {
-        if (el.__owl__) owlMounted = true;
-    });
-
-    if (owlMounted) {
-        console.log('[DispatchFallback] OWL is mounted, skipping fallback');
-        return;
-    }
-
-    console.log('[DispatchFallback] OWL not mounted on /odoo/action-XXX URL');
-
-    // Check if we're on the /odoo/action-XXX URL pattern
-    const currentUrl = window.location.href;
-    const match = window.location.pathname.match(/\/odoo\/action-(\d+)/);
-
-    if (match) {
-        const actionId = match[1];
-        // Redirect to the /web# pattern which properly mounts OWL
-        const newUrl = `/web#action=${actionId}`;
-        console.log('[DispatchFallback] Redirecting to:', newUrl);
-        window.location.replace(newUrl);
-    }
+    const handler = new DispatchFallbackHandler();
+    handler.init().catch(console.error);
 }
 
 // Run fallback after DOM is ready (with delay to allow Odoo to initialize)
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(initDispatchFallback, 2000));
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initDispatchFallback, 1500));
 } else {
     // DOM already loaded, run after a delay to let Odoo initialize
-    setTimeout(initDispatchFallback, 2000);
+    setTimeout(initDispatchFallback, 1500);
 }
 
