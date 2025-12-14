@@ -152,10 +152,10 @@
                                 </div>
                                 <div class="resource-list">
                                     <t t-foreach="state.jobs" t-as="job" t-key="job.id">
-                                        <div t-attf-class="resource-item job-item {{ isJobSelected(job.id) ? 'selected' : '' }}"
+                                        <div t-attf-class="resource-item job-item {{ state.selectedJobIds.includes(job.id) ? 'selected' : '' }}"
                                              t-on-click="() => toggleJobSelection(job.id)">
                                             <div class="job-item-main">
-                                                <input type="checkbox" t-att-checked="isJobSelected(job.id)"/>
+                                                <input type="checkbox" t-att-checked="state.selectedJobIds.includes(job.id)"/>
                                                 <span class="resource-name" t-esc="job.name || job.job_number"/>
                                                 <span t-attf-class="resource-status badge badge-{{ job.state }}" t-esc="job.state"/>
                                             </div>
@@ -179,9 +179,9 @@
                                 </div>
                                 <div class="resource-list">
                                     <t t-foreach="state.inspectors" t-as="inspector" t-key="inspector.id">
-                                        <div t-attf-class="resource-item {{ isInspectorSelected(inspector.id) ? 'selected' : '' }} {{ !inspector.available ? 'unavailable' : '' }}"
+                                        <div t-attf-class="resource-item {{ state.selectedInspectorIds.includes(inspector.id) ? 'selected' : '' }} {{ !inspector.available ? 'unavailable' : '' }}"
                                              t-on-click="() => toggleInspectorSelection(inspector.id)">
-                                            <input type="checkbox" t-att-checked="isInspectorSelected(inspector.id)"/>
+                                            <input type="checkbox" t-att-checked="state.selectedInspectorIds.includes(inspector.id)"/>
                                             <span class="resource-name" t-esc="inspector.name"/>
                                             <span t-if="!inspector.available" class="badge bg-secondary">Unavailable</span>
                                         </div>
