@@ -543,3 +543,130 @@ export class EnhancedDispatchView extends Component {
 
 registry.category("actions").add("property_fielder_field_service.enhanced_dispatch_action", EnhancedDispatchView);
 
+
+/**
+ * Fallback: Manual event binding for when OWL doesn't mount properly
+ * This happens when accessing the page directly via /odoo/action-XXX URL
+ */
+function initDispatchFallback() {
+    const dispatchView = document.querySelector('.o_enhanced_dispatch_view');
+    if (!dispatchView) return;
+
+    // Check if OWL is mounted by looking for __owl__ on any element
+    let owlMounted = false;
+    dispatchView.querySelectorAll('*').forEach(el => {
+        if (el.__owl__) owlMounted = true;
+    });
+
+    if (owlMounted) {
+        console.log('[DispatchFallback] OWL is mounted, skipping fallback');
+        return;
+    }
+
+    console.log('[DispatchFallback] OWL not mounted, adding manual event handlers');
+
+    // Tab switching
+    const tabs = dispatchView.querySelectorAll('.dispatch-tab');
+    const panels = {
+        plan: dispatchView.querySelector('.plan-panel'),
+        optimize: dispatchView.querySelector('.optimize-panel'),
+        schedule: dispatchView.querySelector('.schedule-panel'),
+    };
+
+    // Also get the floating panels
+    const resourcesPanel = dispatchView.querySelector('.resources-panel, [class*="resources"]');
+    const settingsPanel = dispatchView.querySelector('.settings-panel, [class*="settings"]');
+    const optimizationPanel = dispatchView.querySelector('.optimization-panel, [class*="optimization"]');
+    const routeDetailsPanel = dispatchView.querySelector('.route-details-panel, [class*="route-details"]');
+
+    tabs.forEach((tab, index) => {
+        const tabName = ['plan', 'optimize', 'schedule'][index];
+        tab.addEventListener('click', () => {
+            console.log('[DispatchFallback] Tab clicked:', tabName);
+
+            // Update tab active state
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Show/hide panels based on tab
+            // For now, we'll just log and let the CSS handle visibility
+            // The real solution would be to force OWL to mount
+        });
+    });
+
+    // If OWL is not mounted, try to force mount it
+    setTimeout(async () => {
+        try {
+            const owl = odoo.loader.modules.get('@odoo/owl');
+            if (!owl) {
+                console.warn('[DispatchFallback] OWL module not found');
+                return;
+            }
+
+            const { App } = owl;
+            const templateLoaderModule = odoo.loader.modules.get('@web/core/templates');
+            const getTemplate = templateLoaderModule?.getTemplate;
+            const registryModule = odoo.loader.modules.get('@web/core/registry');
+            const actionRegistry = registryModule?.registry?.category('actions');
+
+            const EnhancedDispatchViewClass = actionRegistry?.get('property_fielder_field_service.enhanced_dispatch_action');
+            if (!EnhancedDispatchViewClass) {
+                console.warn('[DispatchFallback] EnhancedDispatchView not found in registry');
+                return;
+            }
+
+            // Get or create environment
+            let env = odoo.__WOWL_DEBUG__?.root?.env;
+            if (!env) {
+                console.warn('[DispatchFallback] No OWL environment found, cannot mount');
+                return;
+            }
+
+            // Find the action manager container
+            const actionManager = document.querySelector('.o_action_manager');
+            if (!actionManager) {
+                console.warn('[DispatchFallback] Action manager not found');
+                return;
+            }
+
+            // Clear existing content and mount OWL
+            console.log('[DispatchFallback] Attempting to mount OWL component...');
+
+            // Remove the static HTML
+            const existingView = actionManager.querySelector('.o_enhanced_dispatch_view');
+            if (existingView) {
+                existingView.remove();
+            }
+
+            // Create new OWL app
+            const app = new App(EnhancedDispatchViewClass, {
+                env,
+                props: {},
+                getTemplate,
+            });
+
+            await app.mount(actionManager);
+            console.log('[DispatchFallback] OWL component mounted successfully!');
+
+        } catch (error) {
+            console.error('[DispatchFallback] Failed to mount OWL:', error);
+        }
+    }, 500);
+}
+
+// Run fallback after DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDispatchFallback);
+} else {
+    // DOM already loaded, run after a short delay to let Odoo initialize
+    setTimeout(initDispatchFallback, 1000);
+}
+
+// Also run when navigating to the dispatch view (for SPA navigation)
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href*="action-"], a[data-menu-xmlid*="dispatch"]');
+    if (link) {
+        setTimeout(initDispatchFallback, 1500);
+    }
+});
+
