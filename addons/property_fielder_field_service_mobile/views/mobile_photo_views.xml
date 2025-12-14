@@ -214,8 +214,8 @@
                                 <field name="checkout_time"/>
                                 <field name="status" widget="badge"/>
                                 <field name="duration_minutes"/>
-                                <field name="location_lat"/>
-                                <field name="location_lng"/>
+                                <field name="checkin_latitude"/>
+                                <field name="checkin_longitude"/>
                             </list>
                         </field>
                     </page>
