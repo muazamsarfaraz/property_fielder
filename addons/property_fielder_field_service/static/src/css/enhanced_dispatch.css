@@ -273,6 +273,7 @@
    ======================================== */
 .floating-panel {
     position: absolute;
+    z-index: 1000;
     background: var(--pf-white);
     border-radius: var(--pf-radius-lg);
     box-shadow: var(--pf-shadow-lg);
