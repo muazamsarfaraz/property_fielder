@@ -110,7 +110,14 @@ class FieldServiceInspector(models.Model):
         compute='_compute_route_count',
         store=False
     )
-    
+
+    available = fields.Boolean(
+        string='Available',
+        compute='_compute_available',
+        store=False,
+        help='Whether inspector is currently available for scheduling'
+    )
+
     # Relations
     job_ids = fields.One2many(
         'property_fielder.job',
@@ -135,7 +142,16 @@ class FieldServiceInspector(models.Model):
         """Count routes"""
         for inspector in self:
             inspector.route_count = len(inspector.route_ids)
-    
+
+    def _compute_available(self):
+        """Determine if inspector is available for scheduling.
+        Currently just checks if inspector is active.
+        Could be extended to check shift times, vacation, etc.
+        """
+        for inspector in self:
+            # For now, available = active. In future, check shift times, vacation calendar, etc.
+            inspector.available = inspector.active
+
     def action_view_jobs(self):
         """Open jobs assigned to this inspector"""
         return {

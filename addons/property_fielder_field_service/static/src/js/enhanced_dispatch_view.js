@@ -138,7 +138,7 @@ export class EnhancedDispatchView extends Component {
                 this.orm.searchRead(
                     "property_fielder.inspector",
                     [["active", "=", true]],
-                    ["id", "name", "user_id", "skill_ids", "active", "home_latitude", "home_longitude",
+                    ["id", "name", "user_id", "skill_ids", "active", "available", "home_latitude", "home_longitude",
                      "shift_start", "shift_end"]
                 ),
             ]);
