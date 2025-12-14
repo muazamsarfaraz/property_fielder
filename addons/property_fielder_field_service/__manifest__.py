@@ -2,7 +2,7 @@
 {
     'name': 'Property Fielder Field Service',
     'version': '1.0.0',
-    'category': 'Services/Field Service',
+    'category': 'Fielder',
     'summary': 'AI-Powered Job Dispatch and Route Optimization',
     'description': """
 Property Fielder Field Service Management

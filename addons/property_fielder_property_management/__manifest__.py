@@ -2,7 +2,7 @@
 {
     'name': 'Property Fielder Property Management',
     'version': '1.0.0',
-    'category': 'Services/Property Management',
+    'category': 'Fielder',
     'summary': 'Property Management with FLAGE+ Certification Compliance',
     'description': """
 Property Fielder Property Management

@@ -2,7 +2,7 @@
 {
     'name': 'Property Fielder Field Service Mobile',
     'version': '1.0.0',
-    'category': 'Services/Field Service',
+    'category': 'Fielder',
     'summary': 'Mobile app for field inspectors',
     'description': """
 Property Fielder Field Service Mobile
