@@ -114,9 +114,10 @@
                             <page string="Mobile Notes" name="mobile_notes">
                                 <field name="note_ids">
                                     <list create="0" delete="0">
-                                        <field name="note_type" widget="badge"/>
+                                        <field name="category" widget="badge"/>
+                                        <field name="title"/>
                                         <field name="content"/>
-                                        <field name="created_at"/>
+                                        <field name="create_date"/>
                                     </list>
                                 </field>
                             </page>
