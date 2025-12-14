@@ -4,26 +4,31 @@ set -e
 
 echo "Starting Property Fielder (Odoo 19)..."
 
-# Railway provides DATABASE_URL or individual vars
-# Parse DATABASE_URL if provided, otherwise use individual vars
-if [ -n "$DATABASE_URL" ]; then
-    # Parse postgres://user:password@host:port/dbname
-    export DB_HOST=$(echo $DATABASE_URL | sed -E 's/.*@([^:]+):.*/\1/')
-    export DB_PORT=$(echo $DATABASE_URL | sed -E 's/.*:([0-9]+)\/.*/\1/')
-    export DB_USER=$(echo $DATABASE_URL | sed -E 's/postgres:\/\/([^:]+):.*/\1/')
-    export DB_PASSWORD=$(echo $DATABASE_URL | sed -E 's/postgres:\/\/[^:]+:([^@]+)@.*/\1/')
-    export DB_NAME=$(echo $DATABASE_URL | sed -E 's/.*\/([^?]+).*/\1/')
-fi
-
 # Use Railway's PORT or default to 8069
 HTTP_PORT=${PORT:-8069}
 
-# Database connection settings
-DB_HOST=${DB_HOST:-${PGHOST:-db}}
-DB_PORT=${DB_PORT:-${PGPORT:-5432}}
-DB_USER=${DB_USER:-${PGUSER:-odoo}}
-DB_PASSWORD=${DB_PASSWORD:-${PGPASSWORD:-odoo}}
-DB_NAME=${DB_NAME:-${PGDATABASE:-property_fielder}}
+# Parse DATABASE_URL using Python (more reliable than sed)
+if [ -n "$DATABASE_URL" ]; then
+    echo "Parsing DATABASE_URL..."
+    eval $(python3 << EOF
+import os
+from urllib.parse import urlparse
+url = urlparse(os.environ.get('DATABASE_URL', ''))
+print(f"DB_HOST={url.hostname or 'db'}")
+print(f"DB_PORT={url.port or 5432}")
+print(f"DB_USER={url.username or 'odoo'}")
+print(f"DB_PASSWORD={url.password or 'odoo'}")
+print(f"DB_NAME={url.path.lstrip('/') or 'property_fielder'}")
+EOF
+)
+else
+    # Fallback to individual env vars
+    DB_HOST=${PGHOST:-db}
+    DB_PORT=${PGPORT:-5432}
+    DB_USER=${PGUSER:-odoo}
+    DB_PASSWORD=${PGPASSWORD:-odoo}
+    DB_NAME=${PGDATABASE:-property_fielder}
+fi
 
 # Admin password
 ADMIN_PASSWD=${ODOO_ADMIN_PASSWORD:-admin}
