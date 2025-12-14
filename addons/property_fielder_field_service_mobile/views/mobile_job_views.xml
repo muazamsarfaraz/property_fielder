@@ -69,7 +69,7 @@
                             </page>
                             <page string="Photos" name="photos">
                                 <button name="action_capture_photo" string="Capture Photo" type="object" class="btn-primary mb-3"/>
-                                <field name="photo_ids" mode="kanban" context="{'default_job_id': active_id}">
+                                <field name="photo_ids" mode="kanban" context="{'default_job_id': id}">
                                     <kanban class="o_kanban_small_column" create="0">
                                         <field name="id"/>
                                         <field name="name"/>
