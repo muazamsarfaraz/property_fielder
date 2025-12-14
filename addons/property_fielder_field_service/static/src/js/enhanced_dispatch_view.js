@@ -198,7 +198,9 @@ export class EnhancedDispatchView extends Component {
     }
 
     selectAllJobs() {
+        console.log("[EnhancedDispatchView] selectAllJobs called, jobs:", this.state.jobs.length);
         this.state.selectedJobIds = this.state.jobs.map(j => j.id);
+        console.log("[EnhancedDispatchView] selectedJobIds now:", this.state.selectedJobIds);
     }
 
     clearJobSelection() {
