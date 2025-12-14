@@ -62,13 +62,14 @@ if [ "$DB_USER" = "postgres" ]; then
 fi
 
 # Create runtime config with database settings
+# Use db_name = False to let Odoo auto-select the database based on --database flag
 cat > /tmp/odoo-runtime.conf << EOF
 [options]
 db_host = $DB_HOST
 db_port = $DB_PORT
 db_user = $DB_USER
 db_password = $DB_PASSWORD
-db_name = $DB_NAME
+db_name = False
 http_port = $HTTP_PORT
 http_interface = 0.0.0.0
 admin_passwd = $ADMIN_PASSWD
@@ -94,5 +95,6 @@ else
 fi
 
 # Start Odoo with runtime configuration
-exec odoo --config=/tmp/odoo-runtime.conf --db-filter="^${DB_NAME}$" $INIT_FLAG
+# --database flag explicitly sets the database to use
+exec odoo --config=/tmp/odoo-runtime.conf --database=$DB_NAME --db-filter="^${DB_NAME}$" $INIT_FLAG
 
