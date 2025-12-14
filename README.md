@@ -23,7 +23,7 @@ property_fielder/
 
 ## Railway Deployment (Production)
 
-**Auto-deploy**: Push to `main` branch triggers automatic deployment.
+**Auto-deploy**: Push to `master` branch triggers automatic deployment.
 
 | Service | URL |
 |---------|-----|
@@ -36,7 +36,7 @@ property_fielder/
 ```bash
 git add .
 git commit -m "Your changes"
-git push origin main
+git push origin master
 # Railway auto-deploys in ~2-3 minutes
 ```
 
