@@ -5,9 +5,9 @@ dockerfilePath = "Dockerfile"
 
 [deploy]
 startCommand = "/start.sh"
-# Disable healthcheck - Odoo takes a while to initialize on first start
-# healthcheckPath = "/web/health"
-# healthcheckTimeout = 600
+# Healthcheck - Odoo takes ~2-3 minutes to initialize on first start
+healthcheckPath = "/web/health"
+healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
 
