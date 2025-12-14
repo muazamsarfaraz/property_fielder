@@ -548,6 +548,8 @@ registry.category("actions").add("property_fielder_field_service.enhanced_dispat
  * Fallback: Force action reload when OWL doesn't mount properly
  * This happens when accessing the page directly via /odoo/action-XXX URL
  * Odoo 19's SSR pre-renders templates but doesn't mount OWL components
+ *
+ * Solution: Redirect to /web# URL pattern which properly mounts OWL components
  */
 function initDispatchFallback() {
     const dispatchView = document.querySelector('.o_enhanced_dispatch_view');
@@ -564,66 +566,26 @@ function initDispatchFallback() {
         return;
     }
 
-    console.log('[DispatchFallback] OWL not mounted, attempting to reload action...');
+    console.log('[DispatchFallback] OWL not mounted on /odoo/action-XXX URL');
 
-    // Try to get Odoo's action service and reload the action properly
-    setTimeout(async () => {
-        try {
-            // Get the action service from OWL environment
-            const env = odoo.__WOWL_DEBUG__?.root?.env;
-            if (!env) {
-                console.warn('[DispatchFallback] No OWL environment found');
-                // Fallback: redirect to force proper loading
-                const currentUrl = window.location.href;
-                if (currentUrl.includes('/odoo/action-')) {
-                    // Navigate through web client instead
-                    window.location.href = '/web#action=property_fielder_field_service.action_field_service_dispatch_new';
-                }
-                return;
-            }
+    // Check if we're on the /odoo/action-XXX URL pattern
+    const currentUrl = window.location.href;
+    const match = window.location.pathname.match(/\/odoo\/action-(\d+)/);
 
-            const actionService = env.services?.action;
-            if (!actionService) {
-                console.warn('[DispatchFallback] Action service not found');
-                return;
-            }
-
-            // Try to reload the current action
-            console.log('[DispatchFallback] Reloading action through action service...');
-
-            // Get action ID from URL
-            const match = window.location.pathname.match(/\/odoo\/action-(\d+)/);
-            if (match) {
-                const actionId = parseInt(match[1]);
-                // Clear the current content first
-                const actionManager = document.querySelector('.o_action_manager');
-                if (actionManager) {
-                    actionManager.innerHTML = '';
-                }
-                // Reload the action
-                await actionService.doAction(actionId, { clearBreadcrumbs: true });
-                console.log('[DispatchFallback] Action reloaded successfully!');
-            }
-
-        } catch (error) {
-            console.error('[DispatchFallback] Failed to reload action:', error);
-        }
-    }, 500);
-}
-
-// Run fallback after DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(initDispatchFallback, 1000));
-} else {
-    // DOM already loaded, run after a short delay to let Odoo initialize
-    setTimeout(initDispatchFallback, 1500);
-}
-
-// Also run when navigating to the dispatch view (for SPA navigation)
-document.addEventListener('click', (e) => {
-    const link = e.target.closest('a[href*="action-"], a[data-menu-xmlid*="dispatch"]');
-    if (link) {
-        setTimeout(initDispatchFallback, 2000);
+    if (match) {
+        const actionId = match[1];
+        // Redirect to the /web# pattern which properly mounts OWL
+        const newUrl = `/web#action=${actionId}`;
+        console.log('[DispatchFallback] Redirecting to:', newUrl);
+        window.location.replace(newUrl);
     }
-});
+}
+
+// Run fallback after DOM is ready (with delay to allow Odoo to initialize)
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initDispatchFallback, 2000));
+} else {
+    // DOM already loaded, run after a delay to let Odoo initialize
+    setTimeout(initDispatchFallback, 2000);
+}
 
