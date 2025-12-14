@@ -191,7 +191,7 @@ class FieldServiceOptimization(models.Model):
             # Get Timefold server URL from system parameters
             timefold_url = self.env['ir.config_parameter'].sudo().get_param(
                 'property_fielder.timefold.url',
-                'http://localhost:8080'
+                'https://job-dispatch.up.railway.app'
             )
 
             # Build request payload

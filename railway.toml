@@ -1,0 +1,12 @@
+# Railway configuration for Property Fielder
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "/start.sh"
+healthcheckPath = "/web/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
