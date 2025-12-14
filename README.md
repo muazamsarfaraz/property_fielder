@@ -1,177 +1,48 @@
-# Property Fielder - UK Property Inspection Platform
+# Property Fielder - UK Property Compliance Platform
 
-**Complete field service management with FLAGE+ certification tracking for UK property inspections**
+Odoo 19 addons for UK property compliance and field service management.
 
-**Version:** 3.0.0
-**Status:** ✅ All Odoo Addons Complete | ✅ Flutter Mobile App Complete
-**Platform:** Odoo 19.0 | Flutter 3.x
-
----
-
-## 🎯 WHAT IS THIS?
-
-A **complete property inspection platform** for UK property management companies, featuring:
-- **FLAGE+ Certification Tracking** - Gas Safety, EPC, EICR, Fire Safety, Legionella, Asbestos
-- **Field Service Management** - Jobs, routes, inspectors, optimization
-- **Mobile Inspector App** - Flutter app with offline support
-- **Route Optimization** - AI-powered scheduling with Timefold Solver
-
-Perfect for:
-- 🏠 UK Property Management Companies
-- 🔧 Letting Agents and Landlords
-- ⚡ Property Inspection Services
-- 📋 Compliance and Certification Companies
-
----
-
-## 📦 PROJECT STRUCTURE
-
-```
-property_fielder/
-├── README.md                    # This file
-├── docker-compose.yml           # Docker setup for Odoo 19 + PostgreSQL
-├── odoo.conf                    # Odoo configuration
-│
-├── addons/                      # Odoo 19 addons
-│   ├── property_fielder_field_service/        # Field service management
-│   ├── property_fielder_property_management/  # FLAGE+ certifications
-│   └── property_fielder_field_service_mobile/ # Mobile API endpoints
-│
-└── mobile_app/                  # Flutter mobile app
-    ├── lib/                     # Dart source code
-    └── pubspec.yaml             # Flutter dependencies
-```
-
----
-
-## 🚀 QUICK START
-
-### 1. Docker Setup (Recommended)
-
-```bash
-cd property_fielder
-docker-compose up -d
-```
-
-This starts:
-- **Odoo 19** on http://localhost:8069
-- **PostgreSQL 16** database
-
-### 2. Install Addons
-
-1. Go to http://localhost:8069
-2. Create database: `property_fielder`
-3. Go to Apps → Update Apps List
-4. Install in order:
-   - Property Fielder Property Management
-   - Property Fielder Field Service
-   - Property Fielder Field Service Mobile
-
-### 3. Flutter Mobile App
-
-```bash
-cd mobile_app
-flutter pub get
-flutter pub run build_runner build
-flutter run
-```
-
----
-
-## ✨ FEATURES
-
-### Odoo Addons (Complete)
-
-✅ **Property Management**
-- FLAGE+ certification tracking (Gas, EPC, EICR, Fire, Legionella, Asbestos)
-- Property portfolio management
-- Compliance dashboard with expiry alerts
-- Certification reports
-
-✅ **Field Service**
-- Job management with time windows
-- Inspector management with skills
-- Route optimization with Timefold Solver
-- Interactive dispatch view (Map + Timeline)
-- Schedule sharing via email
-- Change request workflow
-
-✅ **Mobile API**
-- REST endpoints for mobile app
-- Check-in/out tracking
-- Photo upload with GPS
-- Signature capture
-- Notes and voice memos
-
-### Flutter Mobile App (Complete)
-
-✅ **Core Features**
-- Offline-first architecture with Hive storage
-- Background sync with conflict resolution
-- GPS-based check-in/out
-- Photo capture with GPS tagging
-- Signature capture
-- Notes with categories
-
-✅ **Screens**
-- Dashboard with job stats
-- Job list with tabs (Today/Upcoming/Completed)
-- Job detail with actions
-- Route list with progress
-- Photo gallery by category
-- Signature capture pad
-- Sync status screen
-- Settings screen
-
----
-
-## 🏗️ ARCHITECTURE
+## Project Structure
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│                    ODOO 19 PLATFORM                         │
-│  • property_fielder_property_management (FLAGE+)            │
-│  • property_fielder_field_service (Jobs, Routes)            │
-│  • property_fielder_field_service_mobile (REST API)         │
-└─────────────────────────────────────────────────────────────┘
-                         ↓ REST API
-┌─────────────────────────────────────────────────────────────┐
-│              FLUTTER MOBILE APP                             │
-│  • Offline storage (Hive)                                   │
-│  • Background sync (WorkManager)                            │
-│  • GPS tracking (Geolocator)                                │
-└─────────────────────────────────────────────────────────────┘
+property_fielder/
+├── addons/                      # Odoo 19 addons
+│   ├── property_fielder_field_service/        # Core: Jobs, Routes, Optimization
+│   ├── property_fielder_field_service_mobile/ # Core: Mobile API
+│   └── property_fielder_property_management/  # Core: Properties, FLAGE+ Certs
+│
+├── prd/                         # Product Requirements Documents
+│   ├── PRD_MAIN.md              # Master PRD (all requirements)
+│   └── addons/                  # Per-addon PRDs
+│       ├── core/                # Core addons (3)
+│       ├── compliance/          # Compliance addons (5)
+│       └── property_management/ # Business addons (14)
+│
+├── e2e-tests/                   # Playwright E2E tests
+├── mobile_app/                  # Flutter inspector app
+├── docker-compose.yml           # Odoo 19 + PostgreSQL
+└── odoo.conf                    # Odoo configuration
 ```
 
----
+## Quick Start
 
-## 📚 DOCUMENTATION
+```bash
+docker-compose up -d
+# Access: http://localhost:8069
+# Install addons via Apps menu
+```
 
-| Document | Purpose |
-|----------|---------|
-| [addons/README.md](addons/README.md) | Addon installation guide |
-| [addons/ARCHITECTURE.md](addons/ARCHITECTURE.md) | System architecture |
-| [mobile_app/README.md](mobile_app/README.md) | Flutter app guide |
-| [ODOO_19_MIGRATION_GUIDE.md](ODOO_19_MIGRATION_GUIDE.md) | Odoo 19 migration patterns |
-| [ODOO_INSTALLATION_GUIDE.md](ODOO_INSTALLATION_GUIDE.md) | Docker setup guide |
+## Implemented Addons
 
----
+| Addon | Purpose | Status |
+|-------|---------|--------|
+| `property_fielder_property_management` | Properties, FLAGE+ certifications | ✅ Built |
+| `property_fielder_field_service` | Jobs, Routes, Dispatch, Optimization | ✅ Built |
+| `property_fielder_field_service_mobile` | Mobile REST API | ✅ Built |
 
-## 🛠️ DEVELOPMENT STATUS
+## PRD Documentation
 
-### Completed ✅
+See `prd/PRD_MAIN.md` for complete requirements. Individual addon PRDs in `prd/addons/`.
 
-- [x] Odoo 19 Docker setup
-- [x] Property Management addon with FLAGE+ certifications
-- [x] Field Service addon with dispatch view
-- [x] Mobile API addon with REST endpoints
-- [x] Flutter mobile app with offline support
-- [x] All views, wizards, and workflows
-- [x] Schedule sharing and change requests
-
----
-
-**Last Updated:** December 10, 2025
-**Version:** 3.0.0
 **License:** LGPL-3.0
 

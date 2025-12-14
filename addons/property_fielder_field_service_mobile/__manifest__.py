@@ -44,6 +44,7 @@ This addon provides a mobile-optimized interface and REST API for native mobile 
         'views/mobile_job_views.xml',
         'views/mobile_route_views.xml',
         'views/mobile_dashboard_views.xml',
+        'views/mobile_photo_views.xml',
 
         # Templates
         'views/mobile_templates.xml',

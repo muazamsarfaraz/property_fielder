@@ -6,13 +6,64 @@ from odoo.exceptions import UserError
 
 class Job(models.Model):
     _inherit = 'property_fielder.job'
-    
+
     # Mobile-specific fields
     mobile_checkin_time = fields.Datetime(string='Mobile Check-In Time', readonly=True)
     mobile_checkout_time = fields.Datetime(string='Mobile Check-Out Time', readonly=True)
     mobile_location_lat = fields.Float(string='Check-In Latitude', readonly=True)
     mobile_location_lng = fields.Float(string='Check-In Longitude', readonly=True)
-    
+
+    # Related records from mobile
+    photo_ids = fields.One2many(
+        'property_fielder.job.photo',
+        'job_id',
+        string='Photos',
+        help='Photos captured during this job'
+    )
+    photo_count = fields.Integer(
+        string='Photo Count',
+        compute='_compute_photo_count',
+        store=True
+    )
+    signature_ids = fields.One2many(
+        'property_fielder.job.signature',
+        'job_id',
+        string='Signatures',
+        help='Signatures captured for this job'
+    )
+    checkin_ids = fields.One2many(
+        'property_fielder.job.checkin',
+        'job_id',
+        string='Check-ins',
+        help='Check-in/out records for this job'
+    )
+    note_ids = fields.One2many(
+        'property_fielder.job.note',
+        'job_id',
+        string='Mobile Notes',
+        help='Notes added during job execution'
+    )
+
+    @api.depends('photo_ids')
+    def _compute_photo_count(self):
+        for job in self:
+            job.photo_count = len(job.photo_ids)
+
+    def action_view_photos(self):
+        """Open photos gallery for this job"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Job Photos'),
+            'res_model': 'property_fielder.job.photo',
+            'view_mode': 'kanban,tree,form',
+            'domain': [('job_id', '=', self.id)],
+            'context': {
+                'default_job_id': self.id,
+                'default_inspector_id': self.inspector_id.id,
+            },
+        }
+
     def action_mobile_checkin(self):
         """Mobile check-in action"""
         self.ensure_one()

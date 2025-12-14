@@ -67,16 +67,58 @@
                             <page string="Notes">
                                 <field name="notes"/>
                             </page>
-                            <page string="Photos">
-                                <button name="action_capture_photo" string="Capture Photo" type="object" class="btn-primary"/>
-                                <!-- Photo gallery will go here -->
+                            <page string="Photos" name="photos">
+                                <button name="action_capture_photo" string="Capture Photo" type="object" class="btn-primary mb-3"/>
+                                <field name="photo_ids" mode="kanban" context="{'default_job_id': active_id}">
+                                    <kanban class="o_kanban_small_column" create="0">
+                                        <field name="id"/>
+                                        <field name="name"/>
+                                        <field name="image"/>
+                                        <field name="category"/>
+                                        <field name="capture_time"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="o_kanban_image">
+                                                    <field name="image" widget="image" options="{'preview_image': 'image', 'size': [150, 150]}"/>
+                                                </div>
+                                                <div class="oe_kanban_details">
+                                                    <strong><field name="name"/></strong>
+                                                    <div><field name="category" widget="badge"/></div>
+                                                    <div class="text-muted"><field name="capture_time"/></div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                </field>
                             </page>
-                            <page string="Signature">
-                                <button name="action_capture_signature" string="Capture Signature" type="object" class="btn-primary"/>
-                                <!-- Signature pad will go here -->
+                            <page string="Signatures" name="signatures">
+                                <button name="action_capture_signature" string="Capture Signature" type="object" class="btn-primary mb-3"/>
+                                <field name="signature_ids">
+                                    <list create="0" delete="0">
+                                        <field name="signer_name"/>
+                                        <field name="signature_type"/>
+                                        <field name="signed_time"/>
+                                    </list>
+                                </field>
                             </page>
-                            <page string="Check-Ins">
-                                <!-- Check-in history will go here -->
+                            <page string="Check-Ins" name="checkins">
+                                <field name="checkin_ids">
+                                    <list create="0" delete="0">
+                                        <field name="checkin_time"/>
+                                        <field name="checkout_time"/>
+                                        <field name="status" widget="badge"/>
+                                        <field name="duration_minutes"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Mobile Notes" name="mobile_notes">
+                                <field name="note_ids">
+                                    <list create="0" delete="0">
+                                        <field name="note_type" widget="badge"/>
+                                        <field name="content"/>
+                                        <field name="created_at"/>
+                                    </list>
+                                </field>
                             </page>
                         </notebook>
                     </sheet>

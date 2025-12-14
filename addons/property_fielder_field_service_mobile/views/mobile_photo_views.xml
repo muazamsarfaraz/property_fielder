@@ -1,0 +1,228 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        
+        <!-- Job Photo Form View -->
+        <record id="view_job_photo_form" model="ir.ui.view">
+            <field name="name">property_fielder.job.photo.form</field>
+            <field name="model">property_fielder.job.photo</field>
+            <field name="arch" type="xml">
+                <form string="Photo">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Photo Description"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="job_id"/>
+                                <field name="inspector_id"/>
+                                <field name="category"/>
+                                <field name="capture_time"/>
+                            </group>
+                            <group>
+                                <field name="latitude"/>
+                                <field name="longitude"/>
+                                <field name="device_info"/>
+                            </group>
+                        </group>
+                        <group string="Photo">
+                            <field name="image" widget="image" class="oe_avatar"/>
+                        </group>
+                        <group string="Notes">
+                            <field name="notes" nolabel="1"/>
+                        </group>
+                        <group string="Tags">
+                            <field name="tag_ids" widget="many2many_tags" nolabel="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Job Photo Tree View -->
+        <record id="view_job_photo_tree" model="ir.ui.view">
+            <field name="name">property_fielder.job.photo.tree</field>
+            <field name="model">property_fielder.job.photo</field>
+            <field name="arch" type="xml">
+                <list string="Photos" create="0">
+                    <field name="image_small" widget="image" options="{'size': [50, 50]}"/>
+                    <field name="name"/>
+                    <field name="job_id"/>
+                    <field name="inspector_id"/>
+                    <field name="category" widget="badge"/>
+                    <field name="capture_time"/>
+                    <field name="latitude"/>
+                    <field name="longitude"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Job Photo Kanban View (Gallery) -->
+        <record id="view_job_photo_kanban" model="ir.ui.view">
+            <field name="name">property_fielder.job.photo.kanban</field>
+            <field name="model">property_fielder.job.photo</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_small_column" create="0">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="image"/>
+                    <field name="category"/>
+                    <field name="capture_time"/>
+                    <field name="inspector_id"/>
+                    <field name="latitude"/>
+                    <field name="longitude"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="o_kanban_image">
+                                <field name="image" widget="image" options="{'preview_image': 'image', 'size': [200, 200]}"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong><field name="name"/></strong>
+                                <div><field name="category" widget="badge"/></div>
+                                <div class="text-muted"><field name="capture_time"/></div>
+                                <div class="text-muted" t-if="record.latitude.raw_value">
+                                    <i class="fa fa-map-marker"/> GPS: <t t-out="record.latitude.value"/>, <t t-out="record.longitude.value"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Photo Gallery Action -->
+        <record id="action_job_photos" model="ir.actions.act_window">
+            <field name="name">Job Photos</field>
+            <field name="res_model">property_fielder.job.photo</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No photos captured yet
+                </p>
+                <p>
+                    Photos are captured by inspectors using the mobile app during job execution.
+                </p>
+            </field>
+        </record>
+
+        <!-- Photo Tag Model Views -->
+        <record id="view_photo_tag_tree" model="ir.ui.view">
+            <field name="name">property_fielder.photo.tag.tree</field>
+            <field name="model">property_fielder.photo.tag</field>
+            <field name="arch" type="xml">
+                <list string="Photo Tags" editable="bottom">
+                    <field name="name"/>
+                    <field name="color" widget="color_picker"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Job Signature Form View -->
+        <record id="view_job_signature_form" model="ir.ui.view">
+            <field name="name">property_fielder.job.signature.form</field>
+            <field name="model">property_fielder.job.signature</field>
+            <field name="arch" type="xml">
+                <form string="Signature">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="job_id"/>
+                                <field name="inspector_id"/>
+                                <field name="signature_type"/>
+                                <field name="signed_time"/>
+                            </group>
+                            <group>
+                                <field name="signer_name"/>
+                                <field name="signer_title"/>
+                                <field name="signer_email"/>
+                                <field name="signer_phone"/>
+                            </group>
+                        </group>
+                        <group string="Signature Image">
+                            <field name="signature" widget="image" class="oe_avatar"/>
+                        </group>
+                        <group string="Location">
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Inherit Job Form to add Photos Tab -->
+        <record id="view_job_form_inherit_photos" model="ir.ui.view">
+            <field name="name">property_fielder.job.form.inherit.photos</field>
+            <field name="model">property_fielder.job</field>
+            <field name="inherit_id" ref="property_fielder_field_service.view_field_service_job_form"/>
+            <field name="arch" type="xml">
+                <!-- Add photo count button to button box -->
+                <xpath expr="//sheet" position="inside">
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_photos" type="object" class="oe_stat_button" icon="fa-camera">
+                            <field name="photo_count" widget="statinfo" string="Photos"/>
+                        </button>
+                    </div>
+                </xpath>
+                <!-- Add Photos page to notebook -->
+                <xpath expr="//notebook/page[@name='skills']" position="after">
+                    <page string="Photos" name="photos">
+                        <field name="photo_ids" mode="kanban" context="{'default_job_id': active_id}">
+                            <kanban class="o_kanban_small_column" create="0">
+                                <field name="id"/>
+                                <field name="name"/>
+                                <field name="image"/>
+                                <field name="category"/>
+                                <field name="capture_time"/>
+                                <field name="inspector_id"/>
+                                <field name="latitude"/>
+                                <field name="longitude"/>
+                                <templates>
+                                    <t t-name="card">
+                                        <div class="o_kanban_image">
+                                            <field name="image" widget="image" options="{'preview_image': 'image', 'size': [200, 200]}"/>
+                                        </div>
+                                        <div class="oe_kanban_details">
+                                            <strong><field name="name"/></strong>
+                                            <div><field name="category" widget="badge"/></div>
+                                            <div class="text-muted"><field name="capture_time"/></div>
+                                            <div class="text-muted"><field name="inspector_id"/></div>
+                                            <div class="text-muted" t-if="record.latitude.raw_value">
+                                                <i class="fa fa-map-marker"/> GPS
+                                            </div>
+                                        </div>
+                                    </t>
+                                </templates>
+                            </kanban>
+                        </field>
+                    </page>
+                    <page string="Signatures" name="signatures">
+                        <field name="signature_ids">
+                            <list create="0" delete="0">
+                                <field name="signer_name"/>
+                                <field name="signature_type"/>
+                                <field name="signed_time"/>
+                                <field name="signature" widget="image" options="{'size': [100, 50]}"/>
+                            </list>
+                        </field>
+                    </page>
+                    <page string="Check-Ins" name="checkins">
+                        <field name="checkin_ids">
+                            <list create="0" delete="0">
+                                <field name="inspector_id"/>
+                                <field name="checkin_time"/>
+                                <field name="checkout_time"/>
+                                <field name="status" widget="badge"/>
+                                <field name="duration_minutes"/>
+                                <field name="location_lat"/>
+                                <field name="location_lng"/>
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+
