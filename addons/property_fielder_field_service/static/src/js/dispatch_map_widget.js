@@ -16,8 +16,10 @@ export class DispatchMapWidget extends Component {
         routes: { type: Array, optional: true },
         inspectors: { type: Array, optional: true },
         selectedInspectorIds: { type: Array, optional: true }, // Highlight selected inspectors
+        selectedJobIds: { type: Array, optional: true }, // Selected job IDs for visual differentiation
         hoveredJobId: { type: [Number, { value: null }], optional: true }, // Job to highlight on map
         onJobClick: { type: Function, optional: true },
+        onJobHover: { type: Function, optional: true }, // Callback when hovering a job pin on map
         onRouteClick: { type: Function, optional: true },
         dataVersion: { type: String, optional: true }, // Used to trigger re-render on data changes
     };
@@ -129,12 +131,37 @@ export class DispatchMapWidget extends Component {
                 this.renderJobs();
                 this.renderRoutes();
                 this.renderInspectorMarkers();
+                this.setupPopupClickHandler();
             });
 
         } catch (error) {
             console.error("Failed to initialize map:", error);
             this.notification.add("Failed to initialize map", { type: "danger" });
         }
+    }
+
+    /**
+     * Setup click handler for popup "Add to Route" buttons
+     * Uses event delegation on the map container
+     */
+    setupPopupClickHandler() {
+        // Use event delegation on the map container to catch popup button clicks
+        this.mapContainer.el.addEventListener('click', (e) => {
+            const btn = e.target.closest('.job-popup-select-btn');
+            if (btn && this.props.onJobClick) {
+                const jobId = parseInt(btn.dataset.jobId, 10);
+                const job = (this.props.jobs || []).find(j => j.id === jobId);
+                if (job) {
+                    this.props.onJobClick(job);
+                    // Close the popup after selection
+                    this.markers.forEach(marker => {
+                        if (marker._jobId === jobId && marker.getPopup()) {
+                            marker.getPopup().remove();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     setupClusterSource() {
@@ -241,13 +268,25 @@ export class DispatchMapWidget extends Component {
         const features = [];
         let jobIndex = 0;
 
+        // Get selected job IDs for visual differentiation
+        const selectedJobIds = this.props.selectedJobIds || [];
+
         // Add job markers with proper pin styling
         this.props.jobs.forEach(job => {
             if (!job.latitude || !job.longitude) return;
 
             jobIndex++;
+            const isSelected = selectedJobIds.includes(job.id);
+            const hasRoute = job.sequence_in_route && job.sequence_in_route > 0;
+
+            // Color logic: Always use status-based colors for better visibility
+            // Selected jobs get a highlight ring effect via CSS
             const color = this.getJobColor(job.state);
-            const sequenceNum = job.sequence_in_route || jobIndex;
+
+            // Only show sequence number if job has been routed
+            const displayContent = hasRoute
+                ? `<span class="job-pin-number">${job.sequence_in_route}</span>`
+                : `<span class="job-pin-icon">●</span>`;
 
             // Add to cluster features
             features.push({
@@ -256,7 +295,7 @@ export class DispatchMapWidget extends Component {
                     id: job.id,
                     name: job.name || job.job_number,
                     state: job.state,
-                    sequence: sequenceNum
+                    sequence: hasRoute ? job.sequence_in_route : jobIndex
                 },
                 geometry: {
                     type: 'Point',
@@ -266,10 +305,10 @@ export class DispatchMapWidget extends Component {
 
             // Create custom pin marker element - simple circle centered on coordinate
             const el = document.createElement('div');
-            el.className = 'job-pin-marker';
+            el.className = `job-pin-marker ${isSelected ? 'selected' : ''} ${hasRoute ? 'routed' : ''}`;
             el.innerHTML = `
-                <div class="job-pin" style="--pin-color: ${color};">
-                    <span class="job-pin-number">${sequenceNum}</span>
+                <div class="job-pin" data-status="${job.state}" data-selected="${isSelected}" style="--pin-color: ${color};">
+                    ${displayContent}
                 </div>
             `;
 
@@ -284,6 +323,12 @@ export class DispatchMapWidget extends Component {
 
             if (this.props.onJobClick) {
                 el.addEventListener('click', () => this.props.onJobClick(job));
+            }
+
+            // Bidirectional highlighting: hovering map pin highlights list item
+            if (this.props.onJobHover) {
+                el.addEventListener('mouseenter', () => this.props.onJobHover(job.id));
+                el.addEventListener('mouseleave', () => this.props.onJobHover(null));
             }
 
             this.markers.push(marker);
@@ -418,15 +463,21 @@ export class DispatchMapWidget extends Component {
     }
 
     getJobColor(state) {
+        // Status-based colors for map pins (high contrast, distinct)
+        // Red = Unassigned/Draft (needs attention)
+        // Orange = Scheduled (pending)
+        // Blue = Assigned/In Progress (active)
+        // Green = Completed (done)
         const colors = {
-            'draft': '#8B5CF6',      // Purple - high visibility for unscheduled jobs
-            'scheduled': '#17a2b8',   // Cyan
-            'assigned': '#ffc107',    // Yellow/Amber
-            'in_progress': '#007bff', // Blue
-            'completed': '#28a745',   // Green
-            'cancelled': '#dc3545'    // Red
+            'draft': '#EF4444',       // Red - unassigned, needs attention
+            'pending': '#F97316',     // Orange - pending
+            'scheduled': '#3B82F6',   // Blue - scheduled
+            'assigned': '#8B5CF6',    // Purple - assigned to inspector
+            'in_progress': '#0EA5E9', // Sky blue - actively being worked
+            'completed': '#22C55E',   // Green - done
+            'cancelled': '#6B7280'    // Grey - cancelled
         };
-        return colors[state] || '#8B5CF6';
+        return colors[state] || '#EF4444'; // Default to red (unassigned)
     }
 
     getRouteColor(index) {
@@ -445,23 +496,18 @@ export class DispatchMapWidget extends Component {
         }
 
         // Format the scheduled arrival and departure times (set by optimizer)
-        let scheduledStr = '';
+        let scheduledTimeStr = '';
         if (job.scheduled_arrival_time) {
             const arrival = new Date(job.scheduled_arrival_time);
-            const arrivalStr = arrival.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            const arrivalTimeStr = arrival.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-            let departureStr = '';
+            let departureTimeStr = '';
             if (job.scheduled_departure_time) {
                 const departure = new Date(job.scheduled_departure_time);
-                departureStr = ` - ${departure.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
+                departureTimeStr = ` - ${departure.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
             }
 
-            scheduledStr = `<p style="margin: 4px 0; font-size: 13px;">
-                <strong>📅 Scheduled:</strong>
-                <span style="color: #2ecc71; font-weight: 600;">
-                    ${arrivalStr}${departureStr}
-                </span>
-            </p>`;
+            scheduledTimeStr = `${arrivalTimeStr}${departureTimeStr}`;
         }
 
         // Format duration
@@ -475,16 +521,37 @@ export class DispatchMapWidget extends Component {
             durationStr = `${durationMinutes}m`;
         }
 
+        // Extract property name for compact display
+        let propertyName = job.name || job.job_number;
+        const dashIdx = propertyName.lastIndexOf(' - ');
+        if (dashIdx > 0) {
+            propertyName = propertyName.substring(dashIdx + 3).trim();
+        }
+
+        // Check if job is selected
+        const selectedJobIds = this.props.selectedJobIds || [];
+        const isSelected = selectedJobIds.includes(job.id);
+        const buttonText = isSelected ? 'Remove from Route' : 'Add to Route';
+        const buttonIcon = isSelected ? 'fa-times' : 'fa-check-square-o';
+        const buttonClass = isSelected ? 'btn-outline-danger' : 'btn-primary';
+
         return `
-            <div style="min-width: 220px;">
-                <h6 style="margin: 0 0 8px 0; font-weight: 600;">${job.name || job.job_number}</h6>
-                <p style="margin: 4px 0; font-size: 13px;"><strong>Customer:</strong> ${job.partner_id?.[1] || 'N/A'}</p>
-                <p style="margin: 4px 0; font-size: 13px;"><strong>Address:</strong> ${job.street || ''}, ${job.city || ''}</p>
-                <p style="margin: 4px 0; font-size: 13px;"><strong>⏰ Deadline:</strong> ${deadlineStr}</p>
-                ${scheduledStr}
-                <p style="margin: 4px 0; font-size: 13px;"><strong>⏱️ Duration:</strong> <span style="color: #3498db; font-weight: 600;">${durationStr}</span></p>
-                <p style="margin: 4px 0; font-size: 13px;"><strong>Status:</strong> <span style="color: ${this.getJobColor(job.state)};">${job.state}</span></p>
-                ${job.inspector_id ? `<p style="margin: 4px 0; font-size: 13px;"><strong>Inspector:</strong> ${job.inspector_id[1]}</p>` : ''}
+            <div class="job-popup-content" data-job-id="${job.id}">
+                <div class="job-popup-header">
+                    <h6>${propertyName}</h6>
+                    <span class="job-popup-status" style="background: ${this.getJobColor(job.state)};">${job.state}</span>
+                </div>
+                <div class="job-popup-body">
+                    <div class="job-popup-row"><i class="fa fa-user"></i> ${job.partner_id?.[1] || 'N/A'}</div>
+                    <div class="job-popup-row"><i class="fa fa-map-marker"></i> ${job.street || ''}, ${job.city || ''}</div>
+                    <div class="job-popup-row"><i class="fa fa-clock-o"></i> Due: ${deadlineStr}</div>
+                    ${scheduledTimeStr ? `<div class="job-popup-row job-popup-scheduled"><i class="fa fa-calendar-check-o"></i> ${scheduledTimeStr}</div>` : ''}
+                    <div class="job-popup-row"><i class="fa fa-hourglass-half"></i> ${durationStr}</div>
+                    ${job.inspector_id ? `<div class="job-popup-row"><i class="fa fa-id-badge"></i> ${job.inspector_id[1]}</div>` : ''}
+                </div>
+                <button class="btn btn-sm ${buttonClass} w-100 mt-2 job-popup-select-btn" data-job-id="${job.id}">
+                    <i class="fa ${buttonIcon}"></i> ${buttonText}
+                </button>
             </div>
         `;
     }
@@ -508,12 +575,18 @@ export class DispatchMapWidget extends Component {
         for (const inspector of selectedInspectors) {
             if (!inspector.home_latitude || !inspector.home_longitude) continue;
 
-            // Create a custom marker element for inspector home
+            // Get initials from inspector name (e.g., "John Smith" -> "JS")
+            const nameParts = (inspector.name || 'U').split(' ');
+            const initials = nameParts.length >= 2
+                ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
+                : nameParts[0].substring(0, 2).toUpperCase();
+
+            // Create a custom marker element for inspector home with avatar
             const el = document.createElement('div');
             el.className = 'inspector-home-marker';
             el.innerHTML = `
-                <div class="inspector-marker-icon">
-                    <i class="fa fa-home"></i>
+                <div class="inspector-avatar">
+                    <span class="inspector-initials">${initials}</span>
                 </div>
                 <div class="inspector-marker-label">${inspector.name.split(' ')[0]}</div>
             `;

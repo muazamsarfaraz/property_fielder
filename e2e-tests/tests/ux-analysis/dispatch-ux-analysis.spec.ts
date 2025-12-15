@@ -47,14 +47,39 @@ async function waitForOdooLoad(page: Page): Promise<void> {
 
 async function login(page: Page): Promise<void> {
   await page.goto(`${BASE_URL}/web/login`);
-  await page.fill('input[name="login"]', USERNAME);
-  await page.fill('input[name="password"]', PASSWORD);
-  await page.click('button[type="submit"]');
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(500);
+
+  // Odoo 19 shows a user selection screen first - check if we see it
+  const userButton = page.locator('button:has-text("admin")');
+  if (await userButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+    // Click on the admin user to reveal password field
+    await userButton.click();
+    await page.waitForTimeout(300);
+  }
+
+  // Now fill in the login form - try multiple selectors for email/login field
+  const loginInput = page.locator('input[name="login"], input[placeholder*="email" i], input[placeholder*="Enter your email" i]').first();
+  if (await loginInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await loginInput.fill(USERNAME);
+  }
+
+  // Fill password field
+  const passwordInput = page.locator('input[name="password"], input[type="password"]').first();
+  await passwordInput.fill(PASSWORD);
+
+  // Click login button
+  await page.getByRole('button', { name: 'Log in' }).click();
   await waitForOdooLoad(page);
+
+  // Wait for navigation to complete
+  await page.waitForURL(/\/odoo\/|\/web(?!\/login)/, { timeout: 15000 });
 }
 
 async function navigateToDispatch(page: Page): Promise<void> {
-  const homeBtn = page.locator('button[title="Home Menu"]');
+  // Odoo 19: The home/apps menu button is the first button in the nav bar (hamburger icon)
+  // It often has an empty name, so we need to find it by position in nav
+  const homeBtn = page.locator('nav button').first();
   await homeBtn.click();
   await page.waitForTimeout(500);
   await page.getByRole('menuitem', { name: 'Field Service' }).click();

@@ -42,6 +42,9 @@ export class EnhancedDispatchView extends Component {
             // Sidebar state (new docked layout)
             sidebarCollapsed: false,
             settingsExpanded: false,
+            jobsExpanded: true,      // Jobs section expanded by default
+            inspectorsExpanded: true, // Inspectors section expanded by default
+            sidebarTab: 'jobs',      // 'jobs' or 'inspectors' - tab within sidebar
 
             // Legend visibility
             legendCollapsed: false,
@@ -52,13 +55,16 @@ export class EnhancedDispatchView extends Component {
             selectedRouteId: null,
 
             // Hover state for map highlighting
-            hoveredJobId: null,
+            hoveredJobId: null, // Job hovered in list -> highlight on map
+            mapHoveredJobId: null, // Job hovered on map -> highlight in list
 
             // Search filters
             jobSearchQuery: '',
+            quickFilterOpen: false,
 
             // Optimization state
             optimizationRunning: false,
+            optimizationComplete: false, // True when routes are ready to apply
             optimizationProgress: 0,
             optimizationStatus: '', // Current status message
             optimizationElapsed: 0, // Elapsed time in seconds
@@ -138,9 +144,70 @@ export class EnhancedDispatchView extends Component {
         this.state.jobSearchQuery = '';
     }
 
-    // Handle job hover for map highlighting
-    onJobHover(jobId) {
+    // Handle job hover in list -> highlight on map
+    onJobListHover(jobId) {
         this.state.hoveredJobId = jobId;
+    }
+
+    // Handle job hover on map -> highlight in list (bidirectional)
+    onJobHover(jobId) {
+        this.state.mapHoveredJobId = jobId;
+    }
+
+    // Extract property name from job (primary display)
+    getPropertyName(job) {
+        // Job name format: "Inspection: Fire Safety Certificate - StressTest Property 5"
+        // We want: "StressTest Property 5" (the property name)
+        if (job.property_name) {
+            return job.property_name;
+        }
+        const name = job.name || job.job_number || 'Unknown';
+        // Try to extract property name after " - "
+        const dashIdx = name.lastIndexOf(' - ');
+        if (dashIdx > 0) {
+            return name.substring(dashIdx + 3).trim();
+        }
+        return name;
+    }
+
+    // Extract task type from job (secondary display)
+    getTaskType(job) {
+        // Job name format: "Inspection: Fire Safety Certificate - StressTest Property 5"
+        // We want: "Fire Safety Certificate" (the task type)
+        if (job.task_type_name) {
+            return job.task_type_name;
+        }
+        const name = job.name || '';
+        // Try to extract task type between "Inspection: " and " - "
+        const colonIdx = name.indexOf(': ');
+        const dashIdx = name.lastIndexOf(' - ');
+        if (colonIdx > 0 && dashIdx > colonIdx) {
+            return name.substring(colonIdx + 2, dashIdx).trim();
+        }
+        if (colonIdx > 0) {
+            return name.substring(colonIdx + 2).trim();
+        }
+        return 'Inspection';
+    }
+
+    /**
+     * Check if a job is overdue (deadline has passed)
+     */
+    isJobOverdue(job) {
+        if (!job.latest_end) return false;
+        const deadline = new Date(job.latest_end);
+        return deadline < new Date();
+    }
+
+    /**
+     * Get formatted address for job card display
+     */
+    getJobAddress(job) {
+        const parts = [];
+        if (job.street) parts.push(job.street);
+        if (job.city) parts.push(job.city);
+        if (job.zip) parts.push(job.zip);
+        return parts.join(', ') || 'No address';
     }
 
     updatePanelsForTab(tab) {
@@ -196,6 +263,18 @@ export class EnhancedDispatchView extends Component {
         this.state.settingsExpanded = !this.state.settingsExpanded;
     }
 
+    toggleJobsSection() {
+        this.state.jobsExpanded = !this.state.jobsExpanded;
+    }
+
+    toggleInspectorsSection() {
+        this.state.inspectorsExpanded = !this.state.inspectorsExpanded;
+    }
+
+    setSidebarTab(tab) {
+        this.state.sidebarTab = tab;
+    }
+
     // Data Loading
     async loadData(autoSelectDate = false) {
         this.state.loading = true;
@@ -204,7 +283,7 @@ export class EnhancedDispatchView extends Component {
                 this.orm.searchRead(
                     "property_fielder.job",
                     [["scheduled_date", "=", this.state.selectedDate]],
-                    ["id", "name", "job_number", "partner_id", "street", "city", "latitude", "longitude",
+                    ["id", "name", "job_number", "partner_id", "street", "city", "zip", "latitude", "longitude",
                      "state", "inspector_id", "route_id", "duration_minutes", "sequence_in_route",
                      "priority", "skill_ids", "earliest_start", "latest_end",
                      "scheduled_arrival_time", "scheduled_departure_time"]
@@ -335,14 +414,57 @@ export class EnhancedDispatchView extends Component {
         return this.state.selectedJobIds.includes(jobId);
     }
 
-    selectAllJobs() {
+    selectAllJobs(ev) {
+        if (ev) ev.preventDefault();
         console.log("[EnhancedDispatchView] selectAllJobs called, jobs:", this.state.jobs.length);
         this.state.selectedJobIds = this.state.jobs.map(j => j.id);
+        this.state.quickFilterOpen = false;
         console.log("[EnhancedDispatchView] selectedJobIds now:", this.state.selectedJobIds);
     }
 
-    clearJobSelection() {
+    clearJobSelection(ev) {
+        if (ev) ev.preventDefault();
         this.state.selectedJobIds = [];
+        this.state.quickFilterOpen = false;
+    }
+
+    // Quick filter: Select draft jobs only
+    selectDraftJobs(ev) {
+        if (ev) ev.preventDefault();
+        this.state.selectedJobIds = this.state.jobs
+            .filter(j => j.state === 'draft')
+            .map(j => j.id);
+        this.state.quickFilterOpen = false;
+    }
+
+    // Quick filter: Select scheduled jobs
+    selectScheduledJobs(ev) {
+        if (ev) ev.preventDefault();
+        this.state.selectedJobIds = this.state.jobs
+            .filter(j => j.state === 'scheduled' || j.state === 'assigned')
+            .map(j => j.id);
+        this.state.quickFilterOpen = false;
+    }
+
+    // Quick filter: Select jobs due today
+    selectDueTodayJobs(ev) {
+        if (ev) ev.preventDefault();
+        const today = this.state.selectedDate;
+        this.state.selectedJobIds = this.state.jobs
+            .filter(j => {
+                if (!j.latest_end) return false;
+                // Compare date portion only
+                const dueDate = j.latest_end.split(' ')[0];
+                return dueDate === today;
+            })
+            .map(j => j.id);
+        this.state.quickFilterOpen = false;
+    }
+
+    // Toggle quick filter dropdown
+    toggleQuickFilterDropdown(ev) {
+        if (ev) ev.stopPropagation();
+        this.state.quickFilterOpen = !this.state.quickFilterOpen;
     }
 
     toggleInspectorSelection(inspectorId) {
@@ -542,6 +664,7 @@ export class EnhancedDispatchView extends Component {
             // Complete
             this.state.optimizationProgress = 100;
             this.state.optimizationStatus = 'Optimization complete!';
+            this.state.optimizationComplete = true; // Routes are ready to apply
 
             if (result.error_message) {
                 this.notification.add("⚠️ Optimization completed with issues: " + result.error_message, { type: "warning" });
@@ -555,6 +678,7 @@ export class EnhancedDispatchView extends Component {
         } catch (error) {
             console.error("[Optimization] Failed:", error);
             this.state.optimizationStatus = 'Optimization failed';
+            this.state.optimizationComplete = false;
             this.notification.add("❌ " + this.formatErrorMessage(error, "Route optimization failed"), { type: "danger" });
         } finally {
             clearInterval(elapsedInterval);
@@ -698,6 +822,11 @@ export class EnhancedDispatchView extends Component {
 
     // Dynamic button text based on selection state
     get optimizeButtonText() {
+        // If optimization is complete and routes exist, show "View Routes"
+        if (this.state.optimizationComplete && this.state.routes.length > 0) {
+            return `View ${this.state.routes.length} Route${this.state.routes.length !== 1 ? 's' : ''}`;
+        }
+
         const jobCount = this.state.selectedJobIds.length;
         const inspectorCount = this.state.selectedInspectorIds.length;
 
@@ -705,6 +834,14 @@ export class EnhancedDispatchView extends Component {
         if (inspectorCount === 0) return "Select Inspectors";
 
         return `Optimize ${jobCount} Job${jobCount !== 1 ? 's' : ''}`;
+    }
+
+    // Button style class based on state
+    get optimizeButtonClass() {
+        if (this.state.optimizationComplete && this.state.routes.length > 0) {
+            return 'btn-success'; // Green when routes are ready
+        }
+        return 'btn-primary'; // Purple default
     }
 
     get optimizeButtonDisabled() {

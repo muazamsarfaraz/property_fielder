@@ -146,75 +146,94 @@
 }
 
 /* ========================================
-   TAB NAVIGATION - Micro-interactions
+   PROGRESS STEPPER - Non-clickable indicators
    ======================================== */
-.dispatch-tabs {
+.dispatch-stepper {
     display: flex;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 0;
     margin-left: auto;
 }
 
-.dispatch-tab {
-    padding: 0.5rem 1.25rem;
-    border: 1px solid rgba(255,255,255,0.25);
-    background: rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.85);
-    border-radius: var(--pf-radius-sm);
-    cursor: pointer;
-    transition: all var(--pf-transition);
-    transform: translateY(0);
+.stepper-step {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.8rem;
     font-weight: 500;
-    font-size: 0.875rem;
+    transition: all 0.2s ease;
 }
 
-.dispatch-tab:hover {
-    background: rgba(255,255,255,0.22);
-    color: white;
-    transform: translateY(-2px);
-    border-color: rgba(255,255,255,0.4);
-}
-
-.dispatch-tab.active {
-    background: var(--pf-primary);
-    color: white;
-    border-color: var(--pf-primary-dark);
-    box-shadow: 0 4px 12px rgba(113, 75, 103, 0.4);
-    transform: translateY(-1px);
-}
-
-.dispatch-tab.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: auto; /* Allow hover for tooltip */
-}
-
-.dispatch-tab.disabled:hover {
-    background: rgba(255,255,255,0.12);
-    transform: none;
-    border-color: rgba(255,255,255,0.25);
-}
-
-.dispatch-tab i {
-    margin-right: 0.4rem;
-    transition: transform var(--pf-transition);
-}
-
-.dispatch-tab:hover:not(.disabled) i {
-    transform: scale(1.1);
-}
-
-/* Tab prerequisite lock badge */
-.tab-prereq-badge {
-    display: inline-flex;
+.stepper-number {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.6);
+    display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 0.35rem;
-    font-size: 0.65rem;
-    opacity: 0.7;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
 }
 
-.tab-prereq-badge i {
-    margin: 0;
+.stepper-label {
+    display: none;
+}
+
+@media (min-width: 1200px) {
+    .stepper-label {
+        display: inline;
+    }
+}
+
+.stepper-connector {
+    width: 24px;
+    height: 2px;
+    background: rgba(255,255,255,0.2);
+    transition: background 0.2s ease;
+}
+
+.stepper-connector.completed {
+    background: var(--pf-success);
+}
+
+/* Active step */
+.stepper-step.active {
+    color: white;
+}
+
+.stepper-step.active .stepper-number {
+    background: var(--pf-primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(113, 75, 103, 0.4);
+}
+
+/* Completed step */
+.stepper-step.completed .stepper-number {
+    background: var(--pf-success);
+    color: white;
+}
+
+.stepper-step.completed .stepper-number::after {
+    content: '✓';
+    font-size: 0.7rem;
+}
+
+.stepper-step.completed .stepper-number span {
+    display: none;
+}
+
+/* Locked step */
+.stepper-step.locked {
+    opacity: 0.4;
+}
+
+.stepper-step.locked .stepper-number {
+    background: rgba(255,255,255,0.1);
 }
 
 /* Controls */
@@ -343,7 +362,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.25rem;
+    padding: 0.5rem 1rem;
     background: linear-gradient(135deg, var(--pf-primary) 0%, var(--pf-primary-dark) 100%);
     color: white;
     flex-shrink: 0;
@@ -352,13 +371,13 @@
 .sidebar-title {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
 }
 
 .sidebar-title i {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     opacity: 0.9;
 }
 
@@ -379,25 +398,106 @@
 .sidebar-content {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 0.75rem;
+    padding-bottom: 0; /* Footer will provide bottom padding */
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
-/* Sidebar Sections */
+/* Sidebar Tab Bar (Jobs | Inspectors) */
+.sidebar-tab-bar {
+    display: flex;
+    gap: 0;
+    background: var(--pf-gray-200);
+    border-radius: var(--pf-radius);
+    padding: 3px;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.5rem;
+    border: none;
+    background: transparent;
+    color: var(--pf-gray-600);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: calc(var(--pf-radius) - 2px);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sidebar-tab:hover {
+    color: var(--pf-gray-800);
+    background: rgba(255,255,255,0.5);
+}
+
+.sidebar-tab.active {
+    background: white;
+    color: var(--pf-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.sidebar-tab i {
+    font-size: 0.7rem;
+}
+
+.tab-badge {
+    background: var(--pf-primary);
+    color: white;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+}
+
+.sidebar-tab.active .tab-badge {
+    background: var(--pf-primary);
+}
+
+/* Sidebar Tab Content */
+.sidebar-tab-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 0; /* Allow flex shrinking */
+}
+
+.tab-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0;
+    flex-wrap: wrap;
+}
+
+.job-count-label,
+.inspector-count-label {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--pf-gray-500);
+}
+
+/* Sidebar Sections (compact) */
 .sidebar-section {
     background: var(--pf-gray-100);
-    border-radius: var(--pf-radius-md);
-    padding: 1rem;
+    border-radius: var(--pf-radius-sm);
+    padding: 0.5rem;
     border: 1px solid var(--pf-gray-300);
 }
 
 .sidebar-section.collapsible .section-header.clickable {
     cursor: pointer;
-    margin: -1rem;
-    padding: 1rem;
-    border-radius: var(--pf-radius-md);
+    margin: -0.5rem;
+    padding: 0.5rem;
+    border-radius: var(--pf-radius-sm);
     transition: background var(--pf-transition);
 }
 
@@ -409,27 +509,162 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.35rem;
 }
 
 .section-header h6 {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--pf-gray-700);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .section-header h6 i {
     color: var(--pf-primary);
-    font-size: 0.9rem;
+    font-size: 0.75rem;
 }
 
 .section-actions {
     display: flex;
     gap: 0.35rem;
+}
+
+/* Section header right side (actions + collapse icon) */
+.section-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.collapse-icon {
+    color: var(--pf-gray-500);
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+
+.section-header.clickable:hover .collapse-icon {
+    color: var(--pf-primary);
+}
+
+/* Inspector item with availability */
+.inspector-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.4rem;
+}
+
+.inspector-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.inspector-availability {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.6rem;
+}
+
+.availability-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.availability-dot.available {
+    background: var(--pf-success);
+}
+
+.availability-dot.unavailable {
+    background: var(--pf-gray-400);
+}
+
+.availability-text {
+    color: var(--pf-gray-500);
+}
+
+/* Visual grouping - different background for inspectors section */
+.inspectors-section {
+    background: rgba(113, 75, 103, 0.03);
+    border-color: rgba(113, 75, 103, 0.15);
+}
+
+/* Quick Filter Dropdown */
+.quick-filter-dropdown {
+    position: relative;
+}
+
+.quick-filter-dropdown .dropdown-toggle {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--pf-radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.quick-filter-dropdown .dropdown-toggle::after {
+    margin-left: 0.25rem;
+}
+
+.quick-filter-dropdown .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 160px;
+    padding: 0.5rem 0;
+    margin-top: 0.25rem;
+    background: white;
+    border: 1px solid var(--pf-gray-200);
+    border-radius: var(--pf-radius);
+    box-shadow: var(--pf-shadow-lg);
+    z-index: 1000;
+}
+
+.quick-filter-dropdown .dropdown-item {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    color: var(--pf-text);
+    transition: background 0.15s ease;
+}
+
+.quick-filter-dropdown .dropdown-item:hover {
+    background: var(--pf-primary-bg);
+    color: var(--pf-primary);
+}
+
+.quick-filter-dropdown .dropdown-item i {
+    width: 16px;
+    text-align: center;
+    color: var(--pf-gray-500);
+}
+
+.quick-filter-dropdown .dropdown-item:hover i {
+    color: var(--pf-primary);
+}
+
+.quick-filter-dropdown .dropdown-divider {
+    margin: 0.25rem 0;
+    border-top: 1px solid var(--pf-gray-200);
+}
+
+.quick-filter-dropdown .dropdown-item.text-danger:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.quick-filter-dropdown .dropdown-item.text-danger:hover i {
+    color: #dc2626;
 }
 
 /* Search Filter */
@@ -496,11 +731,18 @@
     margin-bottom: 0.35rem;
 }
 
-/* Sidebar Footer (sticky action button) */
+/* Sidebar Footer (STICKY action button - always visible) */
 .sidebar-footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
     margin-top: auto;
-    padding-top: 1rem;
+    padding: 1rem;
+    background: white;
     border-top: 1px solid var(--pf-gray-300);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 100;
 }
 
 .sidebar-footer .btn-primary {
@@ -574,6 +816,22 @@
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
     margin-bottom: 1rem;
+}
+
+/* Success button state (green when routes are ready) */
+.sidebar-footer .btn-success {
+    background: var(--pf-success);
+    border-color: var(--pf-success);
+    font-weight: 600;
+    padding: 0.875rem 1rem;
+    transition: all var(--pf-transition);
+}
+
+.sidebar-footer .btn-success:hover:not(:disabled) {
+    background: #1a9f4a;
+    border-color: #1a9f4a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
 .selection-card {
@@ -929,37 +1187,100 @@
     font-size: 0.7rem;
 }
 
-/* Job Item with Times - Compact Layout */
+/* Job Item - Ultra-Compact High-Density Layout */
 .job-item {
+    display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.35rem;
-    padding: 0.4rem 0.6rem;
-    margin-bottom: 0.25rem;
+    gap: 0.3rem;
+    padding: 0.25rem 0.4rem;
+    margin-bottom: 1px;
+    /* Status color strip on left border - thicker for visibility */
+    border-left: 4px solid var(--pf-gray-300);
+    transition: all 0.15s ease;
+    background: white;
+    min-height: 32px;
 }
 
-.job-item-main {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+/* Status-based left border colors for rapid scanning (matches map pin colors) */
+.job-item[data-status="draft"] { border-left-color: #EF4444; }      /* Red - unassigned */
+.job-item[data-status="pending"] { border-left-color: #F97316; }    /* Orange - pending */
+.job-item[data-status="scheduled"] { border-left-color: #3B82F6; }  /* Blue - scheduled */
+.job-item[data-status="assigned"] { border-left-color: #8B5CF6; }   /* Purple - assigned */
+.job-item[data-status="in_progress"] { border-left-color: #0EA5E9; } /* Sky blue - active */
+.job-item[data-status="completed"] { border-left-color: #22C55E; }  /* Green - done */
+.job-item[data-status="cancelled"] { border-left-color: #6B7280; }  /* Grey - cancelled */
+
+/* Overdue jobs get red border */
+.job-item[data-overdue="true"] { border-left-color: #dc3545; }
+
+.job-item-checkbox {
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.job-item-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.job-item-content {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
-.job-item-main .resource-name {
-    white-space: normal; /* Allow text wrapping for readability */
-    overflow: visible;
-    text-overflow: clip;
-    font-size: 0.8rem;
-    line-height: 1.3;
-    word-break: break-word;
+/* Primary: Property name (compact) */
+.job-property-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--pf-text);
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Address line with icon (ultra-compact) */
+.job-address {
+    font-size: 0.6rem;
+    color: var(--pf-gray-500);
+    line-height: 1.1;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.job-address::before {
+    content: '📍';
+    font-size: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Meta row: hide status badge (use left border color instead), show times inline */
+.job-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0;
+    flex-wrap: nowrap;
+}
+
+/* Hide status badge text - left border color indicates status */
+.job-item-meta .badge {
+    display: none;
 }
 
 .job-item-times {
     display: flex;
-    gap: 0.5rem;
-    font-size: 0.7rem;
+    gap: 0.25rem;
+    font-size: 0.55rem;
     flex-shrink: 0;
     color: var(--pf-gray-500);
 }
@@ -967,11 +1288,13 @@
 .job-deadline {
     color: var(--pf-warning);
     font-weight: 500;
+    font-size: 0.55rem;
 }
 
 .job-scheduled {
     color: var(--pf-success);
     font-weight: 600;
+    font-size: 0.55rem;
 }
 
 /* ========================================
@@ -1192,9 +1515,9 @@
    ======================================== */
 
 .job-pin-marker {
-    /* Simple circle marker - center anchored */
-    width: 30px;
-    height: 30px;
+    /* Larger circle marker for better visibility */
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1203,8 +1526,8 @@
 
 .job-pin {
     --pin-color: var(--pf-primary);
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1221,10 +1544,17 @@
 
 .job-pin-number {
     color: white;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 700;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1;
+}
+
+/* Icon for unrouted pins (dot instead of number) */
+.job-pin-icon {
+    color: white;
+    font-size: 12px;
     line-height: 1;
 }
 
@@ -1233,14 +1563,34 @@
     display: none;
 }
 
-/* Pin Status Colors - Purple for Draft (high visibility for dispatcher) */
-.job-pin[data-status="draft"] { --pin-color: #8B5CF6; }
-.job-pin[data-status="pending"] { --pin-color: #F39C12; }
-.job-pin[data-status="scheduled"] { --pin-color: #17a2b8; }
-.job-pin[data-status="assigned"] { --pin-color: #ffc107; }
-.job-pin[data-status="in_progress"] { --pin-color: #007bff; }
-.job-pin[data-status="completed"] { --pin-color: #28a745; }
-.job-pin[data-status="cancelled"] { --pin-color: #dc3545; }
+/* === PIN SELECTION STATES === */
+
+/* Unselected pins: Muted grey, smaller */
+.job-pin-marker:not(.selected):not(.routed) .job-pin {
+    opacity: 0.7;
+    transform: scale(0.85);
+}
+
+/* Selected pins: Bright purple with glow */
+.job-pin-marker.selected:not(.routed) .job-pin {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4),
+                0 0 0 3px rgba(139, 92, 246, 0.4);
+}
+
+/* Routed pins: Full color based on status */
+.job-pin-marker.routed .job-pin {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Pin Status Colors - only apply to routed pins */
+.job-pin-marker.routed .job-pin[data-status="draft"] { --pin-color: #8B5CF6; }
+.job-pin-marker.routed .job-pin[data-status="pending"] { --pin-color: #F39C12; }
+.job-pin-marker.routed .job-pin[data-status="scheduled"] { --pin-color: #17a2b8; }
+.job-pin-marker.routed .job-pin[data-status="assigned"] { --pin-color: #ffc107; }
+.job-pin-marker.routed .job-pin[data-status="in_progress"] { --pin-color: #007bff; }
+.job-pin-marker.routed .job-pin[data-status="completed"] { --pin-color: #28a745; }
+.job-pin-marker.routed .job-pin[data-status="cancelled"] { --pin-color: #dc3545; }
 
 /* Highlighted job marker (on hover from list) */
 .job-pin-marker.highlighted .job-pin {
@@ -1256,11 +1606,24 @@
     50% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 1), 0 0 0 12px var(--pin-color, #8B5CF6), 0 12px 30px rgba(0, 0, 0, 0.4); }
 }
 
-/* Hovered job item in list */
+/* Hovered job item in list (from list hover) */
 .job-item.hovered {
     background: linear-gradient(135deg, var(--pf-primary-bg), rgba(139, 92, 246, 0.15)) !important;
     border-color: var(--pf-primary) !important;
     box-shadow: 0 0 0 2px var(--pf-primary-light), 0 4px 12px rgba(113, 75, 103, 0.2);
+}
+
+/* Hovered job item in list (from map pin hover - bidirectional) */
+.job-item.map-hovered {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.2)) !important;
+    border-color: #3B82F6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 4px 12px rgba(59, 130, 246, 0.2);
+    animation: mapHoverPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes mapHoverPulse {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), 0 4px 12px rgba(59, 130, 246, 0.2); }
+    50% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4), 0 6px 16px rgba(59, 130, 246, 0.3); }
 }
 
 /* Cluster styling override for better visibility */
@@ -1271,70 +1634,173 @@
 }
 
 .mapboxgl-popup-close-button {
-    font-size: 18px;
-    padding: 4px 8px;
+    font-size: 16px;
+    padding: 2px 6px;
+    color: var(--pf-gray-500);
+    opacity: 1;
+    font-weight: bold;
+    background: none;
+    border: none;
+    transition: color 0.15s ease;
+}
+
+.mapboxgl-popup-close-button:hover {
+    color: var(--pf-danger);
+}
+
+/* Compact Job Popup Styling */
+.job-popup-content {
+    min-width: 200px;
+    max-width: 260px;
+}
+
+.job-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--pf-gray-200);
+}
+
+.job-popup-header h6 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--pf-primary);
+    flex: 1;
+    line-height: 1.3;
+}
+
+.job-popup-status {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 10px;
+    color: white;
+    font-weight: 500;
+    text-transform: capitalize;
+    flex-shrink: 0;
+}
+
+.job-popup-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.job-popup-row {
+    font-size: 0.75rem;
+    color: var(--pf-text);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    line-height: 1.3;
+}
+
+.job-popup-row i {
+    color: var(--pf-gray-400);
+    width: 12px;
+    text-align: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.job-popup-row.job-popup-scheduled {
+    color: #2ecc71;
+    font-weight: 500;
+}
+
+.job-popup-row.job-popup-scheduled i {
+    color: #2ecc71;
+}
+
+/* Popup Action Button */
+.job-popup-select-btn {
+    font-size: 0.75rem !important;
+    padding: 0.4rem 0.6rem !important;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.job-popup-select-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.job-popup-select-btn.btn-primary {
+    background: var(--pf-primary);
+    border-color: var(--pf-primary);
+}
+
+.job-popup-select-btn.btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.job-popup-select-btn.btn-outline-danger:hover {
+    background: #dc3545;
+    color: white;
 }
 
 /* ========================================
-   MAP LEGEND (Collapsible)
+   MAP LEGEND (Compact Icon with Hover Expand)
    ======================================== */
-.map-legend {
+.map-legend-compact {
     position: absolute;
     bottom: 100px;
     right: 20px;
-    background: var(--pf-white);
-    border-radius: var(--pf-radius-md);
-    box-shadow: var(--pf-shadow-md);
     z-index: 500;
-    min-width: 160px;
-    font-size: 0.75rem;
+}
+
+.legend-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--pf-white);
     border: 1px solid var(--pf-gray-300);
-    animation: scaleIn 0.25s ease-out;
+    box-shadow: var(--pf-shadow-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pf-gray-600);
+    font-size: 1rem;
     transition: all 0.2s ease;
 }
 
-.map-legend.collapsed {
-    min-width: 100px;
+.legend-icon-btn:hover {
+    background: var(--pf-primary);
+    color: white;
+    border-color: var(--pf-primary);
+    transform: scale(1.1);
 }
 
-.map-legend.collapsed .map-legend-header {
+.legend-popup {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+    background: var(--pf-white);
     border-radius: var(--pf-radius-md);
-    border-bottom: none;
+    box-shadow: var(--pf-shadow-lg);
+    border: 1px solid var(--pf-gray-300);
+    padding: 0.75rem;
+    min-width: 160px;
+    font-size: 0.75rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.2s ease;
+    pointer-events: none;
 }
 
-.map-legend-header {
-    padding: 0.5rem 0.75rem;
-    background: var(--pf-gray-100);
-    border-bottom: 1px solid var(--pf-gray-300);
-    font-weight: 600;
-    color: var(--pf-gray-700);
-    border-radius: var(--pf-radius-md) var(--pf-radius-md) 0 0;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    cursor: pointer;
-    -webkit-user-select: none;
-    user-select: none;
-    transition: background 0.15s ease;
-}
-
-.map-legend-header:hover {
-    background: var(--pf-gray-200);
-}
-
-.map-legend-header i.fa-info-circle {
-    color: var(--pf-primary);
-}
-
-.legend-toggle {
-    margin-left: auto;
-    font-size: 0.65rem;
-    color: var(--pf-gray-500);
-    transition: transform 0.2s ease;
-}
-
-.map-legend-body {
-    padding: 0.5rem 0.75rem;
+.map-legend-compact:hover .legend-popup {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .legend-section-title {
@@ -1491,19 +1957,18 @@
         padding: 0.5rem;
     }
 
-    .dispatch-tabs {
+    .dispatch-stepper {
         order: 3;
         width: 100%;
         justify-content: center;
     }
 
-    .dispatch-tab {
-        padding: 0.4rem 0.75rem;
-        font-size: 0.8rem;
+    .stepper-label {
+        display: none !important;
     }
 
-    .dispatch-tab span {
-        display: none;
+    .stepper-connector {
+        width: 16px;
     }
 
     .floating-panel {
@@ -1522,6 +1987,9 @@
     align-items: center;
     cursor: pointer;
     animation: markerPulse 2s ease-in-out infinite;
+    /* Ensure markers don't overlap map controls */
+    z-index: 1 !important;
+    pointer-events: auto;
 }
 
 @keyframes markerPulse {
@@ -1529,6 +1997,7 @@
     50% { transform: scale(1.1); }
 }
 
+/* Legacy icon style (kept for backwards compatibility) */
 .inspector-marker-icon {
     width: 36px;
     height: 36px;
@@ -1546,6 +2015,32 @@
 .inspector-marker-icon:hover {
     transform: scale(1.15);
     box-shadow: 0 6px 16px rgba(113, 75, 103, 0.5);
+}
+
+/* New avatar style with initials */
+.inspector-avatar {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    border: 3px solid white;
+    transition: all 0.2s ease;
+}
+
+.inspector-avatar:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+}
+
+.inspector-initials {
+    letter-spacing: 1px;
 }
 
 .inspector-marker-label {
