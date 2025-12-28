@@ -9,12 +9,29 @@
             <field name="view_mode">kanban,list,form</field>
             <field name="context">{}</field>
             <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create your first property
-                </p>
-                <p>
-                    Manage your property portfolio with FLAGE+ compliance tracking.
-                </p>
+                <div class="o_view_nocontent_empty_folder" style="text-align: center; padding: 40px;">
+                    <p style="font-size: 64px; margin-bottom: 20px;">🏠</p>
+                    <h3 style="margin-bottom: 16px; color: #714B67;">No Properties Yet</h3>
+                    <p style="color: #6c757d; max-width: 500px; margin: 0 auto 24px;">
+                        Start building your property portfolio. Add properties to track FLAGE+ compliance
+                        (Fire, Legionella, Asbestos, Gas, Electrical) and schedule inspections.
+                    </p>
+                    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn btn-primary" name="new" type="object" style="padding: 10px 24px;">
+                            <i class="fa fa-plus me-2"/>Add Your First Property
+                        </button>
+                    </div>
+                    <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; max-width: 400px; margin: 24px auto 0; text-align: left;">
+                        <h6 style="margin-bottom: 8px;"><i class="fa fa-shield me-2"/>FLAGE+ Compliance</h6>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #6c757d;">
+                            <li><strong>F</strong>ire Safety Certificates</li>
+                            <li><strong>L</strong>egionella Risk Assessments</li>
+                            <li><strong>A</strong>sbestos Surveys</li>
+                            <li><strong>G</strong>as Safety Records</li>
+                            <li><strong>E</strong>lectrical Installation Certificates</li>
+                        </ul>
+                    </div>
+                </div>
             </field>
         </record>
 
@@ -36,6 +53,26 @@
             <field name="name">Inspections</field>
             <field name="res_model">property_fielder.property.inspection</field>
             <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <div class="o_view_nocontent_empty_folder" style="text-align: center; padding: 40px;">
+                    <p style="font-size: 64px; margin-bottom: 20px;">🔍</p>
+                    <h3 style="margin-bottom: 16px; color: #714B67;">No Inspections Scheduled</h3>
+                    <p style="color: #6c757d; max-width: 500px; margin: 0 auto 24px;">
+                        Inspections are scheduled visits to verify property compliance with FLAGE+ requirements.
+                        Create inspections from properties or directly schedule them here.
+                    </p>
+                    <div style="background: #fff3cd; border-radius: 8px; padding: 16px; max-width: 400px; margin: 0 auto; border: 1px solid #ffc107;">
+                        <i class="fa fa-calendar-check fa-2x text-warning" style="margin-bottom: 8px;"/>
+                        <div><strong>Inspection Workflow</strong></div>
+                        <div style="font-size: 13px; color: #856404; text-align: left; margin-top: 8px;">
+                            <div>1. <strong>Schedule</strong> - Set date and assign inspector</div>
+                            <div>2. <strong>Inspect</strong> - Complete on-site inspection</div>
+                            <div>3. <strong>Report</strong> - Document results</div>
+                            <div>4. <strong>Certify</strong> - Issue or renew certificate</div>
+                        </div>
+                    </div>
+                </div>
+            </field>
         </record>
 
         <!-- Compliance Dashboard Action -->
@@ -45,12 +82,36 @@
             <field name="view_mode">kanban,list,form</field>
             <field name="context">{'search_default_non_compliant': 1, 'search_default_expired': 1, 'search_default_expiring_soon': 1}</field>
             <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    All properties are compliant!
-                </p>
-                <p>
-                    Monitor FLAGE+ compliance status across your property portfolio.
-                </p>
+                <div class="o_view_nocontent_empty_folder" style="text-align: center; padding: 40px;">
+                    <p style="font-size: 64px; margin-bottom: 20px;">✅</p>
+                    <h3 style="margin-bottom: 16px; color: #28a745;">All Properties Are Compliant!</h3>
+                    <p style="color: #6c757d; max-width: 500px; margin: 0 auto 24px;">
+                        Excellent! All your properties have valid FLAGE+ certifications.
+                        Keep monitoring to stay ahead of upcoming expiry dates.
+                    </p>
+                    <div style="background: #d4edda; border-radius: 8px; padding: 16px; max-width: 400px; margin: 0 auto; display: inline-flex; gap: 24px;">
+                        <div style="text-align: center;">
+                            <i class="fa fa-fire fa-2x" style="color: #28a745;"/>
+                            <div style="font-size: 11px; color: #155724; margin-top: 4px;">Fire</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i class="fa fa-tint fa-2x" style="color: #28a745;"/>
+                            <div style="font-size: 11px; color: #155724; margin-top: 4px;">Legionella</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i class="fa fa-warning fa-2x" style="color: #28a745;"/>
+                            <div style="font-size: 11px; color: #155724; margin-top: 4px;">Asbestos</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i class="fa fa-fire-extinguisher fa-2x" style="color: #28a745;"/>
+                            <div style="font-size: 11px; color: #155724; margin-top: 4px;">Gas</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <i class="fa fa-bolt fa-2x" style="color: #28a745;"/>
+                            <div style="font-size: 11px; color: #155724; margin-top: 4px;">Electrical</div>
+                        </div>
+                    </div>
+                </div>
             </field>
         </record>
 

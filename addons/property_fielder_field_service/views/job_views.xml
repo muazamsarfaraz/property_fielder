@@ -174,13 +174,29 @@
         <field name="view_mode">kanban,list,form,calendar</field>
         <field name="context">{}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create your first job
-            </p>
-            <p>
-                Jobs represent work to be done at customer locations.
-                Schedule jobs, assign inspectors, and optimize routes.
-            </p>
+            <div class="o_view_nocontent_empty_folder" style="text-align: center; padding: 40px;">
+                <p style="font-size: 64px; margin-bottom: 20px;">📋</p>
+                <h3 style="margin-bottom: 16px; color: #714B67;">No Inspection Jobs Yet</h3>
+                <p style="color: #6c757d; max-width: 500px; margin: 0 auto 24px;">
+                    Jobs are automatically created from properties with expiring certifications,
+                    or you can create them manually. Each job represents an inspection to be performed.
+                </p>
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; max-width: 450px; margin: 0 auto; text-align: left;">
+                    <h5 style="margin-bottom: 12px;"><i class="fa fa-rocket me-2"/>Create Jobs From:</h5>
+                    <div style="display: flex; gap: 16px; margin-bottom: 12px;">
+                        <div style="flex: 1; padding: 12px; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                            <i class="fa fa-building fa-lg text-primary" style="margin-bottom: 8px; display: block;"/>
+                            <strong>Properties</strong>
+                            <div style="font-size: 12px; color: #6c757d;">Select properties with expiring certs</div>
+                        </div>
+                        <div style="flex: 1; padding: 12px; background: white; border-radius: 6px; border: 1px solid #dee2e6;">
+                            <i class="fa fa-calendar-check fa-lg text-success" style="margin-bottom: 8px; display: block;"/>
+                            <strong>Inspections</strong>
+                            <div style="font-size: 12px; color: #6c757d;">Schedule from pending inspections</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </field>
     </record>
 

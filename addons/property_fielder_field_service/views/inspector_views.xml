@@ -146,13 +146,23 @@
         <field name="view_mode">kanban,list,form</field>
         <field name="context">{'search_default_active': 1}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Add your first inspector
-            </p>
-            <p>
-                Inspectors are your field service technicians.
-                Assign skills, set availability, and manage their schedules.
-            </p>
+            <div class="o_view_nocontent_empty_folder" style="text-align: center; padding: 40px;">
+                <p style="font-size: 64px; margin-bottom: 20px;">👷</p>
+                <h3 style="margin-bottom: 16px; color: #714B67;">No Inspectors Yet</h3>
+                <p style="color: #6c757d; max-width: 500px; margin: 0 auto 24px;">
+                    Add your field service inspectors to start scheduling jobs.
+                    Each inspector can be assigned specific skills and have their schedules managed.
+                </p>
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; max-width: 400px; margin: 0 auto; text-align: left;">
+                    <h6 style="margin-bottom: 8px;"><i class="fa fa-id-card me-2"/>Inspector Profile Includes:</h6>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #6c757d;">
+                        <li><strong>Skills</strong> - Certification types they can inspect</li>
+                        <li><strong>Availability</strong> - Shift times and days</li>
+                        <li><strong>Home Location</strong> - For route optimization</li>
+                        <li><strong>Max Jobs/Day</strong> - Workload capacity</li>
+                    </ul>
+                </div>
+            </div>
         </field>
     </record>
 </odoo>

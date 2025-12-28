@@ -52,6 +52,18 @@ npm run test:regression  # Full regression suite
 npm run test:critical    # Critical path tests only
 ```
 
+### UX Analysis Tests
+```bash
+# UI Link Spider - crawls all menus and takes screenshots
+npx playwright test --grep @link-spider
+
+# With Gemini AI analysis
+ENABLE_GEMINI_ANALYSIS=true GEMINI_API_KEY=your-key npx playwright test --grep @link-spider
+
+# Dispatch UX Analysis
+npx playwright test --grep @ux-analysis
+```
+
 ## Test Structure
 
 ```
@@ -70,6 +82,9 @@ e2e-tests/
 │   ├── property-management/
 │   ├── field-service/
 │   ├── dispatch/
+│   ├── ux-analysis/    # UX analysis tests
+│   │   ├── dispatch-ux-analysis.spec.ts  # Dispatch UX with Gemini
+│   │   └── link-spider.spec.ts           # UI link crawler
 │   └── smoke.spec.ts   # Quick smoke tests
 ├── playwright.config.ts
 └── global.setup.ts     # Authentication setup
@@ -82,6 +97,8 @@ Use tags to filter tests:
 - `@regression` - Full regression suite
 - `@critical` - Critical business flows
 - `@slow` - Long-running tests
+- `@link-spider` - UI link crawler (crawls all menus)
+- `@ux-analysis` - UX analysis with Gemini AI
 
 ## Adding New Tests
 
