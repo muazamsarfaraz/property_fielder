@@ -1,0 +1,168 @@
+/**
+ * Property Management - Collapsible Chatter Styles
+ * 
+ * Makes the chatter panel hidden by default with a toggle button.
+ * Styled for property management context.
+ */
+
+/* ===========================================
+   CSS Variables for Property Management
+   =========================================== */
+:root {
+    --pm-primary: #714B67;
+    --pm-primary-light: #8a6480;
+    --pm-secondary: #017e84;
+    --pm-success: #28a745;
+    --pm-warning: #ffc107;
+    --pm-danger: #dc3545;
+    --pm-gray-100: #f8f9fa;
+    --pm-gray-200: #e9ecef;
+    --pm-gray-300: #dee2e6;
+    --pm-gray-600: #6c757d;
+    --pm-chatter-width: 380px;
+    --pm-chatter-collapsed-width: 48px;
+}
+
+/* ===========================================
+   Chatter Container - Collapsible Layout
+   =========================================== */
+.o_form_view .o_form_renderer > .oe_chatter {
+    position: relative;
+    transition: all 0.3s ease;
+    background: var(--pm-gray-100);
+    border-left: 1px solid var(--pm-gray-300);
+    overflow: hidden;
+}
+
+/* Collapsed state - default */
+.o_form_view .o_form_renderer > .oe_chatter.pm-chatter-collapsed {
+    flex: 0 0 var(--pm-chatter-collapsed-width) !important;
+    min-width: var(--pm-chatter-collapsed-width) !important;
+    max-width: var(--pm-chatter-collapsed-width) !important;
+}
+
+/* Expanded state */
+.o_form_view .o_form_renderer > .oe_chatter.pm-chatter-expanded {
+    flex: 0 0 var(--pm-chatter-width) !important;
+    min-width: var(--pm-chatter-width) !important;
+    max-width: var(--pm-chatter-width) !important;
+}
+
+/* Hide content when collapsed */
+.oe_chatter.pm-chatter-collapsed > .o_field_widget {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+}
+
+.oe_chatter.pm-chatter-expanded > .o_field_widget {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease 0.1s;
+}
+
+/* ===========================================
+   Toggle Button
+   =========================================== */
+.pm-chatter-toggle {
+    position: absolute;
+    top: 12px;
+    left: 8px;
+    z-index: 100;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background: var(--pm-primary);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pm-chatter-toggle:hover {
+    background: var(--pm-primary-light);
+    transform: scale(1.05);
+}
+
+.pm-chatter-toggle svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease;
+}
+
+/* Rotate icon when expanded */
+.pm-chatter-expanded .pm-chatter-toggle svg {
+    transform: rotate(180deg);
+}
+
+/* ===========================================
+   Chatter Header - Property Management Style
+   =========================================== */
+.oe_chatter.pm-chatter-expanded::before {
+    content: "Property Activity";
+    display: block;
+    padding: 12px 16px 12px 52px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--pm-primary);
+    border-bottom: 1px solid var(--pm-gray-300);
+    background: white;
+}
+
+/* ===========================================
+   Chatter Sections Styling
+   =========================================== */
+.oe_chatter .o_field_widget {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--pm-gray-200);
+}
+
+.oe_chatter .o_field_widget:last-child {
+    border-bottom: none;
+}
+
+/* Style the section headers */
+.oe_chatter .o_field_widget .o_notebook_headers,
+.oe_chatter .o_field_widget > label {
+    font-weight: 600;
+    color: var(--pm-gray-600);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+/* Activity icons */
+.oe_chatter .o_activity_btn,
+.oe_chatter .o_followers_btn {
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+/* ===========================================
+   Mobile Responsive
+   =========================================== */
+@media (max-width: 992px) {
+    .o_form_view .o_form_renderer > .oe_chatter {
+        border-left: none;
+        border-top: 1px solid var(--pm-gray-300);
+    }
+    
+    .o_form_view .o_form_renderer > .oe_chatter.pm-chatter-collapsed {
+        flex: 0 0 48px !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: 48px;
+    }
+    
+    .o_form_view .o_form_renderer > .oe_chatter.pm-chatter-expanded {
+        flex: 0 0 auto !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+

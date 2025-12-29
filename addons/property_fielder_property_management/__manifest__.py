@@ -66,6 +66,12 @@ Features:
         'reports/compliance_report.xml',
         'reports/certificate_report.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'property_fielder_property_management/static/src/css/property_chatter.css',
+            'property_fielder_property_management/static/src/js/property_chatter.js',
+        ],
+    },
     'demo': [],
     'installable': True,
     'application': True,

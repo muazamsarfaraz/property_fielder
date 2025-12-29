@@ -2,6 +2,51 @@
 /* Design System: Property Fielder Dispatch */
 
 /* ========================================
+   FIX: ODOO FORM VIEW LAYOUT (Chatter vs Sheet)
+   This fixes an issue where the form sheet was being
+   squashed to 34px while the chatter took full width.
+   Using high specificity and !important to override Odoo core styles.
+   ======================================== */
+.o_action_manager .o_form_view .o_form_renderer {
+    display: flex !important;
+    flex-direction: row !important;
+}
+
+.o_action_manager .o_form_view .o_form_renderer > .o_form_sheet_bg {
+    flex: 1 1 auto !important;
+    min-width: 600px !important;
+    overflow: auto !important;
+}
+
+.o_action_manager .o_form_view .o_form_renderer > .oe_chatter {
+    flex: 0 0 350px !important;
+    max-width: 400px !important;
+    min-width: 300px !important;
+    border-left: 1px solid var(--pf-gray-300, #dee2e6);
+}
+
+/* Responsive: Stack chatter below sheet on narrow screens */
+@media (max-width: 992px) {
+    .o_action_manager .o_form_view .o_form_renderer {
+        flex-direction: column !important;
+    }
+
+    .o_action_manager .o_form_view .o_form_renderer > .o_form_sheet_bg {
+        min-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .o_action_manager .o_form_view .o_form_renderer > .oe_chatter {
+        flex: 0 0 auto !important;
+        max-width: none !important;
+        min-width: auto !important;
+        width: 100% !important;
+        border-left: none;
+        border-top: 1px solid var(--pf-gray-300, #dee2e6);
+    }
+}
+
+/* ========================================
    CSS CUSTOM PROPERTIES (Design Tokens)
    ======================================== */
 :root {
@@ -3223,13 +3268,24 @@
     50% { opacity: 0.7; transform: scale(1.1); }
 }
 
-/* Time info styling */
+/* Time info styling with clock icon (GEMINI UX: Add icon for clarity) */
 .job-time-info {
-    font-size: 0.55rem;
-    color: var(--pf-gray-500);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.65rem;
+    color: var(--pf-gray-600);
     font-weight: 500;
     white-space: nowrap;
     margin-left: auto;
+    padding: 0.1rem 0.3rem;
+    background: var(--pf-gray-100);
+    border-radius: 4px;
+}
+
+.job-time-info i.fa-clock-o {
+    font-size: 0.55rem;
+    color: var(--pf-gray-500);
 }
 
 /* === ULTRA-COMPACT MODE ENHANCEMENTS === */

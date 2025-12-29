@@ -219,15 +219,14 @@
                                                         <i t-if="job.state === 'completed'" class="fa fa-check"/>
                                                         <i t-if="job.state === 'cancelled'" class="fa fa-ban"/>
                                                     </span>
-                                                    <!-- Text label only in non-compact mode -->
-                                                    <span class="job-status-text" t-if="!state.compactViewMode" t-esc="getStatusLabel(job.state)"/>
+                                                    <!-- GEMINI UX: Removed redundant status text - colored border already indicates status -->
                                                     <!-- Overdue indicator with icon (replaces "LATE" text) -->
                                                     <span class="job-overdue-icon" t-if="isJobOverdue(job)" title="Overdue - Past deadline">
                                                         <i class="fa fa-exclamation-triangle"/>
                                                     </span>
-                                                    <!-- Time info (condensed in compact mode) -->
+                                                    <!-- Time info with clock icon (GEMINI UX: Add icon for clarity) -->
                                                     <span class="job-time-info" t-if="job.latest_end" t-att-title="'Deadline: ' + job.latest_end">
-                                                        <t t-esc="formatTime(job.latest_end)"/>
+                                                        <i class="fa fa-clock-o"/> <t t-esc="formatTime(job.latest_end)"/>
                                                     </span>
                                                 </div>
                                             </div>
