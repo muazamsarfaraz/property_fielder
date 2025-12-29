@@ -90,16 +90,32 @@ patch(FormRenderer.prototype, {
 });
 
 // Also initialize on document ready for initial load
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initCollapsibleChatter, 500);
+    });
+} else {
     setTimeout(initCollapsibleChatter, 500);
-});
+}
 
 // Re-initialize when URL changes (SPA navigation)
 let lastUrl = location.href;
-new MutationObserver(() => {
-    if (location.href !== lastUrl) {
-        lastUrl = location.href;
-        setTimeout(initCollapsibleChatter, 300);
+function setupUrlObserver() {
+    const target = document.body || document.documentElement;
+    if (target) {
+        new MutationObserver(() => {
+            if (location.href !== lastUrl) {
+                lastUrl = location.href;
+                setTimeout(initCollapsibleChatter, 300);
+            }
+        }).observe(target, { childList: true, subtree: true });
     }
-}).observe(document.body, { childList: true, subtree: true });
+}
+
+// Setup observer when DOM is ready
+if (document.body) {
+    setupUrlObserver();
+} else {
+    document.addEventListener('DOMContentLoaded', setupUrlObserver);
+}
 

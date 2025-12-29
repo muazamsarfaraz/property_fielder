@@ -26,6 +26,23 @@ class Property(models.Model):
         default=lambda self: _('New'),
         tracking=True
     )
+
+    # Property Images
+    image = fields.Image(string='Main Image', max_width=1920, max_height=1920)
+    image_medium = fields.Image(
+        string='Medium Image',
+        max_width=512,
+        max_height=512,
+        related='image',
+        store=True
+    )
+    image_small = fields.Image(
+        string='Thumbnail',
+        max_width=128,
+        max_height=128,
+        related='image',
+        store=True
+    )
     
     # Address
     street = fields.Char(string='Street', tracking=True)
@@ -80,6 +97,14 @@ class Property(models.Model):
         'property_id',
         string='Inspections'
     )
+
+    # Photo Gallery
+    image_ids = fields.One2many(
+        'property_fielder.property.image',
+        'property_id',
+        string='Photo Gallery'
+    )
+    image_count = fields.Integer(compute='_compute_image_count', string='Photos')
     
     # Compliance Status
     compliance_status = fields.Selection([
@@ -187,6 +212,11 @@ class Property(models.Model):
                 property.certification_ids.filtered(lambda c: c.status == 'expired')
             )
 
+    @api.depends('image_ids')
+    def _compute_image_count(self):
+        for property in self:
+            property.image_count = len(property.image_ids)
+
     @api.model
     def reverse_geocode(self, lat, lng, use_cache=True):
         """Reverse geocode coordinates to get address.
@@ -275,3 +305,14 @@ class Property(models.Model):
             return {'type': 'ir.actions.client', 'tag': 'reload'}
         return False
 
+    def action_view_images(self):
+        """Action to view property images in a separate view"""
+        self.ensure_one()
+        return {
+            'name': _('Property Photos'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'property_fielder.property.image',
+            'view_mode': 'kanban,list,form',
+            'domain': [('property_id', '=', self.id)],
+            'context': {'default_property_id': self.id},
+        }

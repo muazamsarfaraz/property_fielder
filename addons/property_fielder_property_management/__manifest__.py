@@ -58,6 +58,7 @@ Features:
         # Views (order matters - actions must be defined before they are referenced)
         'views/certification_views.xml',
         'views/inspection_views.xml',
+        'views/property_image_views.xml',
         'views/property_views.xml',
         'views/compliance_dashboard_views.xml',
         'views/menu_views.xml',
