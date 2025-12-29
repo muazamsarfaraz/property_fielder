@@ -19,6 +19,12 @@
                   parent="menu_property_management_properties"
                   action="action_property"
                   sequence="10"/>
+
+        <menuitem id="menu_property_images"
+                  name="Photo Gallery"
+                  parent="menu_property_management_properties"
+                  action="action_property_images"
+                  sequence="20"/>
         
         <!-- Certifications Menu -->
         <menuitem id="menu_property_management_certifications"

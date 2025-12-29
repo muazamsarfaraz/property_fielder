@@ -47,6 +47,7 @@ Features:
         'data/certification_type_data.xml',
         'data/compliance_requirement_data.xml',
         'data/sequence_data.xml',
+        'data/cron_data.xml',
 
         # Wizards
         'wizard/certification_type_wizard_views.xml',
@@ -59,6 +60,7 @@ Features:
         'views/certification_views.xml',
         'views/inspection_views.xml',
         'views/property_image_views.xml',
+        'views/property_document_views.xml',
         'views/property_views.xml',
         'views/compliance_dashboard_views.xml',
         'views/menu_views.xml',
@@ -70,7 +72,11 @@ Features:
     'assets': {
         'web.assets_backend': [
             'property_fielder_property_management/static/src/css/property_chatter.css',
+            'property_fielder_property_management/static/src/css/photo_gallery.css',
+            'property_fielder_property_management/static/src/css/property_map.css',
             'property_fielder_property_management/static/src/js/property_chatter.js',
+            'property_fielder_property_management/static/src/js/property_map_widget.js',
+            'property_fielder_property_management/static/src/xml/property_map_widget.xml',
         ],
     },
     'demo': [],

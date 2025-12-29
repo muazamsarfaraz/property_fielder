@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="property_fielder_property_management.PropertyMapWidget">
+        <div class="property-map-widget-container">
+            <!-- Loading state -->
+            <t t-if="state.loading">
+                <div class="property-map-loading">
+                    <i class="fa fa-spinner fa-spin fa-2x"></i>
+                    <span>Loading map...</span>
+                </div>
+            </t>
+            
+            <!-- Error state / No coordinates -->
+            <t t-elif="state.error or !hasCoordinates">
+                <div class="property-map-empty">
+                    <i class="fa fa-map-marker fa-3x text-muted"></i>
+                    <p class="mt-2 mb-0 text-muted">
+                        <t t-if="!hasCoordinates">
+                            No GPS coordinates available
+                        </t>
+                        <t t-else="">
+                            <t t-esc="state.error"/>
+                        </t>
+                    </p>
+                    <small class="text-muted">Enter latitude and longitude to show property on map</small>
+                </div>
+            </t>
+            
+            <!-- Map container -->
+            <div t-ref="mapContainer" 
+                 class="property-map-container"
+                 t-att-style="hasCoordinates and !state.loading ? 'display: block;' : 'display: none;'"/>
+            
+            <!-- Map controls overlay -->
+            <t t-if="hasCoordinates and !state.loading and !state.error">
+                <div class="property-map-controls">
+                    <button type="button" 
+                            class="btn btn-sm btn-light" 
+                            title="Open in Google Maps"
+                            t-on-click="onOpenInMaps">
+                        <i class="fa fa-external-link"></i>
+                    </button>
+                    <button type="button" 
+                            class="btn btn-sm btn-light" 
+                            title="Center on property"
+                            t-on-click="onCenterMap">
+                        <i class="fa fa-crosshairs"></i>
+                    </button>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
+

@@ -173,3 +173,110 @@ class PropertyCertification(models.Model):
     def action_cancel(self):
         self.write({'status': 'cancelled'})
 
+    # ==================== Scheduled Actions (Cron) ====================
+
+    @api.model
+    def _cron_update_certification_status(self):
+        """Daily cron job to update certification statuses.
+
+        This method:
+        1. Recomputes status for all certifications
+        2. Triggers property FLAGE+ status recomputation
+        3. Logs summary of status changes
+        """
+        _logger = __import__('logging').getLogger(__name__)
+        _logger.info("Starting daily certification status update...")
+
+        # Get all non-cancelled certifications
+        certifications = self.search([('status', '!=', 'cancelled')])
+
+        # Track changes
+        newly_expired = self.env['property_fielder.property.certification']
+        newly_expiring = self.env['property_fielder.property.certification']
+
+        today = fields.Date.today()
+
+        for cert in certifications:
+            old_status = cert.status
+
+            # Force recompute status
+            cert._compute_status()
+            cert._compute_days_until_expiry()
+
+            # Track status transitions
+            if old_status != 'expired' and cert.status == 'expired':
+                newly_expired |= cert
+            elif old_status == 'valid' and cert.status == 'expiring_soon':
+                newly_expiring |= cert
+
+        # Force recompute on affected properties
+        affected_properties = (newly_expired | newly_expiring).mapped('property_id')
+        if affected_properties:
+            affected_properties._compute_flage_status()
+            affected_properties._compute_compliance_status()
+
+        _logger.info(
+            f"Certification status update complete: "
+            f"{len(newly_expired)} newly expired, "
+            f"{len(newly_expiring)} newly expiring soon"
+        )
+
+        # Create activities for newly expiring certificates
+        for cert in newly_expiring:
+            cert.activity_schedule(
+                'mail.mail_activity_data_warning',
+                date_deadline=cert.expiry_date,
+                summary=f'{cert.certification_type_id.name} expiring soon',
+                note=f'Certificate {cert.name} for {cert.property_id.name} '
+                     f'will expire on {cert.expiry_date}. Please schedule renewal.'
+            )
+
+        # Create activities for expired certificates
+        for cert in newly_expired:
+            cert.activity_schedule(
+                'mail.mail_activity_data_todo',
+                summary=f'{cert.certification_type_id.name} has EXPIRED',
+                note=f'URGENT: Certificate {cert.name} for {cert.property_id.name} '
+                     f'expired on {cert.expiry_date}. Immediate renewal required.'
+            )
+
+        return True
+
+    @api.model
+    def _cron_send_expiry_reminders(self):
+        """Weekly cron job to send expiry reminder emails.
+
+        Sends reminders for certificates expiring in:
+        - 14 days (urgent reminder)
+        - 30 days (advance notice)
+        - 60 days (early warning)
+        """
+        _logger = __import__('logging').getLogger(__name__)
+        _logger.info("Sending certification expiry reminders...")
+
+        today = fields.Date.today()
+        reminder_periods = [14, 30, 60]  # days before expiry
+
+        for days in reminder_periods:
+            target_date = today + __import__('datetime').timedelta(days=days)
+
+            certs_expiring = self.search([
+                ('status', 'in', ['valid', 'expiring_soon']),
+                ('expiry_date', '=', target_date)
+            ])
+
+            for cert in certs_expiring:
+                if cert.property_id.partner_id and cert.property_id.partner_id.email:
+                    # Create activity for property manager
+                    cert.activity_schedule(
+                        'mail.mail_activity_data_warning',
+                        date_deadline=today,
+                        summary=f'{days} day reminder: {cert.certification_type_id.name}',
+                        note=f'Certificate {cert.name} for {cert.property_id.name} '
+                             f'expires in {days} days ({cert.expiry_date}).'
+                    )
+
+            _logger.info(f"  {len(certs_expiring)} certificates expiring in {days} days")
+
+        return True
+

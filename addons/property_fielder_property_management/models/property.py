@@ -55,7 +55,48 @@ class Property(models.Model):
     # GPS Coordinates
     latitude = fields.Float(string='Latitude', digits=(10, 7))
     longitude = fields.Float(string='Longitude', digits=(10, 7))
-    
+
+    # Block/Unit Hierarchy
+    parent_id = fields.Many2one(
+        'property_fielder.property',
+        string='Parent Property/Block',
+        ondelete='restrict',
+        help='Parent building or block that this unit belongs to',
+        index=True
+    )
+    child_ids = fields.One2many(
+        'property_fielder.property',
+        'parent_id',
+        string='Units/Flats'
+    )
+    is_block = fields.Boolean(
+        string='Is Block/Building',
+        compute='_compute_hierarchy_info',
+        store=True,
+        help='True if this property has child units'
+    )
+    unit_count = fields.Integer(
+        string='Number of Units',
+        compute='_compute_hierarchy_info',
+        store=True
+    )
+    unit_number = fields.Char(
+        string='Unit/Flat Number',
+        help='Unit or flat number within the parent block (e.g., "Flat 2A", "Unit 101")'
+    )
+    floor_level = fields.Integer(
+        string='Floor Level',
+        help='Floor number (0 = Ground, -1 = Basement, 1 = First floor, etc.)'
+    )
+
+    # UK Property Identification
+    uprn = fields.Char(
+        string='UPRN',
+        help='Unique Property Reference Number - 12 digit UK property identifier',
+        tracking=True,
+        copy=False
+    )
+
     # Property Details
     property_type = fields.Selection([
         ('house', 'House'),
@@ -65,11 +106,100 @@ class Property(models.Model):
         ('commercial', 'Commercial'),
         ('other', 'Other')
     ], string='Property Type', required=True, default='flat', tracking=True)
-    
+
     bedrooms = fields.Integer(string='Bedrooms', default=1)
     bathrooms = fields.Integer(string='Bathrooms', default=1)
+    reception_rooms = fields.Integer(string='Reception Rooms', default=1)
     floor_area = fields.Float(string='Floor Area (sqm)')
     year_built = fields.Integer(string='Year Built')
+
+    # Tenure & Ownership Details
+    tenure = fields.Selection([
+        ('freehold', 'Freehold'),
+        ('leasehold', 'Leasehold'),
+        ('share_of_freehold', 'Share of Freehold'),
+        ('commonhold', 'Commonhold'),
+        ('rental', 'Rental Only')
+    ], string='Tenure', tracking=True)
+
+    council_tax_band = fields.Selection([
+        ('a', 'Band A'),
+        ('b', 'Band B'),
+        ('c', 'Band C'),
+        ('d', 'Band D'),
+        ('e', 'Band E'),
+        ('f', 'Band F'),
+        ('g', 'Band G'),
+        ('h', 'Band H')
+    ], string='Council Tax Band')
+    council_tax_account = fields.Char(string='Council Tax Account')
+
+    furnishing_state = fields.Selection([
+        ('unfurnished', 'Unfurnished'),
+        ('part_furnished', 'Part Furnished'),
+        ('furnished', 'Furnished')
+    ], string='Furnishing State', default='unfurnished')
+
+    # EPC (Energy Performance Certificate)
+    epc_rating = fields.Selection([
+        ('a', 'A (92-100)'),
+        ('b', 'B (81-91)'),
+        ('c', 'C (69-80)'),
+        ('d', 'D (55-68)'),
+        ('e', 'E (39-54)'),
+        ('f', 'F (21-38)'),
+        ('g', 'G (1-20)')
+    ], string='EPC Rating', tracking=True)
+    epc_score = fields.Integer(
+        string='EPC Score',
+        help='Energy efficiency score from 1 to 100'
+    )
+    epc_certificate_number = fields.Char(string='EPC Certificate Number')
+    epc_valid_until = fields.Date(string='EPC Valid Until', tracking=True)
+    epc_exempt = fields.Boolean(string='EPC Exempt', default=False)
+    epc_exempt_reason = fields.Text(string='EPC Exemption Reason')
+    mees_compliant = fields.Boolean(
+        string='MEES Compliant',
+        compute='_compute_mees_compliant',
+        store=True,
+        help='Minimum Energy Efficiency Standards - requires EPC rating E or above for rentals'
+    )
+
+    # HMO (House in Multiple Occupation)
+    hmo_status = fields.Selection([
+        ('not_hmo', 'Not an HMO'),
+        ('small_hmo', 'Small HMO (3-4 tenants)'),
+        ('licensable_hmo', 'Licensable HMO (5+ tenants)'),
+        ('mandatory_hmo', 'Mandatory HMO'),
+        ('additional_hmo', 'Additional Licensing HMO')
+    ], string='HMO Status', default='not_hmo', tracking=True)
+    hmo_license_number = fields.Char(string='HMO License Number')
+    hmo_license_expiry = fields.Date(string='HMO License Expiry', tracking=True)
+    hmo_max_occupancy = fields.Integer(
+        string='HMO Max Occupancy',
+        help='Maximum number of permitted occupants under HMO license'
+    )
+    hmo_license_holder_id = fields.Many2one(
+        'res.partner',
+        string='HMO License Holder',
+        help='Person or company named on the HMO license'
+    )
+
+    # Selective Licensing
+    selective_license_required = fields.Boolean(
+        string='Selective License Required',
+        help='Property is in a selective licensing area'
+    )
+    selective_license_number = fields.Char(string='Selective License Number')
+    selective_license_expiry = fields.Date(string='Selective License Expiry')
+
+    # Section 21 Status
+    section_21_banned = fields.Boolean(
+        string='Section 21 Banned',
+        compute='_compute_section_21_banned',
+        store=True,
+        help='Section 21 notices cannot be served if property lacks valid EPC, Gas Safety, or required licenses'
+    )
     
     # Ownership
     partner_id = fields.Many2one('res.partner', string='Owner/Landlord', tracking=True)
@@ -105,7 +235,62 @@ class Property(models.Model):
         string='Photo Gallery'
     )
     image_count = fields.Integer(compute='_compute_image_count', string='Photos')
-    
+
+    # Documents
+    document_ids = fields.One2many(
+        'property_fielder.property.document',
+        'property_id',
+        string='Documents'
+    )
+    document_count = fields.Integer(compute='_compute_document_count', string='Documents')
+
+    # Key Sets
+    key_set_ids = fields.One2many(
+        'property_fielder.key.set',
+        'property_id',
+        string='Key Sets'
+    )
+    key_set_count = fields.Integer(compute='_compute_key_set_count', string='Key Sets')
+
+    # Utility Meters
+    utility_meter_ids = fields.One2many(
+        'property_fielder.utility.meter',
+        'property_id',
+        string='Utility Meters'
+    )
+    utility_meter_count = fields.Integer(compute='_compute_utility_meter_count', string='Meters')
+
+    # Insurance
+    insurance_ids = fields.One2many(
+        'property_fielder.building.insurance',
+        'property_id',
+        string='Insurance Policies'
+    )
+    insurance_count = fields.Integer(compute='_compute_insurance_count', string='Insurance')
+
+    # EWS1 Assessments (for high-rise buildings)
+    ews1_ids = fields.One2many(
+        'property_fielder.ews1.assessment',
+        'property_id',
+        string='EWS1 Assessments'
+    )
+
+    # Property Assets
+    asset_ids = fields.One2many(
+        'property_fielder.property.asset',
+        'property_id',
+        string='Assets/Appliances'
+    )
+    asset_count = fields.Integer(compute='_compute_asset_count', string='Assets')
+
+    # HMO Rooms
+    hmo_room_ids = fields.One2many(
+        'property_fielder.hmo.room',
+        'property_id',
+        string='HMO Rooms'
+    )
+    hmo_room_count = fields.Integer(compute='_compute_hmo_room_count', string='Rooms')
+
     # Compliance Status
     compliance_status = fields.Selection([
         ('compliant', 'Fully Compliant'),
@@ -148,7 +333,34 @@ class Property(models.Model):
         ('expired', 'Expired'),
         ('missing', 'Missing')
     ], string='Electrical Safety', compute='_compute_flage_status', store=True)
-    
+
+    # FLAGE+ Expiry Dates (computed from latest certificate of each type)
+    flage_fire_expiry = fields.Date(
+        string='Fire Safety Expiry',
+        compute='_compute_flage_status',
+        store=True
+    )
+    flage_legionella_expiry = fields.Date(
+        string='Legionella Expiry',
+        compute='_compute_flage_status',
+        store=True
+    )
+    flage_asbestos_expiry = fields.Date(
+        string='Asbestos Expiry',
+        compute='_compute_flage_status',
+        store=True
+    )
+    flage_gas_expiry = fields.Date(
+        string='Gas Safety Expiry',
+        compute='_compute_flage_status',
+        store=True
+    )
+    flage_electrical_expiry = fields.Date(
+        string='Electrical Safety Expiry',
+        compute='_compute_flage_status',
+        store=True
+    )
+
     # Counts
     certification_count = fields.Integer(compute='_compute_counts')
     inspection_count = fields.Integer(compute='_compute_counts')
@@ -156,9 +368,47 @@ class Property(models.Model):
     
     # Notes
     notes = fields.Text(string='Notes')
+
+    # Access Information (for inspectors)
+    key_safe_location = fields.Char(
+        string='Key Safe Location',
+        help='Location of the key safe (e.g., "Left side of front door", "Behind plant pot")'
+    )
+    key_safe_code = fields.Char(
+        string='Key Safe Code',
+        help='Code for the key safe (keep confidential)',
+        groups='property_fielder_property_management.group_property_manager'
+    )
+    entry_instructions = fields.Text(
+        string='Entry Instructions',
+        help='Special instructions for entering the property'
+    )
+    parking_instructions = fields.Text(
+        string='Parking Instructions',
+        help='Where to park when visiting the property'
+    )
+    access_contact_id = fields.Many2one(
+        'res.partner',
+        string='Access Contact',
+        help='Person to contact for access (e.g., resident, neighbor, concierge)'
+    )
+    access_contact_phone = fields.Char(
+        related='access_contact_id.phone',
+        string='Access Contact Phone',
+        readonly=True
+    )
+    access_hours = fields.Char(
+        string='Access Hours',
+        help='Preferred access times (e.g., "9am-5pm weekdays", "After 6pm")'
+    )
+    access_notes = fields.Text(
+        string='Access Notes',
+        help='Additional notes about property access (dogs, alarms, etc.)'
+    )
     
     _sql_constraints = [
         ('property_number_unique', 'UNIQUE(property_number)', 'Property number must be unique!'),
+        ('uprn_unique', 'UNIQUE(uprn)', 'UPRN must be unique - this property reference is already in use!'),
     ]
 
     @api.model_create_multi
@@ -181,7 +431,7 @@ class Property(models.Model):
             else:
                 property.compliance_status = 'compliant'
 
-    @api.depends('certification_ids', 'certification_ids.certification_type_id', 'certification_ids.status')
+    @api.depends('certification_ids', 'certification_ids.certification_type_id', 'certification_ids.status', 'certification_ids.expiry_date')
     def _compute_flage_status(self):
         for property in self:
             # Get certifications by type
@@ -190,18 +440,26 @@ class Property(models.Model):
             asbestos_cert = property.certification_ids.filtered(lambda c: c.certification_type_id.code == 'ASBESTOS')
             gas_cert = property.certification_ids.filtered(lambda c: c.certification_type_id.code == 'GAS')
             electrical_cert = property.certification_ids.filtered(lambda c: c.certification_type_id.code == 'ELECTRICAL')
-            
-            property.flage_fire_status = self._get_cert_status(fire_cert)
-            property.flage_legionella_status = self._get_cert_status(legionella_cert)
-            property.flage_asbestos_status = self._get_cert_status(asbestos_cert)
-            property.flage_gas_status = self._get_cert_status(gas_cert)
-            property.flage_electrical_status = self._get_cert_status(electrical_cert)
-    
-    def _get_cert_status(self, certification):
+
+            # Set status and expiry for each FLAGE+ category
+            property.flage_fire_status, property.flage_fire_expiry = self._get_cert_status_and_expiry(fire_cert)
+            property.flage_legionella_status, property.flage_legionella_expiry = self._get_cert_status_and_expiry(legionella_cert)
+            property.flage_asbestos_status, property.flage_asbestos_expiry = self._get_cert_status_and_expiry(asbestos_cert)
+            property.flage_gas_status, property.flage_gas_expiry = self._get_cert_status_and_expiry(gas_cert)
+            property.flage_electrical_status, property.flage_electrical_expiry = self._get_cert_status_and_expiry(electrical_cert)
+
+    def _get_cert_status_and_expiry(self, certification):
+        """Returns (status, expiry_date) tuple for a certification."""
         if not certification:
-            return 'missing'
+            return ('missing', False)
         latest = certification.sorted(key=lambda c: c.issue_date, reverse=True)[0]
-        return latest.status
+        return (latest.status, latest.expiry_date)
+
+    @api.depends('child_ids')
+    def _compute_hierarchy_info(self):
+        for prop in self:
+            prop.unit_count = len(prop.child_ids)
+            prop.is_block = prop.unit_count > 0
 
     @api.depends('certification_ids', 'inspection_ids')
     def _compute_counts(self):
@@ -216,6 +474,36 @@ class Property(models.Model):
     def _compute_image_count(self):
         for property in self:
             property.image_count = len(property.image_ids)
+
+    @api.depends('document_ids')
+    def _compute_document_count(self):
+        for property in self:
+            property.document_count = len(property.document_ids)
+
+    @api.depends('key_set_ids')
+    def _compute_key_set_count(self):
+        for property in self:
+            property.key_set_count = len(property.key_set_ids)
+
+    @api.depends('utility_meter_ids')
+    def _compute_utility_meter_count(self):
+        for property in self:
+            property.utility_meter_count = len(property.utility_meter_ids)
+
+    @api.depends('insurance_ids')
+    def _compute_insurance_count(self):
+        for property in self:
+            property.insurance_count = len(property.insurance_ids)
+
+    @api.depends('asset_ids')
+    def _compute_asset_count(self):
+        for property in self:
+            property.asset_count = len(property.asset_ids)
+
+    @api.depends('hmo_room_ids')
+    def _compute_hmo_room_count(self):
+        for property in self:
+            property.hmo_room_count = len(property.hmo_room_ids)
 
     @api.model
     def reverse_geocode(self, lat, lng, use_cache=True):
@@ -316,3 +604,183 @@ class Property(models.Model):
             'domain': [('property_id', '=', self.id)],
             'context': {'default_property_id': self.id},
         }
+
+    def action_view_documents(self):
+        """Action to view property documents in a separate view"""
+        self.ensure_one()
+        return {
+            'name': _('Property Documents'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'property_fielder.property.document',
+            'view_mode': 'kanban,list,form',
+            'domain': [('property_id', '=', self.id)],
+            'context': {'default_property_id': self.id},
+        }
+
+    def action_view_key_sets(self):
+        """Action to view property key sets"""
+        self.ensure_one()
+        return {
+            'name': _('Key Sets'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'property_fielder.key.set',
+            'view_mode': 'list,form',
+            'domain': [('property_id', '=', self.id)],
+            'context': {'default_property_id': self.id},
+        }
+
+    def action_view_utility_meters(self):
+        """Action to view property utility meters"""
+        self.ensure_one()
+        return {
+            'name': _('Utility Meters'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'property_fielder.utility.meter',
+            'view_mode': 'list,form',
+            'domain': [('property_id', '=', self.id)],
+            'context': {'default_property_id': self.id},
+        }
+
+    def action_view_insurance(self):
+        """Action to view property insurance policies"""
+        self.ensure_one()
+        return {
+            'name': _('Insurance Policies'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'property_fielder.building.insurance',
+            'view_mode': 'list,form',
+            'domain': [('property_id', '=', self.id)],
+            'context': {'default_property_id': self.id},
+        }
+
+    def action_view_assets(self):
+        """Action to view property assets"""
+        self.ensure_one()
+        return {
+            'name': _('Property Assets'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'property_fielder.property.asset',
+            'view_mode': 'list,form',
+            'domain': [('property_id', '=', self.id)],
+            'context': {'default_property_id': self.id},
+        }
+
+    def action_view_hmo_rooms(self):
+        """Action to view HMO rooms"""
+        self.ensure_one()
+        return {
+            'name': _('HMO Rooms'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'property_fielder.hmo.room',
+            'view_mode': 'list,form',
+            'domain': [('property_id', '=', self.id)],
+            'context': {'default_property_id': self.id},
+        }
+
+    # ==================== UK Compliance Computed Fields ====================
+
+    @api.depends('epc_rating', 'epc_exempt', 'tenure')
+    def _compute_mees_compliant(self):
+        """Compute MEES compliance status.
+
+        MEES requires EPC rating of E or above for rental properties.
+        Properties are compliant if:
+        - EPC exempt, or
+        - Not a rental property, or
+        - EPC rating is A, B, C, D, or E
+        """
+        for prop in self:
+            if prop.epc_exempt:
+                prop.mees_compliant = True
+            elif prop.tenure != 'rental':
+                prop.mees_compliant = True
+            elif prop.epc_rating in ('a', 'b', 'c', 'd', 'e'):
+                prop.mees_compliant = True
+            elif not prop.epc_rating:
+                # No rating - assume non-compliant for rentals
+                prop.mees_compliant = False
+            else:
+                # Rating is F or G
+                prop.mees_compliant = False
+
+    @api.depends('epc_rating', 'flage_gas_status', 'hmo_status', 'hmo_license_expiry',
+                 'selective_license_required', 'selective_license_expiry')
+    def _compute_section_21_banned(self):
+        """Compute whether Section 21 notices are banned.
+
+        Section 21 cannot be served if:
+        - Property lacks valid EPC
+        - Property lacks valid Gas Safety Certificate
+        - HMO requires license but license is expired/missing
+        - Selective license required but expired/missing
+        """
+        from datetime import date
+        today = date.today()
+
+        for prop in self:
+            banned = False
+
+            # Check EPC
+            if not prop.epc_rating and not prop.epc_exempt:
+                banned = True
+
+            # Check Gas Safety
+            if prop.flage_gas_status in ('missing', 'expired'):
+                banned = True
+
+            # Check HMO License
+            if prop.hmo_status in ('licensable_hmo', 'mandatory_hmo', 'additional_hmo'):
+                if not prop.hmo_license_number or not prop.hmo_license_expiry:
+                    banned = True
+                elif prop.hmo_license_expiry < today:
+                    banned = True
+
+            # Check Selective License
+            if prop.selective_license_required:
+                if not prop.selective_license_number or not prop.selective_license_expiry:
+                    banned = True
+                elif prop.selective_license_expiry < today:
+                    banned = True
+
+            prop.section_21_banned = banned
+
+    @api.constrains('uprn')
+    def _check_uprn(self):
+        """Validate UPRN format (12 digits)"""
+        import re
+        for prop in self:
+            if prop.uprn:
+                # Remove any spaces or dashes
+                clean_uprn = re.sub(r'[\s\-]', '', prop.uprn)
+                if not re.match(r'^\d{1,12}$', clean_uprn):
+                    raise ValidationError(
+                        _('UPRN must be a numeric value of up to 12 digits. Got: %s') % prop.uprn
+                    )
+
+    @api.constrains('epc_score')
+    def _check_epc_score(self):
+        """Validate EPC score is between 1 and 100"""
+        for prop in self:
+            if prop.epc_score and (prop.epc_score < 1 or prop.epc_score > 100):
+                raise ValidationError(
+                    _('EPC Score must be between 1 and 100. Got: %s') % prop.epc_score
+                )
+
+    @api.onchange('epc_score')
+    def _onchange_epc_score(self):
+        """Auto-set EPC rating based on score"""
+        if self.epc_score:
+            if self.epc_score >= 92:
+                self.epc_rating = 'a'
+            elif self.epc_score >= 81:
+                self.epc_rating = 'b'
+            elif self.epc_score >= 69:
+                self.epc_rating = 'c'
+            elif self.epc_score >= 55:
+                self.epc_rating = 'd'
+            elif self.epc_score >= 39:
+                self.epc_rating = 'e'
+            elif self.epc_score >= 21:
+                self.epc_rating = 'f'
+            else:
+                self.epc_rating = 'g'

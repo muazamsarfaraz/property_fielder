@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        
+        <!-- Property Document Tree View -->
+        <record id="view_property_document_tree" model="ir.ui.view">
+            <field name="name">property_fielder.property.document.tree</field>
+            <field name="model">property_fielder.property.document</field>
+            <field name="arch" type="xml">
+                <list string="Documents" decoration-danger="is_expired" decoration-muted="not is_active">
+                    <field name="name"/>
+                    <field name="category" widget="badge"/>
+                    <field name="document_filename"/>
+                    <field name="issue_date"/>
+                    <field name="expiry_date"/>
+                    <field name="is_expired" column_invisible="1"/>
+                    <field name="is_active" column_invisible="1"/>
+                    <field name="uploaded_by"/>
+                    <field name="upload_date"/>
+                </list>
+            </field>
+        </record>
+        
+        <!-- Property Document Form View -->
+        <record id="view_property_document_form" model="ir.ui.view">
+            <field name="name">property_fielder.property.document.form</field>
+            <field name="model">property_fielder.property.document</field>
+            <field name="arch" type="xml">
+                <form string="Document">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="Document Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group name="document_info" string="Document Information">
+                                <field name="category"/>
+                                <field name="document_file" filename="document_filename"/>
+                                <field name="document_filename" invisible="1"/>
+                                <field name="description"/>
+                            </group>
+                            <group name="dates" string="Dates">
+                                <field name="issue_date"/>
+                                <field name="expiry_date"/>
+                                <field name="is_expired" readonly="1"/>
+                                <field name="is_active"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group name="property" string="Property">
+                                <field name="property_id"/>
+                            </group>
+                            <group name="tracking" string="Upload Information">
+                                <field name="uploaded_by" readonly="1"/>
+                                <field name="upload_date" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Property Document Kanban View (for embedded in property form) -->
+        <record id="view_property_document_kanban" model="ir.ui.view">
+            <field name="name">property_fielder.property.document.kanban</field>
+            <field name="model">property_fielder.property.document</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_small_column">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="category"/>
+                    <field name="document_file"/>
+                    <field name="document_filename"/>
+                    <field name="expiry_date"/>
+                    <field name="is_expired"/>
+                    <field name="is_active"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">
+                                    <i t-if="record.category.raw_value == 'lease'" class="fa fa-file-text-o fa-2x text-primary" title="Lease"/>
+                                    <i t-elif="record.category.raw_value == 'insurance'" class="fa fa-shield fa-2x text-success" title="Insurance"/>
+                                    <i t-elif="record.category.raw_value == 'certificate'" class="fa fa-certificate fa-2x text-warning" title="Certificate"/>
+                                    <i t-elif="record.category.raw_value == 'plan'" class="fa fa-map fa-2x text-info" title="Plan"/>
+                                    <i t-elif="record.category.raw_value == 'inventory'" class="fa fa-list-alt fa-2x text-secondary" title="Inventory"/>
+                                    <i t-elif="record.category.raw_value == 'correspondence'" class="fa fa-envelope fa-2x text-muted" title="Correspondence"/>
+                                    <i t-else="" class="fa fa-file-o fa-2x text-muted" title="Document"/>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <strong><field name="name"/></strong>
+                                    <div class="text-muted small">
+                                        <field name="category" widget="badge"/>
+                                    </div>
+                                    <div t-if="record.expiry_date.raw_value" class="small">
+                                        <span t-attf-class="#{record.is_expired.raw_value ? 'text-danger' : ''}">
+                                            Expires: <field name="expiry_date"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+        <!-- Property Document Search View -->
+        <record id="view_property_document_search" model="ir.ui.view">
+            <field name="name">property_fielder.property.document.search</field>
+            <field name="model">property_fielder.property.document</field>
+            <field name="arch" type="xml">
+                <search string="Search Documents">
+                    <field name="name"/>
+                    <field name="property_id"/>
+                    <field name="category"/>
+                    <separator/>
+                    <filter name="active" string="Active" domain="[('is_active', '=', True)]"/>
+                    <filter name="expired" string="Expired" domain="[('is_expired', '=', True)]"/>
+                    <separator/>
+                    <filter name="lease" string="Lease" domain="[('category', '=', 'lease')]"/>
+                    <filter name="insurance" string="Insurance" domain="[('category', '=', 'insurance')]"/>
+                    <filter name="certificate" string="Certificates" domain="[('category', '=', 'certificate')]"/>
+                    <filter name="plan" string="Plans" domain="[('category', '=', 'plan')]"/>
+                    <separator/>
+                    <filter name="group_category" string="Category" context="{'group_by': 'category'}"/>
+                    <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
+                </search>
+            </field>
+        </record>
+        
+    </data>
+</odoo>
+

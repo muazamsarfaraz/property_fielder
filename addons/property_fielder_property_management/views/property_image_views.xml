@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <data>
-        
+
         <!-- Property Image Form View -->
         <record id="view_property_image_form" model="ir.ui.view">
             <field name="name">property_fielder.property.image.form</field>
@@ -9,34 +9,29 @@
             <field name="arch" type="xml">
                 <form string="Property Photo">
                     <sheet>
-                        <div class="oe_title">
-                            <label for="name"/>
-                            <h1>
-                                <field name="name" placeholder="Photo description..."/>
-                            </h1>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <field name="image" widget="image" class="w-100"/>
+                            </div>
+                            <div class="col-md-6">
+                                <group>
+                                    <field name="name" placeholder="e.g., Front entrance, Living room..."/>
+                                    <field name="category"/>
+                                    <field name="is_main"/>
+                                    <field name="taken_date"/>
+                                    <field name="sequence" invisible="1"/>
+                                    <field name="property_id" invisible="1"/>
+                                </group>
+                                <group string="Notes">
+                                    <field name="notes" nolabel="1" placeholder="Additional notes about this photo..."/>
+                                </group>
+                            </div>
                         </div>
-                        <group>
-                            <group>
-                                <field name="property_id"/>
-                                <field name="category"/>
-                                <field name="is_main"/>
-                                <field name="sequence"/>
-                            </group>
-                            <group>
-                                <field name="taken_date"/>
-                            </group>
-                        </group>
-                        <group>
-                            <field name="image" widget="image" class="oe_avatar"/>
-                        </group>
-                        <group>
-                            <field name="notes" placeholder="Additional notes about this photo..."/>
-                        </group>
                     </sheet>
                 </form>
             </field>
         </record>
-        
+
         <!-- Property Image List View -->
         <record id="view_property_image_list" model="ir.ui.view">
             <field name="name">property_fielder.property.image.list</field>
@@ -53,28 +48,38 @@
                 </list>
             </field>
         </record>
-        
-        <!-- Property Image Kanban View -->
+
+        <!-- Property Image Kanban View (Gallery Style) -->
         <record id="view_property_image_kanban" model="ir.ui.view">
             <field name="name">property_fielder.property.image.kanban</field>
             <field name="model">property_fielder.property.image</field>
             <field name="arch" type="xml">
-                <kanban class="o_kanban_mobile">
+                <kanban class="pm_photo_gallery" default_group_by="category">
                     <field name="id"/>
                     <field name="name"/>
                     <field name="image_medium"/>
                     <field name="category"/>
                     <field name="is_main"/>
+                    <field name="taken_date"/>
                     <templates>
                         <t t-name="card">
-                            <div class="oe_kanban_global_click">
-                                <div class="o_kanban_image">
-                                    <field name="image_medium" widget="image"/>
+                            <div class="pm_gallery_card oe_kanban_global_click">
+                                <div class="pm_gallery_image_wrapper">
+                                    <field name="image_medium" widget="image" class="pm_gallery_image"/>
+                                    <div class="pm_gallery_overlay">
+                                        <span t-if="record.is_main.raw_value" class="pm_main_badge" title="Main Property Image">★</span>
+                                    </div>
                                 </div>
-                                <div class="o_kanban_details mt-2">
-                                    <strong t-if="record.name.raw_value"><field name="name"/></strong>
-                                    <div><field name="category" widget="badge"/></div>
-                                    <span t-if="record.is_main.raw_value" class="badge text-bg-primary">Main Image</span>
+                                <div class="pm_gallery_info">
+                                    <div class="pm_gallery_title" t-if="record.name.raw_value">
+                                        <field name="name"/>
+                                    </div>
+                                    <div class="pm_gallery_meta">
+                                        <field name="category" widget="badge"/>
+                                        <span t-if="record.taken_date.raw_value" class="pm_gallery_date">
+                                            <field name="taken_date"/>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </t>
@@ -82,7 +87,45 @@
                 </kanban>
             </field>
         </record>
-        
+
+        <!-- Search View for Property Images -->
+        <record id="view_property_image_search" model="ir.ui.view">
+            <field name="name">property_fielder.property.image.search</field>
+            <field name="model">property_fielder.property.image</field>
+            <field name="arch" type="xml">
+                <search string="Search Photos">
+                    <filter string="Exterior" name="exterior" domain="[('category', '=', 'exterior')]"/>
+                    <filter string="Interior" name="interior" domain="[('category', '=', 'interior')]"/>
+                    <filter string="Floor Plans" name="floor_plan" domain="[('category', '=', 'floor_plan')]"/>
+                    <filter string="Documents" name="document" domain="[('category', '=', 'document')]"/>
+                    <separator/>
+                    <filter string="Main Images" name="main" domain="[('is_main', '=', True)]"/>
+                    <separator/>
+                    <filter string="Category" name="group_category" context="{'group_by': 'category'}"/>
+                    <filter string="Property" name="group_property" context="{'group_by': 'property_id'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Standalone Photo Gallery Action -->
+        <record id="action_property_images" model="ir.actions.act_window">
+            <field name="name">Photo Gallery</field>
+            <field name="res_model">property_fielder.property.image</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="search_view_id" ref="view_property_image_search"/>
+            <field name="context">{'search_default_group_category': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Upload your first property photo
+                </p>
+                <p>
+                    Add photos to document your properties - exteriors, interiors,
+                    floor plans, and more. Photos help inspectors and staff
+                    identify properties and track changes over time.
+                </p>
+            </field>
+        </record>
+
     </data>
 </odoo>
 

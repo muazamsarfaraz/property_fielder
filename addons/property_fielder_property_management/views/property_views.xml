@@ -15,6 +15,8 @@
                     <field name="zip"/>
                     <field name="partner_id"/>
                     <field name="tenant_id"/>
+                    <field name="epc_rating" widget="badge" optional="hide"/>
+                    <field name="hmo_status" widget="badge" optional="hide"/>
                     <field name="state" widget="badge"/>
                     <field name="compliance_status" widget="badge" decoration-success="compliance_status == 'compliant'" decoration-warning="compliance_status == 'expiring_soon'" decoration-danger="compliance_status in ['expired', 'non_compliant']"/>
                     <field name="flage_fire_status" widget="badge"/>
@@ -47,6 +49,24 @@
                             <button class="oe_stat_button" icon="fa-camera" type="object" name="action_view_images">
                                 <field name="image_count" widget="statbutton" string="Photos"/>
                             </button>
+                            <button class="oe_stat_button" icon="fa-file-text-o" type="object" name="action_view_documents">
+                                <field name="document_count" widget="statbutton" string="Documents"/>
+                            </button>
+                            <button class="oe_stat_button" icon="fa-key" type="object" name="action_view_key_sets">
+                                <field name="key_set_count" widget="statbutton" string="Keys"/>
+                            </button>
+                            <button class="oe_stat_button" icon="fa-tachometer" type="object" name="action_view_utility_meters">
+                                <field name="utility_meter_count" widget="statbutton" string="Meters"/>
+                            </button>
+                            <button class="oe_stat_button" icon="fa-shield" type="object" name="action_view_insurance">
+                                <field name="insurance_count" widget="statbutton" string="Insurance"/>
+                            </button>
+                            <button class="oe_stat_button" icon="fa-cogs" type="object" name="action_view_assets">
+                                <field name="asset_count" widget="statbutton" string="Assets"/>
+                            </button>
+                            <button class="oe_stat_button" icon="fa-bed" type="object" name="action_view_hmo_rooms" invisible="hmo_status == 'not_hmo'">
+                                <field name="hmo_room_count" widget="statbutton" string="Rooms"/>
+                            </button>
                         </div>
 
                         <field name="image" widget="image" class="oe_avatar" options="{'preview_image': 'image_medium'}"/>
@@ -66,39 +86,116 @@
                                 <field name="property_type"/>
                                 <field name="bedrooms"/>
                                 <field name="bathrooms"/>
+                                <field name="reception_rooms"/>
                                 <field name="floor_area"/>
                                 <field name="year_built"/>
+                                <field name="tenure"/>
+                                <field name="furnishing_state"/>
                             </group>
-                            <group name="ownership" string="Ownership">
+                            <group name="ownership" string="Ownership &amp; Hierarchy">
                                 <field name="partner_id"/>
                                 <field name="tenant_id"/>
+                                <field name="parent_id" options="{'no_create': True}"/>
+                                <field name="unit_number" invisible="not parent_id"/>
+                                <field name="floor_level" invisible="not parent_id"/>
+                                <field name="is_block" readonly="1" invisible="not is_block"/>
+                                <field name="unit_count" invisible="not is_block"/>
                             </group>
                         </group>
+
+                        <group>
+                            <group name="uk_identifiers" string="UK Identifiers">
+                                <field name="uprn" placeholder="12 digit UPRN"/>
+                                <field name="council_tax_band"/>
+                                <field name="council_tax_account"/>
+                            </group>
+                            <group name="epc_info" string="Energy Performance (EPC)">
+                                <field name="epc_rating"/>
+                                <field name="epc_score"/>
+                                <field name="epc_certificate_number"/>
+                                <field name="epc_valid_until"/>
+                                <field name="epc_exempt"/>
+                                <field name="epc_exempt_reason" invisible="not epc_exempt"/>
+                                <field name="mees_compliant" widget="boolean_toggle" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group name="hmo_section" invisible="hmo_status == 'not_hmo'">
+                            <group name="hmo_info" string="HMO Details">
+                                <field name="hmo_status"/>
+                                <field name="hmo_license_number"/>
+                                <field name="hmo_license_expiry"/>
+                                <field name="hmo_max_occupancy"/>
+                                <field name="hmo_license_holder_id"/>
+                            </group>
+                            <group name="selective_license" string="Selective Licensing">
+                                <field name="selective_license_required"/>
+                                <field name="selective_license_number" invisible="not selective_license_required"/>
+                                <field name="selective_license_expiry" invisible="not selective_license_required"/>
+                            </group>
+                        </group>
+
+                        <group invisible="hmo_status != 'not_hmo'">
+                            <group name="hmo_status_only">
+                                <field name="hmo_status"/>
+                            </group>
+                            <group/>
+                        </group>
+
+                        <div class="alert alert-warning" role="alert" invisible="not section_21_banned">
+                            <i class="fa fa-exclamation-triangle"/> <strong>Section 21 Restricted:</strong>
+                            This property cannot serve Section 21 notices due to missing compliance requirements.
+                        </div>
+                        <field name="section_21_banned" invisible="1"/>
                         
                         <group>
                             <group name="address" string="Address">
                                 <field name="street"/>
                                 <field name="street2"/>
                                 <field name="city"/>
-                                <field name="state"/>
+                                <field name="state" string="County"/>
                                 <field name="zip"/>
                                 <field name="country_id"/>
                             </group>
-                            <group name="location" string="GPS Location">
-                                <field name="latitude"/>
-                                <field name="longitude"/>
+                            <group name="location" string="Location">
+                                <!-- Interactive Map Widget -->
+                                <div colspan="2" class="mb-3">
+                                    <field name="latitude" widget="property_map" nolabel="1"/>
+                                </div>
+                                <field name="latitude" string="Lat"/>
+                                <field name="longitude" string="Lng"/>
                             </group>
                         </group>
                         
                         <group name="compliance" string="FLAGE+ Compliance Status">
                             <group>
-                                <field name="flage_fire_status" widget="badge"/>
-                                <field name="flage_legionella_status" widget="badge"/>
-                                <field name="flage_asbestos_status" widget="badge"/>
+                                <label for="flage_fire_status" string="Fire Safety"/>
+                                <div class="d-flex align-items-center gap-2">
+                                    <field name="flage_fire_status" widget="badge" nolabel="1"/>
+                                    <span class="text-muted small" invisible="not flage_fire_expiry">Exp: <field name="flage_fire_expiry" nolabel="1"/></span>
+                                </div>
+                                <label for="flage_legionella_status" string="Legionella"/>
+                                <div class="d-flex align-items-center gap-2">
+                                    <field name="flage_legionella_status" widget="badge" nolabel="1"/>
+                                    <span class="text-muted small" invisible="not flage_legionella_expiry">Exp: <field name="flage_legionella_expiry" nolabel="1"/></span>
+                                </div>
+                                <label for="flage_asbestos_status" string="Asbestos"/>
+                                <div class="d-flex align-items-center gap-2">
+                                    <field name="flage_asbestos_status" widget="badge" nolabel="1"/>
+                                    <span class="text-muted small" invisible="not flage_asbestos_expiry">Exp: <field name="flage_asbestos_expiry" nolabel="1"/></span>
+                                </div>
                             </group>
                             <group>
-                                <field name="flage_gas_status" widget="badge"/>
-                                <field name="flage_electrical_status" widget="badge"/>
+                                <label for="flage_gas_status" string="Gas Safety"/>
+                                <div class="d-flex align-items-center gap-2">
+                                    <field name="flage_gas_status" widget="badge" nolabel="1"/>
+                                    <span class="text-muted small" invisible="not flage_gas_expiry">Exp: <field name="flage_gas_expiry" nolabel="1"/></span>
+                                </div>
+                                <label for="flage_electrical_status" string="Electrical Safety"/>
+                                <div class="d-flex align-items-center gap-2">
+                                    <field name="flage_electrical_status" widget="badge" nolabel="1"/>
+                                    <span class="text-muted small" invisible="not flage_electrical_expiry">Exp: <field name="flage_electrical_expiry" nolabel="1"/></span>
+                                </div>
                                 <field name="compliance_status" widget="badge"/>
                             </group>
                         </group>
@@ -129,27 +226,189 @@
                                 </field>
                             </page>
                             <page string="Photos" name="photos">
+                                <div class="alert alert-info mb-3" role="alert">
+                                    <strong>📷 Photo Gallery</strong> - Upload photos of your property.
+                                    Click a photo to edit, or mark one as the main image to display on cards.
+                                </div>
                                 <field name="image_ids" mode="kanban">
-                                    <kanban>
+                                    <kanban class="pm_photo_gallery">
                                         <field name="id"/>
                                         <field name="name"/>
-                                        <field name="image_small"/>
+                                        <field name="image_medium"/>
                                         <field name="category"/>
                                         <field name="is_main"/>
+                                        <field name="taken_date"/>
                                         <field name="sequence"/>
                                         <templates>
                                             <t t-name="card">
-                                                <div class="oe_kanban_global_click o_kanban_image_wrapper">
-                                                    <field name="image_small" widget="image" options="{'size': [128, 128]}"/>
-                                                    <div class="o_kanban_details">
-                                                        <strong t-if="record.name.raw_value"><field name="name"/></strong>
-                                                        <div><field name="category"/></div>
-                                                        <span t-if="record.is_main.raw_value" class="badge text-bg-primary">Main</span>
+                                                <div class="pm_gallery_card oe_kanban_global_click">
+                                                    <div class="pm_gallery_image_wrapper">
+                                                        <field name="image_medium" widget="image" class="pm_gallery_image"/>
+                                                        <div class="pm_gallery_overlay">
+                                                            <span t-if="record.is_main.raw_value" class="pm_main_badge" title="Main Property Image">★</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="pm_gallery_info">
+                                                        <div class="pm_gallery_title" t-if="record.name.raw_value">
+                                                            <field name="name"/>
+                                                        </div>
+                                                        <div class="pm_gallery_meta">
+                                                            <field name="category" widget="badge"/>
+                                                            <span t-if="record.taken_date.raw_value" class="pm_gallery_date">
+                                                                <field name="taken_date"/>
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </t>
                                         </templates>
                                     </kanban>
+                                </field>
+                            </page>
+                            <page string="Documents" name="documents">
+                                <div class="alert alert-info mb-3" role="alert">
+                                    <strong>📄 Document Repository</strong> - Store important property documents like leases, insurance policies, floor plans, and certificates.
+                                </div>
+                                <field name="document_ids" mode="kanban">
+                                    <kanban class="o_kanban_small_column">
+                                        <field name="id"/>
+                                        <field name="name"/>
+                                        <field name="category"/>
+                                        <field name="document_file"/>
+                                        <field name="document_filename"/>
+                                        <field name="expiry_date"/>
+                                        <field name="is_expired"/>
+                                        <field name="is_active"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-2">
+                                                        <i t-if="record.category.raw_value == 'lease'" class="fa fa-file-text-o fa-2x text-primary" title="Lease"/>
+                                                        <i t-elif="record.category.raw_value == 'insurance'" class="fa fa-shield fa-2x text-success" title="Insurance"/>
+                                                        <i t-elif="record.category.raw_value == 'certificate'" class="fa fa-certificate fa-2x text-warning" title="Certificate"/>
+                                                        <i t-elif="record.category.raw_value == 'plan'" class="fa fa-map fa-2x text-info" title="Plan"/>
+                                                        <i t-elif="record.category.raw_value == 'inventory'" class="fa fa-list-alt fa-2x text-secondary" title="Inventory"/>
+                                                        <i t-elif="record.category.raw_value == 'correspondence'" class="fa fa-envelope fa-2x text-muted" title="Correspondence"/>
+                                                        <i t-else="" class="fa fa-file-o fa-2x text-muted" title="Document"/>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <strong><field name="name"/></strong>
+                                                        <div class="text-muted small">
+                                                            <field name="category" widget="badge"/>
+                                                        </div>
+                                                        <div t-if="record.expiry_date.raw_value" class="small">
+                                                            <span t-attf-class="#{record.is_expired.raw_value ? 'text-danger' : ''}">
+                                                                Expires: <field name="expiry_date"/>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                </field>
+                            </page>
+                            <page string="Access" name="access">
+                                <div class="text-muted mb-3">
+                                    <i class="fa fa-key" title="Key"/> Property Access Information - Entry instructions for inspectors and maintenance staff
+                                </div>
+                                <group>
+                                    <group name="key_access" string="Key Access">
+                                        <field name="key_safe_location" placeholder="e.g., Left side of front door"/>
+                                        <field name="key_safe_code" password="True" placeholder="Enter code"/>
+                                        <field name="entry_instructions" placeholder="Special entry instructions..."/>
+                                    </group>
+                                    <group name="contact_hours" string="Contact &amp; Hours">
+                                        <field name="access_contact_id"/>
+                                        <field name="access_contact_phone"/>
+                                        <field name="access_hours" placeholder="e.g., 9am-5pm weekdays"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group name="parking" string="Parking">
+                                        <field name="parking_instructions" placeholder="Where to park when visiting..."/>
+                                    </group>
+                                    <group name="access_notes" string="Additional Notes">
+                                        <field name="access_notes" placeholder="Dogs, alarms, special requirements..."/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Keys" name="keys">
+                                <field name="key_set_ids">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="key_type"/>
+                                        <field name="key_count"/>
+                                        <field name="fob_count"/>
+                                        <field name="holder_id"/>
+                                        <field name="holder_type"/>
+                                        <field name="state" widget="badge"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Meters" name="meters">
+                                <field name="utility_meter_ids">
+                                    <list>
+                                        <field name="utility_type"/>
+                                        <field name="meter_serial"/>
+                                        <field name="mpan"/>
+                                        <field name="mprn"/>
+                                        <field name="supplier_id"/>
+                                        <field name="last_reading"/>
+                                        <field name="last_reading_date"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Insurance" name="insurance">
+                                <field name="insurance_ids">
+                                    <list decoration-danger="status == 'expired'" decoration-warning="status == 'expiring'">
+                                        <field name="policy_number"/>
+                                        <field name="policy_type"/>
+                                        <field name="insurer_name"/>
+                                        <field name="start_date"/>
+                                        <field name="expiry_date"/>
+                                        <field name="annual_premium"/>
+                                        <field name="status" widget="badge"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Assets" name="assets">
+                                <field name="asset_ids">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="asset_type"/>
+                                        <field name="asset_category"/>
+                                        <field name="location"/>
+                                        <field name="manufacturer"/>
+                                        <field name="state" widget="badge"/>
+                                        <field name="next_service_date"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="HMO Rooms" name="hmo_rooms" invisible="hmo_status == 'not_hmo'">
+                                <field name="hmo_room_ids">
+                                    <list decoration-danger="not compliant">
+                                        <field name="room_number"/>
+                                        <field name="room_type"/>
+                                        <field name="floor_level"/>
+                                        <field name="floor_area_sqm"/>
+                                        <field name="max_occupancy"/>
+                                        <field name="current_occupancy"/>
+                                        <field name="tenant_id"/>
+                                        <field name="compliant" widget="boolean"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Units" name="units" invisible="not is_block">
+                                <field name="child_ids">
+                                    <list>
+                                        <field name="property_number"/>
+                                        <field name="name"/>
+                                        <field name="unit_number"/>
+                                        <field name="floor_level"/>
+                                        <field name="tenant_id"/>
+                                        <field name="compliance_status" widget="badge"/>
+                                    </list>
                                 </field>
                             </page>
                             <page string="Notes" name="notes">
@@ -230,6 +489,7 @@
                 <search string="Properties">
                     <field name="name"/>
                     <field name="property_number"/>
+                    <field name="uprn"/>
                     <field name="city"/>
                     <field name="zip"/>
                     <field name="partner_id"/>
@@ -241,10 +501,22 @@
                     <filter string="Expiring Soon" name="expiring_soon" domain="[('compliance_status', '=', 'expiring_soon')]"/>
                     <filter string="Expired" name="expired" domain="[('compliance_status', '=', 'expired')]"/>
                     <filter string="Non-Compliant" name="non_compliant" domain="[('compliance_status', '=', 'non_compliant')]"/>
-                    <filter string="Property Type" name="group_property_type" context="{'group_by': 'property_type'}"/>
+                    <separator/>
+                    <filter string="HMO Properties" name="hmo" domain="[('hmo_status', '!=', 'not_hmo')]"/>
+                    <filter string="Licensed HMO" name="hmo_licensed" domain="[('hmo_status', '=', 'licensed')]"/>
+                    <filter string="MEES Non-Compliant" name="mees_fail" domain="[('mees_compliant', '=', False)]"/>
+                    <filter string="Section 21 Banned" name="s21_banned" domain="[('section_21_banned', '=', True)]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Property Type" name="group_property_type" context="{'group_by': 'property_type'}"/>
                         <filter string="City" name="group_city" context="{'group_by': 'city'}"/>
                         <filter string="Owner" name="group_owner" context="{'group_by': 'partner_id'}"/>
-                        <filter string="Compliance Status" name="group_compliance" context="{'group_by': 'compliance_status'}"/></search>
+                        <filter string="Compliance Status" name="group_compliance" context="{'group_by': 'compliance_status'}"/>
+                        <filter string="EPC Rating" name="group_epc" context="{'group_by': 'epc_rating'}"/>
+                        <filter string="HMO Status" name="group_hmo" context="{'group_by': 'hmo_status'}"/>
+                        <filter string="Council Tax Band" name="group_council_tax" context="{'group_by': 'council_tax_band'}"/>
+                    </group>
+                </search>
             </field>
         </record>
 
