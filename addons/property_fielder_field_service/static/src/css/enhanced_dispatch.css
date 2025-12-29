@@ -478,11 +478,210 @@
     flex-wrap: wrap;
 }
 
+/* ========================================
+   QUICK FILTER PILLS (Issue 4)
+   ======================================== */
+.quick-filter-pills {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.4rem 0;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--pf-gray-200);
+    margin-bottom: 0.5rem;
+}
+
+.filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    border: 1px solid var(--pf-gray-300);
+    background: white;
+    color: var(--pf-gray-600);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.filter-pill:hover {
+    border-color: var(--pf-primary-light);
+    background: var(--pf-primary-bg);
+    color: var(--pf-primary);
+}
+
+.filter-pill.active {
+    background: var(--pf-primary);
+    border-color: var(--pf-primary);
+    color: white;
+}
+
+.filter-pill .pill-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    background: rgba(0,0,0,0.1);
+}
+
+.filter-pill.active .pill-count {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Unassigned filter - red accent */
+.filter-pill.filter-unassigned:not(.active) {
+    border-color: #FCA5A5;
+    color: #DC2626;
+}
+.filter-pill.filter-unassigned.active {
+    background: #DC2626;
+    border-color: #DC2626;
+}
+
+/* Scheduled filter - blue accent */
+.filter-pill.filter-scheduled:not(.active) {
+    border-color: #93C5FD;
+    color: #2563EB;
+}
+.filter-pill.filter-scheduled.active {
+    background: #2563EB;
+    border-color: #2563EB;
+}
+
+/* Urgent filter - pulsing */
+.filter-pill.filter-urgent {
+    border-color: #F87171;
+    color: #DC2626;
+    animation: pulse-subtle 2s infinite;
+}
+
+.filter-pill.filter-urgent.active {
+    background: #DC2626;
+    border-color: #DC2626;
+    animation: none;
+}
+
+.filter-pill .urgent-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #EF4444;
+    animation: pulse-urgent 1.5s infinite;
+}
+
+.filter-pill.active .urgent-dot {
+    background: white;
+}
+
+@keyframes pulse-subtle {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+}
+
+/* Search and View Controls Row */
+.search-view-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.search-view-row .search-filter {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.view-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
+
+.view-controls .btn-xs {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.7rem;
+}
+
 .job-count-label,
 .inspector-count-label {
     margin-left: auto;
     font-size: 0.7rem;
     color: var(--pf-gray-500);
+}
+
+/* ========================================
+   QUICK ACTION BAR (Sticky when jobs selected)
+   ======================================== */
+.quick-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, var(--pf-primary-bg), rgba(139, 92, 246, 0.15));
+    border: 1px solid var(--pf-primary-light);
+    border-radius: var(--pf-radius-md);
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+    animation: slideDown 0.2s ease-out;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.quick-action-bar .selection-info {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.quick-action-bar .selection-count {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--pf-primary);
+    background: white;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--pf-radius-sm);
+    min-width: 28px;
+    text-align: center;
+}
+
+.quick-action-bar .selection-label {
+    font-size: 0.75rem;
+    color: var(--pf-gray-600);
+}
+
+.quick-action-bar .quick-actions {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.quick-action-bar .quick-assign-btn {
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.quick-action-bar .btn-outline-secondary {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
 }
 
 /* Sidebar Sections (compact) */
@@ -551,36 +750,116 @@
     color: var(--pf-primary);
 }
 
+/* Inspector context hint (Issue 5) */
+.inspector-context-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: linear-gradient(135deg, #EDE9FE, #DBEAFE);
+    border-radius: var(--pf-radius-sm);
+    font-size: 0.75rem;
+    color: #5B21B6;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #7C3AED;
+}
+
+.inspector-context-hint i {
+    font-size: 0.9rem;
+}
+
+.inspector-context-hint strong {
+    font-weight: 700;
+}
+
 /* Inspector item with availability */
 .inspector-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.4rem;
-    padding: 0.3rem 0.4rem;
+    padding: 0.4rem 0.5rem;
+    border-left: 3px solid transparent;
+}
+
+.inspector-item.selected {
+    border-left-color: var(--pf-primary);
+}
+
+.inspector-item.unavailable {
+    border-left-color: var(--pf-gray-300);
 }
 
 .inspector-info {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.inspector-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.inspector-name-row .resource-name {
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.inspector-details {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.65rem;
+    color: var(--pf-gray-500);
+}
+
+.inspector-shift {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.inspector-shift i {
+    font-size: 0.6rem;
+}
+
+.inspector-status-pill {
+    padding: 0.1rem 0.4rem;
+    border-radius: 10px;
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.inspector-status-pill.available {
+    background: #DCFCE7;
+    color: #16A34A;
+}
+
+.inspector-status-pill.unavailable {
+    background: #F3F4F6;
+    color: #6B7280;
 }
 
 .inspector-availability {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    font-size: 0.6rem;
+    flex-shrink: 0;
 }
 
 .availability-dot {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
 }
 
 .availability-dot.available {
     background: var(--pf-success);
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
 }
 
 .availability-dot.unavailable {
@@ -998,6 +1277,202 @@
     white-space: nowrap;
 }
 
+/* Enhanced Corner Empty State */
+.empty-state-corner.enhanced {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    max-width: 300px;
+    background: linear-gradient(135deg, var(--pf-primary) 0%, var(--pf-primary-dark) 100%);
+    color: white;
+}
+
+.empty-state-corner.enhanced .empty-corner-illustration {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-corner.enhanced .empty-corner-illustration i {
+    font-size: 1.25rem;
+    color: white;
+}
+
+.empty-state-corner.enhanced .empty-text strong {
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.empty-state-corner.enhanced .empty-text span {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.empty-corner-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.empty-corner-actions .btn-outline-light {
+    border-color: rgba(255,255,255,0.4);
+    color: white;
+}
+
+.empty-corner-actions .btn-outline-light:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.6);
+}
+
+/* ========================================
+   EMPTY STATE CARDS (Sidebar)
+   ======================================== */
+.empty-state-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(180deg, var(--pf-gray-50) 0%, white 100%);
+    border-radius: var(--pf-radius-lg);
+    margin: 0.5rem;
+    border: 1px dashed var(--pf-gray-200);
+}
+
+.empty-state-card.compact {
+    padding: 1.5rem 1rem;
+}
+
+.empty-state-card h5 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--pf-gray-700);
+}
+
+.empty-state-card h6 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--pf-gray-700);
+}
+
+.empty-state-card p {
+    margin: 0 0 1rem 0;
+    font-size: 0.85rem;
+    color: var(--pf-gray-500);
+    line-height: 1.5;
+}
+
+/* Empty State Illustration (stacked icons) */
+.empty-state-illustration {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+}
+
+.empty-state-illustration.small {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0.75rem;
+}
+
+.empty-state-illustration i.primary {
+    position: absolute;
+    font-size: 2.5rem;
+    color: var(--pf-primary);
+    opacity: 0.8;
+    top: 50%;
+    left: 50%;
+    transform: translate(-60%, -50%);
+}
+
+.empty-state-illustration.small i.primary {
+    font-size: 1.75rem;
+}
+
+.empty-state-illustration i.accent {
+    position: absolute;
+    font-size: 1.5rem;
+    color: var(--pf-primary-dark);
+    bottom: 0;
+    right: 0;
+    background: white;
+    padding: 0.25rem;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.empty-state-illustration.small i.accent {
+    font-size: 1rem;
+    padding: 0.2rem;
+}
+
+/* Empty State Actions */
+.empty-state-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Empty State Hint */
+.empty-state-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 193, 7, 0.1);
+    border-radius: var(--pf-radius-sm);
+    font-size: 0.75rem;
+    color: var(--pf-gray-600);
+}
+
+.empty-state-hint i {
+    color: #f59e0b;
+    font-size: 0.9rem;
+}
+
+/* Empty State Steps (for routes) */
+.empty-state-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--pf-gray-100);
+    width: 100%;
+}
+
+.empty-state-steps .step {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--pf-gray-600);
+    text-align: left;
+}
+
+.empty-state-steps .step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: var(--pf-primary-light);
+    color: var(--pf-primary);
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
 /* ========================================
    FLOATING PANELS - Modern Card Style
    ======================================== */
@@ -1129,10 +1604,26 @@
    RESOURCE LIST - Card-Style Items
    ======================================== */
 .resource-list {
-    max-height: 200px;
+    flex: 1;
     overflow-y: auto;
     border-radius: var(--pf-radius-md);
     padding: 0.25rem;
+    /* Ensure last items aren't obscured by sticky footer */
+    padding-bottom: 1rem;
+    /* Better scroll behavior */
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+}
+
+/* Allow the jobs list to use available space */
+.resource-list.jobs-list {
+    min-height: 150px;
+    max-height: calc(100vh - 400px);
+}
+
+.resource-list.inspectors-list {
+    min-height: 100px;
+    max-height: calc(100vh - 450px);
 }
 
 .resource-item {
@@ -1202,14 +1693,22 @@
     min-height: 32px;
 }
 
-/* Status-based left border colors for rapid scanning (matches map pin colors) */
-.job-item[data-status="draft"] { border-left-color: #EF4444; }      /* Red - unassigned */
+/* Status-based left border colors for rapid scanning - GEMINI UX FIX: Reduced alarm fatigue */
+/* Blue for standard unassigned, Red ONLY for urgent (priority=2) */
+.job-item[data-status="draft"] { border-left-color: #3B82F6; }      /* Blue - standard unassigned */
 .job-item[data-status="pending"] { border-left-color: #F97316; }    /* Orange - pending */
-.job-item[data-status="scheduled"] { border-left-color: #3B82F6; }  /* Blue - scheduled */
+.job-item[data-status="scheduled"] { border-left-color: #10B981; }  /* Green - scheduled/confirmed */
 .job-item[data-status="assigned"] { border-left-color: #8B5CF6; }   /* Purple - assigned */
 .job-item[data-status="in_progress"] { border-left-color: #0EA5E9; } /* Sky blue - active */
 .job-item[data-status="completed"] { border-left-color: #22C55E; }  /* Green - done */
 .job-item[data-status="cancelled"] { border-left-color: #6B7280; }  /* Grey - cancelled */
+
+/* Urgent/high priority jobs override with RED */
+.job-item[data-priority="2"],
+.job-item[data-priority="urgent"],
+.job-item.urgent {
+    border-left-color: #EF4444 !important; /* Red - truly urgent */
+}
 
 /* Overdue jobs get red border */
 .job-item[data-overdue="true"] { border-left-color: #dc3545; }
@@ -1231,6 +1730,55 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+}
+
+/* ========================================
+   JOB HOVER ACTIONS (Quick Assign)
+   ======================================== */
+.job-hover-actions {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    z-index: 5;
+}
+
+.job-item:hover .job-hover-actions {
+    opacity: 1;
+    visibility: visible;
+}
+
+.quick-assign-single {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--pf-primary);
+    border: none;
+    color: white;
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.quick-assign-single:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+    background: var(--pf-primary-dark);
+}
+
+.quick-assign-single i {
+    font-size: 0.7rem;
+}
+
+/* Make room for hover action button */
+.job-item {
+    position: relative;
 }
 
 /* Primary: Property name (compact) */
@@ -1263,18 +1811,81 @@
     flex-shrink: 0;
 }
 
-/* Meta row: hide status badge (use left border color instead), show times inline */
+/* Meta row: show status pill + times inline for scannable info */
 .job-item-meta {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    margin-top: 0;
+    gap: 0.35rem;
+    margin-top: 0.15rem;
     flex-wrap: nowrap;
 }
 
-/* Hide status badge text - left border color indicates status */
-.job-item-meta .badge {
-    display: none;
+/* Status badge pill - small but visible with color coding */
+.job-item-meta .job-status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.4rem;
+    border-radius: 10px;
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+/* Status pill colors */
+.job-status-pill.status-draft {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+.job-status-pill.status-pending {
+    background: #FFEDD5;
+    color: #EA580C;
+}
+.job-status-pill.status-scheduled {
+    background: #DBEAFE;
+    color: #2563EB;
+}
+.job-status-pill.status-assigned {
+    background: #EDE9FE;
+    color: #7C3AED;
+}
+.job-status-pill.status-in_progress {
+    background: #E0F2FE;
+    color: #0284C7;
+}
+.job-status-pill.status-completed {
+    background: #DCFCE7;
+    color: #16A34A;
+}
+.job-status-pill.status-cancelled {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+/* Urgent indicator - pulsing dot */
+.job-urgent-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #EF4444;
+    animation: pulse-urgent 1.5s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulse-urgent {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* Overdue label */
+.job-overdue-label {
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: #DC2626;
+    text-transform: uppercase;
+    padding: 0 0.2rem;
 }
 
 .job-item-times {
@@ -1295,6 +1906,80 @@
     color: var(--pf-success);
     font-weight: 600;
     font-size: 0.55rem;
+}
+
+/* ========================================
+   COMPACT VIEW MODE (Issue 3) - Ultra Dense
+   ======================================== */
+/* When compact mode is enabled, show even denser list */
+.jobs-list.compact-mode .job-item {
+    min-height: 22px;
+    max-height: 26px;
+    padding: 0.1rem 0.35rem;
+    border-left-width: 3px;
+    gap: 0.25rem;
+}
+
+.jobs-list.compact-mode .job-item-checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.jobs-list.compact-mode .job-item-checkbox input[type="checkbox"] {
+    width: 12px;
+    height: 12px;
+}
+
+.jobs-list.compact-mode .job-property-name {
+    font-size: 0.65rem;
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+.jobs-list.compact-mode .job-address {
+    display: none;
+}
+
+.jobs-list.compact-mode .job-item-meta {
+    margin-top: 0;
+    gap: 0.15rem;
+}
+
+.jobs-list.compact-mode .job-status-pill {
+    padding: 0.02rem 0.25rem;
+    font-size: 0.45rem;
+    line-height: 1.1;
+}
+
+.jobs-list.compact-mode .job-urgent-indicator {
+    width: 5px;
+    height: 5px;
+}
+
+.jobs-list.compact-mode .job-overdue-label {
+    font-size: 0.45rem;
+    padding: 0 0.15rem;
+}
+
+.jobs-list.compact-mode .job-deadline,
+.jobs-list.compact-mode .job-scheduled {
+    display: none;
+}
+
+/* In compact mode, property name and status are on same line */
+.jobs-list.compact-mode .job-item-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.jobs-list.compact-mode .job-property-name {
+    flex: 1;
+}
+
+/* Hide hover actions in compact mode (too small) */
+.jobs-list.compact-mode .job-hover-actions {
+    display: none;
 }
 
 /* ========================================
@@ -1571,6 +2256,28 @@
     transform: scale(0.85);
 }
 
+/* === UNASSIGNED PIN PULSING (Issue 7) === */
+/* Draft/unassigned pins pulse to attract attention */
+.job-pin-marker .job-pin[data-status="draft"] {
+    animation: pulse-unassigned 2s ease-in-out infinite;
+}
+
+@keyframes pulse-unassigned {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4),
+                    0 0 0 0 rgba(239, 68, 68, 0.6);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4),
+                    0 0 0 8px rgba(239, 68, 68, 0);
+    }
+}
+
+/* Stop pulsing when selected */
+.job-pin-marker.selected .job-pin[data-status="draft"] {
+    animation: none;
+}
+
 /* Selected pins: Bright purple with glow */
 .job-pin-marker.selected:not(.routed) .job-pin {
     box-shadow: 0 2px 8px rgba(0,0,0,0.4),
@@ -1747,6 +2454,54 @@
 /* ========================================
    MAP LEGEND (Compact Icon with Hover Expand)
    ======================================== */
+
+/* === Map Filter Toggle (GEMINI UX: Show All vs Show Listed) === */
+.map-filter-toggle {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 500;
+    display: flex;
+    gap: 0;
+    background: var(--pf-white);
+    border-radius: 20px;
+    padding: 3px;
+    box-shadow: var(--pf-shadow-md);
+    border: 1px solid var(--pf-gray-300);
+}
+
+.map-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--pf-gray-600);
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.map-filter-btn:hover {
+    background: var(--pf-gray-100);
+    color: var(--pf-gray-700);
+}
+
+.map-filter-btn.active {
+    background: var(--pf-primary);
+    color: white;
+    box-shadow: 0 2px 4px rgba(113, 75, 103, 0.3);
+}
+
+.map-filter-btn i {
+    font-size: 0.7rem;
+}
+
 .map-legend-compact {
     position: absolute;
     bottom: 100px;
@@ -1833,8 +2588,28 @@
     height: 14px;
     border-radius: 50%;
     flex-shrink: 0;
-    border: 1px solid rgba(255,255,255,0.5);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Pulsing legend marker for unassigned */
+.legend-marker.pulsing {
+    animation: legend-pulse 2s ease-in-out infinite;
+}
+
+@keyframes legend-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4), 0 1px 3px rgba(0,0,0,0.2); }
+    50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0), 0 1px 3px rgba(0,0,0,0.2); }
+}
+
+/* Selected ring effect */
+.legend-marker.selected-ring {
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.4), 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.legend-item small {
+    color: var(--pf-gray-400);
+    font-size: 0.6rem;
 }
 
 .legend-cluster {
@@ -2053,4 +2828,524 @@
     font-weight: 600;
     white-space: nowrap;
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* ========================================
+   GEMINI UX IMPROVEMENTS
+   Based on AI analysis recommendations
+   ======================================== */
+
+/* === A. ENHANCED DATA DENSITY IN JOB LIST === */
+/* Compressed padding for more visible jobs */
+.job-item {
+    padding: 0.35rem 0.5rem !important;
+    margin-bottom: 2px;
+    min-height: 38px;
+    border-radius: var(--pf-radius-sm);
+    border: 1px solid transparent;
+}
+
+.job-item:hover {
+    background: var(--pf-gray-100);
+    border-color: var(--pf-gray-200);
+}
+
+.job-item.selected {
+    background: var(--pf-primary-bg);
+    border-color: var(--pf-primary-light);
+}
+
+/* Enhanced property name visibility */
+.job-property-name {
+    font-size: 0.8rem !important;
+    font-weight: 600;
+    color: #212529 !important;
+    margin-bottom: 1px;
+}
+
+/* Improved address readability (Gemini UX: increase font, darken color, heavier weight) */
+.job-address {
+    font-size: 0.75rem !important;      /* Larger for better readability */
+    color: #333333 !important;          /* Dark grey, high contrast */
+    font-weight: 500 !important;        /* Medium weight for legibility */
+    line-height: 1.3;
+    letter-spacing: -0.01em;            /* Tighter for compact look */
+}
+
+/* === B. SETTINGS AREA - COMPACT BY DEFAULT === */
+/* Minimize settings section to reclaim space */
+.sidebar-section.settings-section {
+    max-height: 48px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: var(--pf-gray-50);
+    border: 1px dashed var(--pf-gray-200);
+}
+
+.sidebar-section.settings-section:hover,
+.sidebar-section.settings-section.expanded {
+    max-height: 400px;
+}
+
+.sidebar-section.settings-section .section-header {
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.sidebar-section.settings-section .section-body {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--pf-gray-200);
+}
+
+/* Settings collapse indicator */
+.settings-section .collapse-indicator {
+    font-size: 0.65rem;
+    color: var(--pf-gray-400);
+    margin-left: auto;
+    transition: transform 0.2s ease;
+}
+
+.settings-section.expanded .collapse-indicator {
+    transform: rotate(180deg);
+}
+
+/* === C. MAXIMIZE SIDEBAR LIST HEIGHT === */
+/* Force the job list to fill available space */
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.sidebar-tab-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Scrollable job list area */
+.job-list-container,
+.resource-list-scrollable {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+    padding-bottom: 0.5rem;
+}
+
+/* Sticky action button footer - GEMINI UX: Truly sticky at viewport bottom */
+.sidebar-footer {
+    flex: 0 0 auto;
+    position: sticky !important;
+    bottom: 0 !important;
+    left: 0;
+    right: 0;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.98);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--pf-gray-200);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
+    z-index: 200;
+    margin-top: auto;
+}
+
+/* === D. SMART ADDRESS TRUNCATION === */
+/* Single-line addresses with ellipsis */
+.job-address-truncated {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.job-address-truncated .street {
+    flex: 0 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.job-address-truncated .postcode {
+    flex: 0 0 auto;
+    font-weight: 500;
+    color: var(--pf-gray-600);
+}
+
+/* === E. CONDENSE SIDEBAR HEADER === */
+/* Inline tabs and search for space efficiency */
+.sidebar-header-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: linear-gradient(135deg, var(--pf-primary) 0%, var(--pf-primary-dark) 100%);
+}
+
+.sidebar-tabs-inline {
+    display: flex;
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+    padding: 2px;
+}
+
+.sidebar-tabs-inline .sidebar-tab {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    border-radius: 3px;
+    color: rgba(255,255,255,0.7);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sidebar-tabs-inline .sidebar-tab:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+}
+
+.sidebar-tabs-inline .sidebar-tab.active {
+    color: var(--pf-primary);
+    background: white;
+    font-weight: 600;
+}
+
+/* === F. STATUS COLOR CODING ENHANCEMENT === */
+/* More visible status indicators */
+.job-item {
+    position: relative;
+}
+
+/* Add status dot indicator */
+.job-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.job-status-dot.status-draft { background: #EF4444; }
+.job-status-dot.status-pending { background: #F97316; }
+.job-status-dot.status-scheduled { background: #3B82F6; }
+.job-status-dot.status-assigned { background: #8B5CF6; }
+.job-status-dot.status-in_progress { background: #0EA5E9; }
+.job-status-dot.status-completed { background: #22C55E; }
+.job-status-dot.status-cancelled { background: #6B7280; }
+
+/* === G. STICKY FOOTER WITH SCROLL BEHIND === */
+/* Semi-transparent background for scroll-behind effect */
+.sidebar-footer-floating {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--pf-gray-200);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    z-index: 50;
+}
+
+/* === H. TIME/SCHEDULE VISIBILITY === */
+/* Make scheduled time more prominent */
+.job-scheduled-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--pf-success);
+    background: rgba(34, 197, 94, 0.1);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+}
+
+.job-scheduled-time i {
+    font-size: 0.6rem;
+}
+
+/* Overdue time styling */
+.job-overdue-time {
+    color: var(--pf-danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* === I. ENHANCED SELECTION FEEDBACK === */
+/* Clear visual feedback when items are selected */
+.job-item.selected {
+    background: linear-gradient(135deg, rgba(113, 75, 103, 0.08), rgba(113, 75, 103, 0.12));
+    border-color: var(--pf-primary);
+    box-shadow: inset 0 0 0 1px var(--pf-primary-light);
+}
+
+.job-item.selected .job-property-name {
+    color: var(--pf-primary-dark);
+}
+
+/* Selected count badge animation */
+.selection-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    background: var(--pf-primary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 0 0.4rem;
+    animation: countPulse 0.3s ease;
+}
+
+@keyframes countPulse {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* === J. ACCESSIBILITY IMPROVEMENTS === */
+/* Better focus indicators */
+.job-item:focus-visible,
+.resource-item:focus-visible,
+.sidebar-tab:focus-visible {
+    outline: 2px solid var(--pf-primary);
+    outline-offset: 2px;
+}
+
+/* Ensure minimum touch target size (44x44) */
+@media (pointer: coarse) {
+    .job-item {
+        min-height: 44px;
+    }
+
+    .sidebar-tab {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .job-item-checkbox input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* ========================================
+   GEMINI UX IMPROVEMENTS - ROUND 2
+   Icon-based badges, ultra-compact mode
+   ======================================== */
+
+/* === ICON-BASED STATUS INDICATORS (replaces text badges) === */
+.job-status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 0.6rem;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+/* Status icon colors - matches original pill colors */
+.job-status-icon.status-draft {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+.job-status-icon.status-pending {
+    background: #FFEDD5;
+    color: #EA580C;
+}
+.job-status-icon.status-scheduled {
+    background: #DBEAFE;
+    color: #2563EB;
+}
+.job-status-icon.status-assigned {
+    background: #EDE9FE;
+    color: #7C3AED;
+}
+.job-status-icon.status-in_progress {
+    background: #E0F2FE;
+    color: #0284C7;
+}
+.job-status-icon.status-in_progress i {
+    animation: spin 1.5s linear infinite;
+}
+.job-status-icon.status-completed {
+    background: #DCFCE7;
+    color: #16A34A;
+}
+.job-status-icon.status-cancelled {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Status text (shown in non-compact mode) */
+.job-status-text {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--pf-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Overdue icon (replaces "LATE" text badge) */
+.job-overdue-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: #EF4444;
+    font-size: 0.65rem;
+    animation: pulse-overdue 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulse-overdue {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* Time info styling */
+.job-time-info {
+    font-size: 0.55rem;
+    color: var(--pf-gray-500);
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+/* === ULTRA-COMPACT MODE ENHANCEMENTS === */
+/* Gemini UX: Reduce card height by 40% more */
+.jobs-list.compact-mode .job-item {
+    min-height: 20px;
+    max-height: 22px;
+    padding: 0.05rem 0.3rem;
+    border-left-width: 2px;
+    gap: 0.2rem;
+    margin-bottom: 1px;
+}
+
+.jobs-list.compact-mode .job-item-checkbox {
+    padding: 0;
+}
+
+.jobs-list.compact-mode .job-item-checkbox input[type="checkbox"] {
+    width: 10px;
+    height: 10px;
+}
+
+.jobs-list.compact-mode .job-property-name {
+    font-size: 0.6rem;
+    font-weight: 500;
+    line-height: 1;
+    max-width: 120px;
+}
+
+/* Ultra-compact: single line layout */
+.jobs-list.compact-mode .job-item-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Compact mode: smaller icons */
+.jobs-list.compact-mode .job-status-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 0.5rem;
+}
+
+.jobs-list.compact-mode .job-overdue-icon {
+    width: 12px;
+    height: 12px;
+    font-size: 0.5rem;
+}
+
+.jobs-list.compact-mode .job-time-info {
+    font-size: 0.5rem;
+}
+
+.jobs-list.compact-mode .job-status-text {
+    display: none;
+}
+
+.jobs-list.compact-mode .job-item-meta {
+    margin-top: 0;
+    gap: 0.15rem;
+    flex-shrink: 0;
+}
+
+/* Abbreviated property names styling */
+.job-property-name {
+    /* Support for abbreviated names like "ST-20" */
+    font-variant-numeric: tabular-nums;
+}
+
+/* === CLUSTER SPIDERFY STYLES === */
+/* Spider lines connecting cluster center to spread pins */
+.spider-line {
+    stroke: var(--pf-primary);
+    stroke-width: 1.5;
+    stroke-dasharray: 4, 2;
+    fill: none;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.spider-line:hover {
+    opacity: 1;
+    stroke-width: 2;
+}
+
+/* Spider leg pins (smaller than regular pins) */
+.spider-pin {
+    width: 24px;
+    height: 24px;
+    font-size: 0.65rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    animation: spider-appear 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes spider-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Spider center marker (shown when expanded) */
+.spider-center {
+    background: var(--pf-gray-800);
+    color: white;
+    border: 2px solid white;
+    cursor: pointer;
+}
+
+.spider-center:hover {
+    background: var(--pf-gray-900);
+    transform: scale(1.1);
 }

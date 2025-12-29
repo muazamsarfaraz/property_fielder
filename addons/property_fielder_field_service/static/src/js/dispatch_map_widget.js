@@ -36,6 +36,8 @@ export class DispatchMapWidget extends Component {
         this.mapboxToken = null;
         this.clusterSourceId = 'job-clusters';
         this.mapLoaded = false;
+        this.spiderMarkers = []; // Spiderfy cluster markers
+        this.spiderLines = []; // Spider leg lines
 
         onMounted(() => this.initMap());
         onWillUnmount(() => this.destroyMap());
@@ -216,18 +218,33 @@ export class DispatchMapWidget extends Component {
             }
         });
 
-        // Click on cluster to zoom in
+        // Click on cluster - Spiderfy if at max zoom, otherwise zoom in
+        // Gemini UX Recommendation: Implement spiderfy for overlapping pins
         this.map.on('click', 'clusters', (e) => {
             const features = this.map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+            if (!features.length) return;
+
             const clusterId = features[0].properties.cluster_id;
+            const clusterCenter = features[0].geometry.coordinates;
+            const pointCount = features[0].properties.point_count;
+            const currentZoom = this.map.getZoom();
+
+            // Get expansion zoom to see if we can zoom in more
             this.map.getSource(this.clusterSourceId).getClusterExpansionZoom(
                 clusterId,
-                (err, zoom) => {
+                (err, expansionZoom) => {
                     if (err) return;
-                    this.map.easeTo({
-                        center: features[0].geometry.coordinates,
-                        zoom: zoom
-                    });
+
+                    // If we're already near max zoom or expansion zoom, use spiderfy
+                    if (currentZoom >= 14 || expansionZoom >= 15 || pointCount <= 10) {
+                        this.spiderfyCluster(clusterId, clusterCenter, pointCount);
+                    } else {
+                        // Otherwise zoom in normally
+                        this.map.easeTo({
+                            center: clusterCenter,
+                            zoom: expansionZoom
+                        });
+                    }
                 }
             );
         });
@@ -239,9 +256,139 @@ export class DispatchMapWidget extends Component {
         this.map.on('mouseleave', 'clusters', () => {
             this.map.getCanvas().style.cursor = '';
         });
+
+        // Click on map (not cluster/marker) to close spiderfy
+        this.map.on('click', (e) => {
+            // Check if click was on a cluster or marker
+            const features = this.map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+            if (features.length === 0 && !e.originalEvent.target.closest('.mapboxgl-marker')) {
+                this.clearSpiderfy();
+            }
+        });
+    }
+
+    /**
+     * Spiderfy a cluster - spread its points in a circle pattern
+     * @param {number} clusterId - The cluster ID
+     * @param {Array} center - [lng, lat] of cluster center
+     * @param {number} pointCount - Number of points in cluster
+     */
+    spiderfyCluster(clusterId, center, pointCount) {
+        // Clear any existing spiderfy
+        this.clearSpiderfy();
+
+        // Get the leaves (individual points) of this cluster
+        this.map.getSource(this.clusterSourceId).getClusterLeaves(
+            clusterId,
+            pointCount,
+            0,
+            (err, leaves) => {
+                if (err || !leaves) return;
+
+                this.spiderMarkers = [];
+                this.spiderLines = [];
+
+                // Calculate spider leg positions in a circle
+                const radius = 50; // pixels
+                const angleStep = (2 * Math.PI) / leaves.length;
+
+                leaves.forEach((leaf, i) => {
+                    const angle = angleStep * i - Math.PI / 2; // Start from top
+                    const offsetX = Math.cos(angle) * radius;
+                    const offsetY = Math.sin(angle) * radius;
+
+                    // Get the job data
+                    const jobId = leaf.properties.id;
+                    const jobState = leaf.properties.state || 'draft';
+                    const jobName = leaf.properties.name || '';
+
+                    // Get status color - GEMINI UX FIX: Reduce alarm fatigue
+                    // Blue/grey for standard unassigned, Red ONLY for urgent
+                    const statusColors = {
+                        'draft': '#3B82F6',       // Blue - standard unassigned (NOT red)
+                        'pending': '#F97316',     // Orange - pending action
+                        'scheduled': '#10B981',   // Green - scheduled/confirmed
+                        'assigned': '#8B5CF6',    // Purple - assigned to inspector
+                        'in_progress': '#0EA5E9', // Sky blue - actively being worked
+                        'completed': '#22C55E',   // Green - done
+                        'cancelled': '#6B7280',   // Grey - cancelled
+                    };
+                    const color = statusColors[jobState] || '#3B82F6'; // Default to blue
+
+                    // Create spider pin element
+                    const el = document.createElement('div');
+                    el.className = 'job-pin-marker spider-marker';
+                    el.innerHTML = `
+                        <div class="job-pin spider-pin"
+                             data-status="${jobState}"
+                             style="background: ${color}; width: 24px; height: 24px;">
+                            <span class="job-pin-icon">●</span>
+                        </div>
+                    `;
+                    el.title = jobName;
+
+                    // Create marker at offset position (using pixel offset)
+                    const marker = new mapboxgl.Marker({
+                        element: el,
+                        offset: [offsetX, offsetY],
+                        anchor: 'center'
+                    })
+                    .setLngLat(center)
+                    .addTo(this.map);
+
+                    // Add click handler
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (this.props.onJobClick) {
+                            const job = this.props.jobs.find(j => j.id === jobId);
+                            if (job) this.props.onJobClick(job);
+                        }
+                    });
+
+                    this.spiderMarkers.push(marker);
+                });
+
+                // Add a center marker to close the spider
+                const centerEl = document.createElement('div');
+                centerEl.className = 'job-pin-marker spider-center-marker';
+                centerEl.innerHTML = `
+                    <div class="job-pin spider-center" title="Click to close">
+                        <span class="job-pin-icon">×</span>
+                    </div>
+                `;
+                centerEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.clearSpiderfy();
+                });
+
+                const centerMarker = new mapboxgl.Marker({
+                    element: centerEl,
+                    anchor: 'center'
+                })
+                .setLngLat(center)
+                .addTo(this.map);
+
+                this.spiderMarkers.push(centerMarker);
+            }
+        );
+    }
+
+    /**
+     * Clear any existing spiderfy markers
+     */
+    clearSpiderfy() {
+        if (this.spiderMarkers) {
+            this.spiderMarkers.forEach(m => m.remove());
+            this.spiderMarkers = [];
+        }
+        if (this.spiderLines) {
+            this.spiderLines.forEach(l => l.remove());
+            this.spiderLines = [];
+        }
     }
 
     destroyMap() {
+        this.clearSpiderfy(); // Clear any spider markers first
         if (this.map) {
             this.map.remove();
             this.map = null;
@@ -279,9 +426,9 @@ export class DispatchMapWidget extends Component {
             const isSelected = selectedJobIds.includes(job.id);
             const hasRoute = job.sequence_in_route && job.sequence_in_route > 0;
 
-            // Color logic: Always use status-based colors for better visibility
-            // Selected jobs get a highlight ring effect via CSS
-            const color = this.getJobColor(job.state);
+            // Color logic: Status-based colors with priority override
+            // Urgent (high priority) jobs get RED, others get neutral colors
+            const color = this.getJobColor(job.state, job.priority);
 
             // Only show sequence number if job has been routed
             const displayContent = hasRoute
@@ -462,22 +609,27 @@ export class DispatchMapWidget extends Component {
             .map(j => [j.longitude, j.latitude]);
     }
 
-    getJobColor(state) {
-        // Status-based colors for map pins (high contrast, distinct)
-        // Red = Unassigned/Draft (needs attention)
-        // Orange = Scheduled (pending)
-        // Blue = Assigned/In Progress (active)
-        // Green = Completed (done)
+    getJobColor(state, priority = null) {
+        // GEMINI UX FIX: Reduce "alarm fatigue"
+        // Use neutral Blue/Grey for standard unassigned jobs
+        // Red ONLY for urgent jobs (high priority)
+        // Green for scheduled/confirmed jobs
         const colors = {
-            'draft': '#EF4444',       // Red - unassigned, needs attention
-            'pending': '#F97316',     // Orange - pending
-            'scheduled': '#3B82F6',   // Blue - scheduled
+            'draft': '#3B82F6',       // Blue - standard unassigned (NOT red!)
+            'pending': '#F97316',     // Orange - pending action
+            'scheduled': '#10B981',   // Green - scheduled/confirmed
             'assigned': '#8B5CF6',    // Purple - assigned to inspector
             'in_progress': '#0EA5E9', // Sky blue - actively being worked
             'completed': '#22C55E',   // Green - done
             'cancelled': '#6B7280'    // Grey - cancelled
         };
-        return colors[state] || '#EF4444'; // Default to red (unassigned)
+
+        // Override: High priority/urgent jobs get RED regardless of state
+        if (priority === '2' || priority === 2 || priority === 'urgent') {
+            return '#EF4444'; // Red - truly urgent
+        }
+
+        return colors[state] || '#3B82F6'; // Default to blue (not red)
     }
 
     getRouteColor(index) {
@@ -539,7 +691,7 @@ export class DispatchMapWidget extends Component {
             <div class="job-popup-content" data-job-id="${job.id}">
                 <div class="job-popup-header">
                     <h6>${propertyName}</h6>
-                    <span class="job-popup-status" style="background: ${this.getJobColor(job.state)};">${job.state}</span>
+                    <span class="job-popup-status" style="background: ${this.getJobColor(job.state, job.priority)};">${job.state}</span>
                 </div>
                 <div class="job-popup-body">
                     <div class="job-popup-row"><i class="fa fa-user"></i> ${job.partner_id?.[1] || 'N/A'}</div>

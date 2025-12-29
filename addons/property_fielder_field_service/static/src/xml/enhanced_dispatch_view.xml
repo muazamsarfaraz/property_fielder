@@ -124,40 +124,74 @@
 
                             <!-- Jobs Tab Content -->
                             <div class="sidebar-tab-content" t-if="state.sidebarTab === 'jobs'">
-                                <!-- Quick Filter Actions -->
-                                <div class="tab-actions">
-                                    <div class="dropdown quick-filter-dropdown">
-                                        <button class="btn btn-xs btn-outline-primary dropdown-toggle" type="button"
-                                                data-bs-toggle="dropdown" aria-expanded="false"
-                                                t-on-click="toggleQuickFilterDropdown">
-                                            <i class="fa fa-filter me-1"/> Select
-                                        </button>
-                                        <ul t-attf-class="dropdown-menu {{ state.quickFilterOpen ? 'show' : '' }}">
-                                            <li><a class="dropdown-item" href="#" t-on-click="selectAllJobs"><i class="fa fa-check-double me-2"/> All Jobs</a></li>
-                                            <li><a class="dropdown-item" href="#" t-on-click="selectDraftJobs"><i class="fa fa-file-alt me-2"/> Draft Only</a></li>
-                                            <li><a class="dropdown-item" href="#" t-on-click="selectScheduledJobs"><i class="fa fa-calendar-check me-2"/> Scheduled</a></li>
-                                            <li><a class="dropdown-item" href="#" t-on-click="selectDueTodayJobs"><i class="fa fa-clock me-2"/> Due Today</a></li>
-                                            <li><hr class="dropdown-divider"/></li>
-                                            <li><a class="dropdown-item text-danger" href="#" t-on-click="clearJobSelection"><i class="fa fa-times me-2"/> Clear All</a></li>
-                                        </ul>
-                                    </div>
-                                    <span class="job-count-label"><t t-esc="filteredJobs.length"/>/<t t-esc="state.jobs.length"/> jobs</span>
+                                <!-- Quick Filter Pills (Issue 4 - visible filter toggles) -->
+                                <div class="quick-filter-pills">
+                                    <button t-attf-class="filter-pill {{ state.activeQuickFilter === 'all' ? 'active' : '' }}"
+                                            t-on-click="() => this.setQuickFilter('all')">
+                                        All <span class="pill-count"><t t-esc="state.jobs.length"/></span>
+                                    </button>
+                                    <button t-attf-class="filter-pill filter-unassigned {{ state.activeQuickFilter === 'unassigned' ? 'active' : '' }}"
+                                            t-on-click="() => this.setQuickFilter('unassigned')">
+                                        Unassigned <span class="pill-count"><t t-esc="unassignedCount"/></span>
+                                    </button>
+                                    <button t-attf-class="filter-pill filter-scheduled {{ state.activeQuickFilter === 'scheduled' ? 'active' : '' }}"
+                                            t-on-click="() => this.setQuickFilter('scheduled')">
+                                        Scheduled <span class="pill-count"><t t-esc="scheduledCount"/></span>
+                                    </button>
+                                    <button t-attf-class="filter-pill filter-urgent {{ state.activeQuickFilter === 'urgent' ? 'active' : '' }}"
+                                            t-on-click="() => this.setQuickFilter('urgent')"
+                                            t-if="urgentCount > 0">
+                                        <span class="urgent-dot"/> Urgent <span class="pill-count"><t t-esc="urgentCount"/></span>
+                                    </button>
                                 </div>
-                                <!-- Search Filter -->
-                                <div class="search-filter">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text"><i class="fa fa-search"/></span>
-                                        <input type="text" class="form-control" placeholder="Search jobs..."
-                                               t-att-value="state.jobSearchQuery"
-                                               t-on-input="onJobSearchInput"/>
-                                        <button class="btn btn-outline-secondary" type="button" t-on-click="clearJobSearch"
-                                                t-if="state.jobSearchQuery">
+
+                                <!-- Search and View Controls -->
+                                <div class="search-view-row">
+                                    <!-- Search -->
+                                    <div class="search-filter">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text"><i class="fa fa-search"/></span>
+                                            <input type="text" class="form-control" placeholder="Search..."
+                                                   t-att-value="state.jobSearchQuery"
+                                                   t-on-input="onJobSearchInput"/>
+                                            <button class="btn btn-outline-secondary" type="button" t-on-click="clearJobSearch"
+                                                    t-if="state.jobSearchQuery">
+                                                <i class="fa fa-times"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- View Toggle + Count (Issue 3 - Compact view) -->
+                                    <div class="view-controls">
+                                        <button t-attf-class="btn btn-xs {{ state.compactViewMode ? 'btn-primary' : 'btn-outline-secondary' }}"
+                                                t-on-click="toggleCompactView" title="Compact View">
+                                            <i t-attf-class="fa {{ state.compactViewMode ? 'fa-list' : 'fa-th-list' }}"/>
+                                        </button>
+                                        <span class="job-count-label"><t t-esc="filteredJobs.length"/>/<t t-esc="state.jobs.length"/></span>
+                                    </div>
+                                </div>
+
+                                <!-- Sticky Quick Action Bar (appears when jobs selected) -->
+                                <div class="quick-action-bar" t-if="state.selectedJobIds.length > 0">
+                                    <div class="selection-info">
+                                        <span class="selection-count"><t t-esc="state.selectedJobIds.length"/></span>
+                                        <span class="selection-label">selected</span>
+                                    </div>
+                                    <div class="quick-actions">
+                                        <button class="btn btn-sm btn-primary quick-assign-btn"
+                                                t-on-click="onQuickAssign"
+                                                title="Assign to inspector">
+                                            <i class="fa fa-user-plus me-1"/> Assign
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                                t-on-click="clearJobSelection"
+                                                title="Clear selection">
                                             <i class="fa fa-times"/>
                                         </button>
                                     </div>
                                 </div>
+
                                 <!-- Job List -->
-                                <div class="resource-list jobs-list">
+                                <div t-attf-class="resource-list jobs-list {{ state.compactViewMode ? 'compact-mode' : '' }}">
                                     <t t-foreach="filteredJobs" t-as="job" t-key="job.id">
                                         <div t-attf-class="resource-item job-item {{ state.selectedJobIds.includes(job.id) ? 'selected' : '' }} {{ state.hoveredJobId === job.id ? 'hovered' : '' }} {{ state.mapHoveredJobId === job.id ? 'map-hovered' : '' }}"
                                              t-att-data-status="job.state"
@@ -171,26 +205,63 @@
                                             <div class="job-item-content">
                                                 <!-- Primary: Property name (bold) -->
                                                 <div class="job-property-name" t-esc="getPropertyName(job)"/>
-                                                <!-- Address line -->
-                                                <div class="job-address" t-esc="getJobAddress(job)"/>
-                                                <!-- Meta row: status + times -->
+                                                <!-- Address line (hidden in compact mode) -->
+                                                <div class="job-address" t-if="!state.compactViewMode" t-esc="getJobAddress(job)"/>
+                                                <!-- Meta row: icon-based status + urgent indicator + times -->
                                                 <div class="job-item-meta">
-                                                    <span t-attf-class="resource-status badge badge-{{ job.state }}" t-esc="job.state"/>
-                                                    <span class="job-deadline" t-if="job.latest_end" t-att-title="'Deadline: ' + job.latest_end">
-                                                        ⏰ <t t-esc="formatTime(job.latest_end)"/>
+                                                    <!-- Icon-based status indicator (Gemini UX: use icons instead of text) -->
+                                                    <span t-attf-class="job-status-icon status-{{ job.state }}" t-att-title="getStatusLabel(job.state)">
+                                                        <i t-if="job.state === 'draft'" class="fa fa-circle-o"/>
+                                                        <i t-if="job.state === 'pending'" class="fa fa-clock-o"/>
+                                                        <i t-if="job.state === 'scheduled'" class="fa fa-calendar"/>
+                                                        <i t-if="job.state === 'assigned'" class="fa fa-user"/>
+                                                        <i t-if="job.state === 'in_progress'" class="fa fa-spinner"/>
+                                                        <i t-if="job.state === 'completed'" class="fa fa-check"/>
+                                                        <i t-if="job.state === 'cancelled'" class="fa fa-ban"/>
                                                     </span>
-                                                    <span class="job-scheduled" t-if="job.scheduled_arrival_time" t-att-title="'Scheduled: ' + job.scheduled_arrival_time">
-                                                        📅 <t t-esc="formatTime(job.scheduled_arrival_time)"/>
+                                                    <!-- Text label only in non-compact mode -->
+                                                    <span class="job-status-text" t-if="!state.compactViewMode" t-esc="getStatusLabel(job.state)"/>
+                                                    <!-- Overdue indicator with icon (replaces "LATE" text) -->
+                                                    <span class="job-overdue-icon" t-if="isJobOverdue(job)" title="Overdue - Past deadline">
+                                                        <i class="fa fa-exclamation-triangle"/>
+                                                    </span>
+                                                    <!-- Time info (condensed in compact mode) -->
+                                                    <span class="job-time-info" t-if="job.latest_end" t-att-title="'Deadline: ' + job.latest_end">
+                                                        <t t-esc="formatTime(job.latest_end)"/>
                                                     </span>
                                                 </div>
                                             </div>
+                                            <!-- Quick action on hover (Issue: Quick-Assign) -->
+                                            <div class="job-hover-actions" t-if="job.state === 'draft'">
+                                                <button class="btn btn-xs btn-primary quick-assign-single"
+                                                        t-on-click.stop="(ev) => this.onQuickAssignSingle(job.id, ev)"
+                                                        title="Quick assign this job">
+                                                    <i class="fa fa-user-plus"/>
+                                                </button>
+                                            </div>
                                         </div>
                                     </t>
-                                    <!-- Empty state for jobs -->
+                                    <!-- Enhanced Empty State for Jobs -->
                                     <t t-if="state.jobs.length === 0">
-                                        <div class="empty-list-notice">
-                                            <i class="fa fa-inbox"/>
-                                            <span>No jobs for this date</span>
+                                        <div class="empty-state-card">
+                                            <div class="empty-state-illustration">
+                                                <i class="fa fa-building primary"/>
+                                                <i class="fa fa-clipboard-check accent"/>
+                                            </div>
+                                            <h5>No inspections scheduled</h5>
+                                            <p>Schedule property inspections to see jobs here. Jobs are created from properties with due certifications.</p>
+                                            <div class="empty-state-actions">
+                                                <button type="button" class="btn btn-sm btn-primary" t-on-click="onGoToProperties">
+                                                    <i class="fa fa-building me-1"/> View Properties
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" t-on-click="onLoadTestData">
+                                                    <i class="fa fa-flask me-1"/> Load Demo
+                                                </button>
+                                            </div>
+                                            <div class="empty-state-hint">
+                                                <i class="fa fa-lightbulb"/>
+                                                <span>Tip: Use the date picker above to check other days</span>
+                                            </div>
                                         </div>
                                     </t>
                                 </div>
@@ -198,15 +269,22 @@
 
                             <!-- Inspectors Tab Content -->
                             <div class="sidebar-tab-content" t-if="state.sidebarTab === 'inspectors'">
+                                <!-- Context hint when jobs are selected -->
+                                <div class="inspector-context-hint" t-if="state.selectedJobIds.length > 0">
+                                    <i class="fa fa-info-circle"/>
+                                    <span>Select inspectors to handle <strong><t t-esc="state.selectedJobIds.length"/></strong> selected job(s)</span>
+                                </div>
                                 <!-- Inspector Actions -->
                                 <div class="tab-actions">
                                     <button class="btn btn-xs btn-outline-primary" t-on-click="selectAllInspectors">
-                                        <i class="fa fa-check-double me-1"/> Select All
+                                        <i class="fa fa-check-double me-1"/> All Available
                                     </button>
                                     <button class="btn btn-xs btn-outline-secondary" t-on-click="clearInspectorSelection">
                                         <i class="fa fa-times me-1"/> Clear
                                     </button>
-                                    <span class="inspector-count-label"><t t-esc="state.inspectors.length"/> inspectors</span>
+                                    <span class="inspector-count-label">
+                                        <t t-esc="availableInspectors.length"/>/<t t-esc="state.inspectors.length"/> available
+                                    </span>
                                 </div>
                                 <!-- Inspector List -->
                                 <div class="resource-list inspectors-list">
@@ -215,65 +293,83 @@
                                              t-on-click="() => this.toggleInspectorSelection(inspector.id)">
                                             <input type="checkbox" t-att-checked="state.selectedInspectorIds.includes(inspector.id)"/>
                                             <div class="inspector-info">
-                                                <span class="resource-name" t-esc="inspector.name"/>
-                                                <span class="inspector-availability" t-if="inspector.available">
-                                                    <span class="availability-dot available"/>
-                                                    <span class="availability-text">Available</span>
-                                                </span>
-                                                <span class="inspector-availability" t-else="">
-                                                    <span class="availability-dot unavailable"/>
-                                                    <span class="availability-text">Unavailable</span>
-                                                </span>
+                                                <div class="inspector-name-row">
+                                                    <span class="resource-name" t-esc="inspector.name"/>
+                                                    <span class="inspector-availability" t-if="inspector.available">
+                                                        <span class="availability-dot available"/>
+                                                    </span>
+                                                    <span class="inspector-availability" t-else="">
+                                                        <span class="availability-dot unavailable"/>
+                                                    </span>
+                                                </div>
+                                                <div class="inspector-details">
+                                                    <span class="inspector-shift" t-if="inspector.shift_start">
+                                                        <i class="fa fa-clock"/> <t t-esc="inspector.shift_start"/> - <t t-esc="inspector.shift_end"/>
+                                                    </span>
+                                                    <span t-attf-class="inspector-status-pill {{ inspector.available ? 'available' : 'unavailable' }}">
+                                                        <t t-if="inspector.available">Ready</t>
+                                                        <t t-else="">Off Duty</t>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </t>
-                                    <!-- Empty state for inspectors -->
+                                    <!-- Enhanced Empty State for Inspectors -->
                                     <t t-if="state.inspectors.length === 0">
-                                        <div class="empty-list-notice">
-                                            <i class="fa fa-user-slash"/>
-                                            <span>No inspectors available</span>
+                                        <div class="empty-state-card compact">
+                                            <div class="empty-state-illustration small">
+                                                <i class="fa fa-user-tie primary"/>
+                                                <i class="fa fa-hard-hat accent"/>
+                                            </div>
+                                            <h6>No inspectors configured</h6>
+                                            <p>Add inspectors to assign them to routes and schedule inspections.</p>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" t-on-click="onGoToInspectors">
+                                                <i class="fa fa-user-plus me-1"/> Add Inspector
+                                            </button>
                                         </div>
                                     </t>
                                 </div>
                             </div>
 
-                            <!-- Optimization Settings (collapsed by default, always visible) -->
-                            <div class="sidebar-section collapsible">
-                                <div class="section-header clickable" t-on-click="toggleSettingsSection">
-                                    <h6><i class="fa fa-cog"/> Settings</h6>
-                                    <i t-attf-class="fa fa-chevron-{{ state.settingsExpanded ? 'up' : 'down' }}"/>
-                                </div>
-                                <div class="section-body" t-if="state.settingsExpanded">
-                                    <div class="setting-group">
-                                        <label class="form-label">Solver Time Limit</label>
-                                        <select class="form-select form-select-sm">
-                                            <option value="30">30 seconds</option>
-                                            <option value="60" selected="">1 minute</option>
-                                            <option value="180">3 minutes</option>
-                                            <option value="300">5 minutes</option>
-                                        </select>
+                            <!-- Optimization Settings (only visible on Optimize tab) -->
+                            <t t-if="state.activeTab === 'optimize'">
+                                <div class="sidebar-section collapsible optimization-settings">
+                                    <div class="section-header clickable" t-on-click="toggleSettingsSection">
+                                        <h6><i class="fa fa-cog"/> Optimization Settings</h6>
+                                        <i t-attf-class="fa fa-chevron-{{ state.settingsExpanded ? 'up' : 'down' }}"/>
                                     </div>
-                                    <div class="setting-group">
-                                        <label class="form-label">Optimization Mode</label>
-                                        <select class="form-select form-select-sm">
-                                            <option value="balanced">Balanced</option>
-                                            <option value="minimize_distance">Minimize Distance</option>
-                                            <option value="minimize_time">Minimize Time</option>
-                                            <option value="maximize_jobs">Maximize Jobs</option>
-                                        </select>
-                                    </div>
-                                    <div class="setting-group">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="useOsrm" checked=""/>
-                                            <label class="form-check-label" for="useOsrm">Use OSRM for routing</label>
+                                    <div class="section-body" t-if="state.settingsExpanded">
+                                        <div class="setting-group">
+                                            <label class="form-label">Solver Time Limit</label>
+                                            <select class="form-select form-select-sm">
+                                                <option value="30">30 seconds</option>
+                                                <option value="60" selected="">1 minute</option>
+                                                <option value="180">3 minutes</option>
+                                                <option value="300">5 minutes</option>
+                                            </select>
                                         </div>
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="respectTimeWindows" checked=""/>
-                                            <label class="form-check-label" for="respectTimeWindows">Respect time windows</label>
+                                        <div class="setting-group">
+                                            <label class="form-label">Optimization Mode</label>
+                                            <select class="form-select form-select-sm">
+                                                <option value="balanced">Balanced</option>
+                                                <option value="minimize_distance">Minimize Distance</option>
+                                                <option value="minimize_time">Minimize Time</option>
+                                                <option value="maximize_jobs">Maximize Jobs</option>
+                                            </select>
+                                        </div>
+                                        <div class="setting-group">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="useOsrm" checked=""/>
+                                                <label class="form-check-label" for="useOsrm">Use OSRM for routing</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="respectTimeWindows" checked=""/>
+                                                <label class="form-check-label" for="respectTimeWindows">Respect time windows</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </t>
 
                             <!-- Quick Optimize Button (always visible in Plan tab) -->
                             <div class="sidebar-footer">
@@ -418,12 +514,21 @@
                                     <h6><i class="fa fa-route"/> Routes for <t t-esc="state.selectedDate"/></h6>
                                 </div>
                                 <t t-if="state.routes.length === 0">
-                                    <div class="empty-list-notice">
-                                        <i class="fa fa-route"/>
-                                        <span>No routes for this date</span>
-                                        <button class="btn btn-sm btn-outline-primary mt-2" t-on-click="onSetActiveTabPlan">
-                                            <i class="fa fa-magic me-1"/> Create Routes
+                                    <div class="empty-state-card">
+                                        <div class="empty-state-illustration">
+                                            <i class="fa fa-route primary"/>
+                                            <i class="fa fa-map-marked-alt accent"/>
+                                        </div>
+                                        <h5>No routes scheduled</h5>
+                                        <p>Create optimized routes by selecting jobs and inspectors in the Plan tab.</p>
+                                        <button class="btn btn-sm btn-primary" t-on-click="onSetActiveTabPlan">
+                                            <i class="fa fa-list-check me-1"/> Go to Plan
                                         </button>
+                                        <div class="empty-state-steps">
+                                            <div class="step"><span class="step-num">1</span> Select jobs to schedule</div>
+                                            <div class="step"><span class="step-num">2</span> Choose available inspectors</div>
+                                            <div class="step"><span class="step-num">3</span> Click "Optimize" to create routes</div>
+                                        </div>
                                     </div>
                                 </t>
                                 <div class="route-list">
@@ -451,7 +556,7 @@
                     <!-- Map Container -->
                     <div class="dispatch-map-container">
                         <DispatchMapWidget
-                            jobs="state.jobs"
+                            jobs="mapJobs"
                             routes="state.routes"
                             inspectors="state.inspectors"
                             selectedInspectorIds="state.selectedInspectorIds"
@@ -459,7 +564,7 @@
                             hoveredJobId="state.hoveredJobId"
                             onJobClick="(job) => this.toggleJobSelection(job.id)"
                             onJobHover="(jobId) => this.onJobHover(jobId)"
-                            dataVersion="state.jobs.length + '-' + state.routes.length + '-' + state.selectedJobIds.length + '-' + (state.hoveredJobId || 'none')"/>
+                            dataVersion="mapJobs.length + '-' + state.routes.length + '-' + state.selectedJobIds.length + '-' + (state.hoveredJobId || 'none') + '-' + state.mapShowAll"/>
                     </div>
 
                     <!-- Loading Overlay -->
@@ -467,6 +572,20 @@
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
+                    </div>
+
+                    <!-- Map Filter Toggle (GEMINI UX: Show All vs Show Listed) -->
+                    <div class="map-filter-toggle">
+                        <button t-attf-class="map-filter-btn {{ state.mapShowAll ? '' : 'active' }}"
+                                t-on-click="() => this.setMapFilter(false)"
+                                title="Show only jobs matching current filters">
+                            <i class="fa fa-filter"/> Listed
+                        </button>
+                        <button t-attf-class="map-filter-btn {{ state.mapShowAll ? 'active' : '' }}"
+                                t-on-click="() => this.setMapFilter(true)"
+                                title="Show all jobs on map">
+                            <i class="fa fa-globe"/> All
+                        </button>
                     </div>
 
                     <!-- Map Legend (Bottom Right, Icon-only with hover expand) -->
@@ -477,41 +596,62 @@
                         <div class="legend-popup">
                             <div class="legend-section-title">Job Status</div>
                             <div class="legend-item">
-                                <span class="legend-marker" style="background: #9CA3AF;"/>
-                                <span>Unselected</span>
+                                <span class="legend-marker" style="background: #3B82F6;"/>
+                                <span>Unassigned <small>(standard)</small></span>
                             </div>
                             <div class="legend-item">
-                                <span class="legend-marker" style="background: #8B5CF6;"/>
-                                <span>Selected for Route</span>
+                                <span class="legend-marker pulsing" style="background: #EF4444;"/>
+                                <span>Urgent <small>(high priority)</small></span>
                             </div>
                             <div class="legend-item">
-                                <span class="legend-marker" style="background: #17a2b8;"/>
+                                <span class="legend-marker" style="background: #10B981;"/>
                                 <span>Scheduled</span>
                             </div>
                             <div class="legend-item">
-                                <span class="legend-marker" style="background: #28a745;"/>
+                                <span class="legend-marker" style="background: #8B5CF6;"/>
+                                <span>Assigned to Inspector</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-marker" style="background: #0EA5E9;"/>
+                                <span>In Progress</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-marker" style="background: #22C55E;"/>
                                 <span>Completed</span>
                             </div>
                             <div class="legend-divider"/>
-                            <div class="legend-section-title">Map Symbols</div>
+                            <div class="legend-section-title">Selection</div>
+                            <div class="legend-item">
+                                <span class="legend-marker selected-ring" style="background: #8B5CF6;"/>
+                                <span>Selected Job</span>
+                            </div>
+                            <div class="legend-divider"/>
+                            <div class="legend-section-title">Clusters</div>
                             <div class="legend-item">
                                 <span class="legend-cluster"/>
-                                <span>Cluster (# jobs)</span>
+                                <span>Grouped Jobs (click to expand)</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Corner Empty State Notice (non-blocking) -->
+                    <!-- Enhanced Corner Empty State Notice (non-blocking) -->
                     <t t-if="state.jobs.length === 0 &amp;&amp; !state.loading">
-                        <div class="empty-state-corner">
-                            <i class="fa fa-calendar-plus"/>
-                            <div class="empty-text">
-                                <strong>No jobs for <t t-esc="state.selectedDate"/></strong>
-                                <span>Load test data or create jobs from properties</span>
+                        <div class="empty-state-corner enhanced">
+                            <div class="empty-corner-illustration">
+                                <i class="fa fa-map-marker-alt"/>
                             </div>
-                            <button type="button" class="btn btn-sm btn-primary" t-on-click="onGoToProperties">
-                                <i class="fa fa-building me-1"/> Create Jobs
-                            </button>
+                            <div class="empty-text">
+                                <strong>Ready to schedule inspections</strong>
+                                <span>Properties with due certifications will appear here as jobs</span>
+                            </div>
+                            <div class="empty-corner-actions">
+                                <button type="button" class="btn btn-sm btn-primary" t-on-click="onGoToProperties">
+                                    <i class="fa fa-building me-1"/> View Properties
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-light" t-on-click="onLoadTestData">
+                                    <i class="fa fa-flask me-1"/> Demo Data
+                                </button>
+                            </div>
                         </div>
                     </t>
                 </div>

@@ -62,6 +62,15 @@ export class EnhancedDispatchView extends Component {
             jobSearchQuery: '',
             quickFilterOpen: false,
 
+            // View mode
+            compactViewMode: false, // Toggle for compact job list view
+
+            // Map filter mode (GEMINI UX: Show All vs Show Listed)
+            mapShowAll: true, // true = show all jobs on map, false = only show filtered/listed jobs
+
+            // Quick filter state
+            activeQuickFilter: 'all', // 'all', 'unassigned', 'scheduled', 'urgent'
+
             // Optimization state
             optimizationRunning: false,
             optimizationComplete: false, // True when routes are ready to apply
@@ -118,12 +127,26 @@ export class EnhancedDispatchView extends Component {
         return this.state.routes.length > 0 || this.state.optimizationResult !== null;
     }
 
-    // Filtered jobs based on search query
+    // Filtered jobs based on search query AND quick filter
     get filteredJobs() {
-        const query = (this.state.jobSearchQuery || '').toLowerCase().trim();
-        if (!query) return this.state.jobs;
+        let jobs = this.state.jobs;
 
-        return this.state.jobs.filter(job => {
+        // Apply quick filter first
+        const filter = this.state.activeQuickFilter;
+        if (filter === 'unassigned') {
+            jobs = jobs.filter(j => j.state === 'draft' || !j.route_id);
+        } else if (filter === 'scheduled') {
+            jobs = jobs.filter(j => j.state === 'scheduled' || j.state === 'assigned');
+        } else if (filter === 'urgent') {
+            jobs = jobs.filter(j => this.isJobOverdue(j) || j.priority === 'high');
+        }
+        // 'all' filter returns all jobs
+
+        // Then apply search query
+        const query = (this.state.jobSearchQuery || '').toLowerCase().trim();
+        if (!query) return jobs;
+
+        return jobs.filter(job => {
             const name = (job.name || job.job_number || '').toLowerCase();
             const address = (job.street || '').toLowerCase();
             const city = (job.city || '').toLowerCase();
@@ -134,6 +157,27 @@ export class EnhancedDispatchView extends Component {
                    city.includes(query) ||
                    partner.includes(query);
         });
+    }
+
+    /**
+     * Jobs to display on the map - either all jobs or only filtered/listed jobs
+     * GEMINI UX: Filter Map by Context toggle
+     */
+    get mapJobs() {
+        return this.state.mapShowAll ? this.state.jobs : this.filteredJobs;
+    }
+
+    // Get count for each quick filter
+    get unassignedCount() {
+        return this.state.jobs.filter(j => j.state === 'draft' || !j.route_id).length;
+    }
+
+    get scheduledCount() {
+        return this.state.jobs.filter(j => j.state === 'scheduled' || j.state === 'assigned').length;
+    }
+
+    get urgentCount() {
+        return this.state.jobs.filter(j => this.isJobOverdue(j) || j.priority === 'high').length;
     }
 
     onJobSearchInput(ev) {
@@ -155,18 +199,47 @@ export class EnhancedDispatchView extends Component {
     }
 
     // Extract property name from job (primary display)
+    // Gemini UX Recommendation: Remove repetitive prefixes like "StressTest Property"
     getPropertyName(job) {
         // Job name format: "Inspection: Fire Safety Certificate - StressTest Property 5"
         // We want: "StressTest Property 5" (the property name)
+        let name;
         if (job.property_name) {
-            return job.property_name;
+            name = job.property_name;
+        } else {
+            name = job.name || job.job_number || 'Unknown';
+            // Try to extract property name after " - "
+            const dashIdx = name.lastIndexOf(' - ');
+            if (dashIdx > 0) {
+                name = name.substring(dashIdx + 3).trim();
+            }
         }
-        const name = job.name || job.job_number || 'Unknown';
-        // Try to extract property name after " - "
-        const dashIdx = name.lastIndexOf(' - ');
-        if (dashIdx > 0) {
-            return name.substring(dashIdx + 3).trim();
+
+        // Strip common repetitive prefixes to focus on unique identifiers
+        // Only strip if we have multiple jobs with same prefix (>3)
+        const prefixesToStrip = [
+            'StressTest Property ',
+            'Test Property ',
+            'Demo Property ',
+            'Sample Property ',
+            'Property ',
+        ];
+
+        for (const prefix of prefixesToStrip) {
+            if (name.startsWith(prefix)) {
+                // Check if there's a number or identifier after the prefix
+                const remainder = name.substring(prefix.length).trim();
+                // If remainder is mostly a number/identifier, show it with abbreviated prefix
+                if (/^\d+/.test(remainder) || remainder.length < 30) {
+                    // Show abbreviated prefix + identifier: "P-20" or "Property 20"
+                    const shortPrefix = prefix.includes('Stress') ? 'ST-' :
+                                       prefix.includes('Test') ? 'T-' :
+                                       prefix.includes('Demo') ? 'D-' : 'P-';
+                    return shortPrefix + remainder;
+                }
+            }
         }
+
         return name;
     }
 
@@ -197,6 +270,44 @@ export class EnhancedDispatchView extends Component {
         if (!job.latest_end) return false;
         const deadline = new Date(job.latest_end);
         return deadline < new Date();
+    }
+
+    /**
+     * Get human-readable status label for pills
+     */
+    getStatusLabel(state) {
+        const labels = {
+            'draft': 'Unassigned',
+            'pending': 'Pending',
+            'scheduled': 'Scheduled',
+            'assigned': 'Assigned',
+            'in_progress': 'Active',
+            'completed': 'Done',
+            'cancelled': 'Cancelled',
+        };
+        return labels[state] || state;
+    }
+
+    /**
+     * Toggle compact view mode for job list
+     */
+    toggleCompactView() {
+        this.state.compactViewMode = !this.state.compactViewMode;
+    }
+
+    /**
+     * Set map filter mode (GEMINI UX: Show All vs Show Listed)
+     * @param {boolean} showAll - true to show all jobs, false to show only filtered/listed
+     */
+    setMapFilter(showAll) {
+        this.state.mapShowAll = showAll;
+    }
+
+    /**
+     * Set active quick filter
+     */
+    setQuickFilter(filter) {
+        this.state.activeQuickFilter = filter;
     }
 
     /**
@@ -426,6 +537,32 @@ export class EnhancedDispatchView extends Component {
         if (ev) ev.preventDefault();
         this.state.selectedJobIds = [];
         this.state.quickFilterOpen = false;
+    }
+
+    // Quick assign - switches to inspector selection mode
+    onQuickAssign(ev) {
+        if (ev) ev.preventDefault();
+        console.log("[EnhancedDispatchView] Quick assign clicked, selected jobs:", this.state.selectedJobIds.length);
+        // Switch sidebar to show inspectors for assignment
+        this.state.sidebarTab = 'inspectors';
+        // Scroll inspector list into view if needed
+        const inspectorSection = document.querySelector('.inspectors-section');
+        if (inspectorSection) {
+            inspectorSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    // Quick assign single job - select just this job and switch to inspector mode
+    onQuickAssignSingle(jobId, ev) {
+        if (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
+        console.log("[EnhancedDispatchView] Quick assign single job:", jobId);
+        // Select only this job
+        this.state.selectedJobIds = [jobId];
+        // Switch sidebar to show inspectors for assignment
+        this.state.sidebarTab = 'inspectors';
     }
 
     // Quick filter: Select draft jobs only
@@ -728,6 +865,16 @@ export class EnhancedDispatchView extends Component {
             type: 'ir.actions.act_window',
             res_model: 'property_fielder.property',
             name: 'Properties',
+            views: [[false, 'list'], [false, 'form']],
+            target: 'current',
+        });
+    }
+
+    async onGoToInspectors() {
+        await this.action.doAction({
+            type: 'ir.actions.act_window',
+            res_model: 'property_fielder.inspector',
+            name: 'Inspectors',
             views: [[false, 'list'], [false, 'form']],
             target: 'current',
         });
