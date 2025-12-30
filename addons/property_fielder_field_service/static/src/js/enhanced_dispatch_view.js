@@ -180,6 +180,19 @@ export class EnhancedDispatchView extends Component {
         return this.state.jobs.filter(j => this.isJobOverdue(j) || j.priority === 'high').length;
     }
 
+    // Confirmation status counts
+    get confirmationPendingCount() {
+        return this.state.jobs.filter(j => j.confirmation_state === 'pending').length;
+    }
+
+    get confirmationConfirmedCount() {
+        return this.state.jobs.filter(j => j.confirmation_state === 'confirmed').length;
+    }
+
+    get confirmationDeclinedCount() {
+        return this.state.jobs.filter(j => j.confirmation_state === 'declined' || j.confirmation_state === 'rescheduled').length;
+    }
+
     onJobSearchInput(ev) {
         this.state.jobSearchQuery = ev.target.value;
     }
@@ -450,7 +463,7 @@ export class EnhancedDispatchView extends Component {
                     ["id", "name", "job_number", "partner_id", "street", "city", "zip", "latitude", "longitude",
                      "state", "inspector_id", "route_id", "duration_minutes", "sequence_in_route",
                      "priority", "skill_ids", "earliest_start", "latest_end",
-                     "scheduled_arrival_time", "scheduled_departure_time"]
+                     "scheduled_arrival_time", "scheduled_departure_time", "confirmation_state"]
                 ),
                 this.orm.searchRead(
                     "property_fielder.route",

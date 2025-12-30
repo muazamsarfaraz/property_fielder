@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Template Section Tree View -->
+    <record id="view_template_section_tree" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.section.tree</field>
+        <field name="model">property_fielder.inspection.template.section</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="template_id"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="is_required"/>
+                <field name="is_repeatable"/>
+                <field name="item_count"/>
+                <field name="icon"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Template Section Form View -->
+    <record id="view_template_section_form" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.section.form</field>
+        <field name="model">property_fielder.inspection.template.section</field>
+        <field name="arch" type="xml">
+            <form string="Template Section">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Section Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Configuration">
+                            <field name="template_id"/>
+                            <field name="code"/>
+                            <field name="sequence"/>
+                            <field name="icon"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                        <group string="Options">
+                            <field name="is_required"/>
+                            <field name="is_repeatable"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Guidance for inspectors..."/>
+                    </group>
+                    <notebook>
+                        <page string="Items" name="items">
+                            <field name="item_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="code"/>
+                                    <field name="question"/>
+                                    <field name="response_type"/>
+                                    <field name="is_required"/>
+                                    <field name="creates_defect"/>
+                                    <field name="defect_severity" invisible="not creates_defect"/>
+                                    <field name="photo_required"/>
+                                </list>
+                            </field>
+                            <button name="action_add_item" string="Add Item" type="object" class="btn-link"/>
+                        </page>
+                        <page string="Skip Conditions" name="conditions">
+                            <field name="condition_ids">
+                                <list>
+                                    <field name="source_item_id"/>
+                                    <field name="operator"/>
+                                    <field name="value"/>
+                                    <field name="action"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_template_section_search" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.section.search</field>
+        <field name="model">property_fielder.inspection.template.section</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="template_id"/>
+                <filter name="filter_required" string="Required" domain="[('is_required', '=', True)]"/>
+                <filter name="filter_repeatable" string="Repeatable" domain="[('is_repeatable', '=', True)]"/>
+                <separator/>
+                <filter name="group_template" string="Template" context="{'group_by': 'template_id'}"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_template_section" model="ir.actions.act_window">
+        <field name="name">Template Sections</field>
+        <field name="res_model">property_fielder.inspection.template.section</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_template_section_search"/>
+    </record>
+    
+</odoo>
+
+

@@ -225,10 +225,13 @@ Property Fielder provides:
 | Feature | Status | Notes |
 |---------|--------|-------|
 | Schedule sharing wizard | ✅ Built | Share with inspectors/owners |
-| Email templates | ✅ Built | Inspector schedule, owner appointment |
+| Email templates | ✅ Built | Inspector schedule, owner appointment, reminders |
 | Change request model | ✅ Built | Reschedule/cancel workflow |
-| Tenant access booking | ❌ Not Built | Access confirmation workflow - **needs adding** |
-| Awaab's Law notifications | ❌ Not Built | Statutory deadline alerts - **needs adding** |
+| Appointment confirmation system | ✅ Built | Token-based confirm/decline/reschedule via email links |
+| Confirmation portal pages | ✅ Built | QWeb templates for owner response pages |
+| 24-hour reminder cron | ✅ Built | Daily cron sends appointment reminders |
+| Confirmation stats dashboard | ✅ Built | Pending/confirmed/declined counts in dispatch view |
+| Awaab's Law notifications | ✅ Built | Breach warnings and cron job alerts |
 
 #### 4.1.7 Mobile App (Flutter)
 | Feature | Status | Notes |
@@ -255,20 +258,21 @@ Property Fielder provides:
 
 ### 4.2 What's Missing (Gap Analysis)
 
-| Category | Missing Feature | Priority | PRD Section |
-|----------|-----------------|----------|-------------|
-| **Property** | Non-Compliant/Offboarded states | HIGH | FR-10 |
-| **Property** | Property category (Single Let/HMO/Commercial) | HIGH | FR-1.4 |
-| **Faults** | Fault Code model | HIGH | FR-7 |
-| **Faults** | Inspection Fault model (Cat 1/Cat 2) | HIGH | FR-7 |
-| **Remediation** | Remediation tracking model | HIGH | FR-8 |
-| **Remediation** | Re-check inspection workflow | HIGH | FR-9 |
-| **HHSRS** | HHSRS Hazard model (29 hazards) | HIGH | FR-15.1 |
-| **Awaab's Law** | Deadline calculation and alerts | HIGH | FR-15.2 |
-| **Templates** | Inspection template system | HIGH | FR-15.5 |
-| **Mobile** | Template-driven inspection | HIGH | Phase 7 |
-| **Dashboard** | Compliance dashboard | HIGH | FR-2 |
-| **Access** | Tenant access confirmation | MEDIUM | FR-6 |
+| Category | Missing Feature | Priority | PRD Section | Status |
+|----------|-----------------|----------|-------------|--------|
+| **Property** | Non-Compliant/Offboarded states | HIGH | FR-10 | ❌ Not Built |
+| **Property** | Property category (Single Let/HMO/Commercial) | HIGH | FR-1.4 | ✅ Built (property_type field) |
+| **Faults** | Fault Code model | HIGH | FR-7 | ❌ Not Built |
+| **Faults** | Inspection Fault model (Cat 1/Cat 2) | HIGH | FR-7 | ❌ Not Built |
+| **Remediation** | Remediation tracking model | HIGH | FR-8 | ✅ Built (HHSRS remediation jobs) |
+| **Remediation** | Re-check inspection workflow | HIGH | FR-9 | ❌ Not Built |
+| **HHSRS** | HHSRS Hazard model (29 hazards) | HIGH | FR-15.1 | ✅ Built (property_fielder_hhsrs addon) |
+| **Awaab's Law** | Deadline calculation and alerts | HIGH | FR-15.2 | ✅ Built (awaab.deadline model + cron) |
+| **DHS** | Decent Homes Standard assessment | HIGH | FR-15.3 | ✅ Built (dhs.assessment model) |
+| **Templates** | Inspection template system | HIGH | FR-15.5 | ❌ Not Built |
+| **Mobile** | Template-driven inspection | HIGH | Phase 7 | ❌ Not Built |
+| **Dashboard** | Compliance dashboard | HIGH | FR-2 | ✅ Built (basic stats, charts, quick actions) |
+| **Access** | Appointment confirmation | MEDIUM | FR-6 | ✅ Built (confirm/decline/reschedule flow) |
 
 See Section 6 for complete functional requirements addressing all gaps.
 
@@ -3315,24 +3319,30 @@ These addons deliver the core compliance functionality defined in this PRD.
 
 ---
 
-#### 17.3.5 `property_fielder_hhsrs` (Phase 4)
+#### 17.3.5 `property_fielder_hhsrs` ✅ Built
 
 **Purpose:** HHSRS, DHS, and Awaab's Law compliance for UK social housing.
 
-| Model | Purpose |
-|-------|---------|
-| `hhsrs.hazard.type` | 29 hazard categories (reference data) |
-| `damp.mould` | Damp & mould tracking with timeline |
-| `awaab.deadline` | Awaab's Law deadline tracking |
-| `building.component` | Component condition tracking |
-| `dhs.assessment` | Decent Homes Standard 5-criteria assessment |
+**Status:** ✅ Built (December 2024)
 
-**Extends `defect` model with:**
-- `hhsrs_hazard_type_id`: Many2one to hazard type
-- `hhsrs_band`: A/B/C/D/E/F/G/H/I/J
-- `hhsrs_category`: 1 (immediate) / 2 (less serious)
-- `hhsrs_score`: Integer (likelihood × severity)
-- `is_emergency`: Boolean (triggers 24h deadline)
+| Model | Purpose | Status |
+|-------|---------|--------|
+| `property_fielder.hhsrs.hazard.type` | 29 hazard categories (reference data) | ✅ Built |
+| `property_fielder.hhsrs.likelihood.band` | 16 official HHSRS likelihood bands | ✅ Built |
+| `property_fielder.hhsrs.assessment` | Full HHSRS assessment with scoring | ✅ Built |
+| `property_fielder.awaab.deadline` | Awaab's Law deadline tracking | ✅ Built |
+| `property_fielder.awaab.access.refusal` | Access refusal clock-stopping | ✅ Built |
+| `property_fielder.damp.mould` | Damp & mould tracking with severity | ✅ Built |
+| `property_fielder.damp.mould.timeline` | Damp & mould timeline events | ✅ Built |
+| `property_fielder.dhs.assessment` | Decent Homes Standard 4-criteria | ✅ Built |
+| `property_fielder.building.component` | Component condition tracking | ✅ Built |
+
+**HHSRS Assessment Features:**
+- Full scoring formula: score = 1000 × (Class I × 1.0 + Class II × 0.1 + Class III × 0.01 + Class IV × 0.001)
+- Automatic band assignment (A-J) based on score
+- Automatic category assignment (1 = Band A-C, 2 = Band D-J)
+- Remediation job creation from assessment
+- Integration with field service jobs
 
 **Awaab's Law Deadlines:**
 | Hazard Type | Investigation | Start Repairs | Complete Repairs |
@@ -3341,7 +3351,14 @@ These addons deliver the core compliance functionality defined in this PRD.
 | Non-Emergency | 14 days | 7 days | Reasonable time |
 | Damp & Mould | 14 days | 7 days | As specified |
 
-**Depends on:** `property_fielder_defects`, `property_fielder_templates`
+**Additional Features Built:**
+- Daily cron job for deadline breach checking
+- Email alerts for breach warnings (7-day, 3-day, 1-day)
+- PDF reports for HHSRS and DHS assessments
+- Remediation job integration with field service
+- Security groups and access control
+
+**Depends on:** `property_fielder_property_management`, `property_fielder_field_service`
 
 ---
 
@@ -3445,11 +3462,11 @@ Odoo Core (base, mail, web, hr, contacts, project, account)
 | 1 | `property_fielder_field_service` | Core | - | ✅ Built | - |
 | 2 | `property_fielder_field_service_mobile` | Feature | - | ✅ Built | - |
 | 3 | `property_fielder_property_management` | Core | - | ✅ Built | - |
-| 4 | `property_fielder_import` | Feature | 1 | 🔜 Planned | 15 days |
-| 5 | `property_fielder_templates` | Feature | 2 | 🔜 Planned | 18 days |
-| 6 | `property_fielder_defects` | Domain | 3 | 🔜 Planned | 26 days |
-| 7 | `property_fielder_tenant_access` | Domain | 5 | 🔜 Planned | 16 days |
-| 8 | `property_fielder_hhsrs` | Domain | 4 | 🔜 Planned | 25 days |
+| 4 | `property_fielder_hhsrs` | Domain | - | ✅ Built | - |
+| 5 | `property_fielder_import` | Feature | 1 | 🔜 Planned | 15 days |
+| 6 | `property_fielder_templates` | Feature | 2 | 🔜 Planned | 18 days |
+| 7 | `property_fielder_defects` | Domain | 3 | 🔜 Planned | 26 days |
+| 8 | `property_fielder_tenant_access` | Domain | 5 | 🔜 Planned | 16 days |
 | 9 | `property_fielder_property_leasing` | Business | A | 🔜 Planned | 40-60h |
 | 10 | `property_fielder_property_accounting` | Business | A/B | 🔜 Planned | 50-70h |
 | 11 | `property_fielder_property_maintenance` | Business | A | 🔜 Planned | 40-60h |

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Template Item Tree View -->
+    <record id="view_template_item_tree" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.item.tree</field>
+        <field name="model">property_fielder.inspection.template.item</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="section_id"/>
+                <field name="code"/>
+                <field name="question"/>
+                <field name="response_type"/>
+                <field name="is_required"/>
+                <field name="creates_defect"/>
+                <field name="defect_severity" optional="hide"/>
+                <field name="photo_required"/>
+                <field name="load_previous_value" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Template Item Form View -->
+    <record id="view_template_item_form" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.item.form</field>
+        <field name="model">property_fielder.inspection.template.item</field>
+        <field name="arch" type="xml">
+            <form string="Template Item">
+                <sheet>
+                    <group>
+                        <group string="Basic Information">
+                            <field name="section_id"/>
+                            <field name="template_id" readonly="1"/>
+                            <field name="code"/>
+                            <field name="question"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="Response Configuration">
+                            <field name="response_type"/>
+                            <field name="is_required"/>
+                            <field name="load_previous_value"/>
+                            <field name="weight"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="help_text" placeholder="Guidance for the inspector..."/>
+                    </group>
+                    <notebook>
+                        <page string="Options" name="options" invisible="response_type not in ['select_one', 'select_multi']">
+                            <field name="option_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="value"/>
+                                    <field name="label"/>
+                                    <field name="is_failure"/>
+                                    <field name="color" widget="color"/>
+                                    <field name="score"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Numeric Validation" name="numeric" invisible="response_type not in ['numeric', 'reading']">
+                            <group>
+                                <group>
+                                    <field name="min_value"/>
+                                    <field name="max_value"/>
+                                </group>
+                                <group>
+                                    <field name="unit"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Photo Requirements" name="photos">
+                            <group>
+                                <field name="photo_required"/>
+                                <field name="photo_min_count" invisible="not photo_required"/>
+                            </group>
+                        </page>
+                        <page string="Defect Settings" name="defects">
+                            <group>
+                                <group>
+                                    <field name="creates_defect"/>
+                                    <field name="defect_severity" invisible="not creates_defect"/>
+                                </group>
+                                <group>
+                                    <field name="fault_code_reference" invisible="not creates_defect"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Matrix Schema" name="matrix" invisible="response_type != 'matrix'">
+                            <field name="matrix_schema_id"/>
+                        </page>
+                        <page string="Skip Logic" name="conditions">
+                            <field name="condition_ids">
+                                <list>
+                                    <field name="source_item_id"/>
+                                    <field name="operator"/>
+                                    <field name="value"/>
+                                    <field name="action"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Validation Rules" name="validation">
+                            <field name="validation_rule_ids">
+                                <list editable="bottom">
+                                    <field name="trigger_item_id"/>
+                                    <field name="trigger_operator"/>
+                                    <field name="trigger_value"/>
+                                    <field name="validation_type"/>
+                                    <field name="validation_value"/>
+                                    <field name="error_message"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_template_item_search" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.item.search</field>
+        <field name="model">property_fielder.inspection.template.item</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="question"/>
+                <field name="code"/>
+                <field name="section_id"/>
+                <field name="template_id"/>
+                <filter name="filter_required" string="Required" domain="[('is_required', '=', True)]"/>
+                <filter name="filter_creates_defect" string="Creates Defect" domain="[('creates_defect', '=', True)]"/>
+                <filter name="filter_photo" string="Photo Required" domain="[('photo_required', '=', True)]"/>
+                <separator/>
+                <filter name="group_section" string="Section" context="{'group_by': 'section_id'}"/>
+                <filter name="group_template" string="Template" context="{'group_by': 'template_id'}"/>
+                <filter name="group_response_type" string="Response Type" context="{'group_by': 'response_type'}"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_template_item" model="ir.actions.act_window">
+        <field name="name">Template Items</field>
+        <field name="res_model">property_fielder.inspection.template.item</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_template_item_search"/>
+    </record>
+    
+</odoo>
+
+

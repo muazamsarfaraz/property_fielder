@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Root Menu for Templates (under Field Service) -->
+    <menuitem id="menu_templates_root"
+              name="Templates"
+              parent="property_fielder_field_service.menu_field_service_root"
+              sequence="30"/>
+    
+    <!-- Inspections Menu -->
+    <menuitem id="menu_inspection"
+              name="Inspections"
+              parent="menu_templates_root"
+              action="action_inspection"
+              sequence="10"/>
+    
+    <!-- Templates Configuration Menu -->
+    <menuitem id="menu_template_config"
+              name="Template Configuration"
+              parent="menu_templates_root"
+              sequence="50"/>
+    
+    <!-- Inspection Templates -->
+    <menuitem id="menu_inspection_template"
+              name="Inspection Templates"
+              parent="menu_template_config"
+              action="action_inspection_template"
+              sequence="10"/>
+    
+    <!-- Template Sections -->
+    <menuitem id="menu_template_section"
+              name="Template Sections"
+              parent="menu_template_config"
+              action="action_template_section"
+              sequence="20"
+              groups="group_template_manager"/>
+    
+    <!-- Template Items -->
+    <menuitem id="menu_template_item"
+              name="Template Items"
+              parent="menu_template_config"
+              action="action_template_item"
+              sequence="30"
+              groups="group_template_manager"/>
+    
+</odoo>
+
+

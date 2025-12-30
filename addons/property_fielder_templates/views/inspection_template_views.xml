@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inspection Template Tree View -->
+    <record id="view_inspection_template_tree" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.tree</field>
+        <field name="model">property_fielder.inspection.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="certification_type_id"/>
+                <field name="version"/>
+                <field name="section_count"/>
+                <field name="item_count"/>
+                <field name="estimated_duration"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'" decoration-muted="state == 'archived'" decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Inspection Template Form View -->
+    <record id="view_inspection_template_form" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.form</field>
+        <field name="model">property_fielder.inspection.template</field>
+        <field name="arch" type="xml">
+            <form string="Inspection Template">
+                <header>
+                    <button name="action_activate" string="Activate" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_archive" string="Archive" type="object" invisible="state != 'active'"/>
+                    <button name="action_new_version" string="New Version" type="object" invisible="state == 'draft'"/>
+                    <button name="action_preview" string="Preview" type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,archived"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_inspections" type="object" class="oe_stat_button" icon="fa-clipboard-check">
+                            <field name="inspection_count" widget="statinfo" string="Inspections"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Template Name"/>
+                        </h1>
+                        <field name="code" placeholder="Template Code"/>
+                    </div>
+                    <group>
+                        <group string="Configuration">
+                            <field name="certification_type_id"/>
+                            <field name="version"/>
+                            <field name="estimated_duration" widget="integer"/>
+                            <field name="report_template_id"/>
+                        </group>
+                        <group string="Requirements">
+                            <field name="requires_signature"/>
+                            <field name="requires_photos"/>
+                            <field name="min_photos" invisible="not requires_photos"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Template description and purpose..."/>
+                    </group>
+                    <notebook>
+                        <page string="Sections" name="sections">
+                            <field name="section_ids" mode="tree">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="is_required"/>
+                                    <field name="is_repeatable"/>
+                                    <field name="item_count"/>
+                                    <field name="icon"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="All Items" name="items">
+                            <field name="section_ids" mode="tree">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="item_ids" widget="one2many_list">
+                                        <list>
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="code"/>
+                                            <field name="question"/>
+                                            <field name="response_type"/>
+                                            <field name="is_required"/>
+                                            <field name="creates_defect"/>
+                                        </list>
+                                    </field>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Calculations" name="calculations">
+                            <field name="calculation_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="formula"/>
+                                    <field name="result_type"/>
+                                    <field name="display_in_report"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Inspection Template Kanban View -->
+    <record id="view_inspection_template_kanban" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.kanban</field>
+        <field name="model">property_fielder.inspection.template</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="state"/>
+                <field name="section_count"/>
+                <field name="item_count"/>
+                <field name="certification_type_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <strong><field name="name"/></strong>
+                            <field name="state" widget="label_selection" options="{'classes': {'draft': 'info', 'active': 'success', 'archived': 'secondary'}}"/>
+                        </div>
+                        <div class="text-muted small">
+                            <field name="code"/>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge bg-secondary me-1">
+                                <field name="section_count"/> sections
+                            </span>
+                            <span class="badge bg-secondary">
+                                <field name="item_count"/> items
+                            </span>
+                        </div>
+                        <div class="mt-1 text-muted small" t-if="record.certification_type_id.value">
+                            <i class="fa fa-certificate" title="Certification Type"/> <field name="certification_type_id"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_inspection_template_search" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.search</field>
+        <field name="model">property_fielder.inspection.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="certification_type_id"/>
+                <filter name="filter_active" string="Active" domain="[('state', '=', 'active')]"/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                <filter name="group_cert" string="Certification Type" context="{'group_by': 'certification_type_id'}"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_inspection_template" model="ir.actions.act_window">
+        <field name="name">Inspection Templates</field>
+        <field name="res_model">property_fielder.inspection.template</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_inspection_template_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first inspection template
+            </p>
+            <p>
+                Templates define the structure of inspections with sections, items, and response types.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+
+

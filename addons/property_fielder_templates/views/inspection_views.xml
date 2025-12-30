@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inspection Tree View -->
+    <record id="view_inspection_tree" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.tree</field>
+        <field name="model">property_fielder.inspection</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="overall_result == 'fail'" decoration-success="overall_result == 'pass'" decoration-muted="overall_result == 'incomplete'">
+                <field name="name"/>
+                <field name="template_id"/>
+                <field name="property_id"/>
+                <field name="inspector_id"/>
+                <field name="scheduled_date"/>
+                <field name="completion_date"/>
+                <field name="completion_percentage" widget="progressbar"/>
+                <field name="overall_result" widget="badge" decoration-success="overall_result == 'pass'" decoration-danger="overall_result == 'fail'" decoration-warning="overall_result == 'pending'"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Inspection Form View -->
+    <record id="view_inspection_form" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.form</field>
+        <field name="model">property_fielder.inspection</field>
+        <field name="arch" type="xml">
+            <form string="Inspection">
+                <header>
+                    <button name="action_initialize_responses" string="Initialize Responses" type="object" class="btn-secondary" invisible="response_count > 0"/>
+                    <button name="action_prefill_from_previous" string="Pre-fill from Previous" type="object" class="btn-secondary"/>
+                    <button name="action_complete" string="Complete Inspection" type="object" class="btn-primary" invisible="overall_result != 'pending'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,assigned,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_responses" type="object" class="oe_stat_button" icon="fa-list-alt">
+                            <field name="response_count" widget="statinfo" string="Responses"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Inspection Details">
+                            <field name="template_id"/>
+                            <field name="property_id"/>
+                            <field name="inspector_id"/>
+                            <field name="scheduled_date"/>
+                            <field name="job_id" readonly="1"/>
+                        </group>
+                        <group string="Status">
+                            <field name="overall_result"/>
+                            <field name="completion_percentage" widget="progressbar"/>
+                            <field name="completion_date"/>
+                            <field name="defect_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Responses" name="responses">
+                            <field name="response_ids" mode="tree">
+                                <list editable="bottom" decoration-danger="creates_defect">
+                                    <field name="item_id"/>
+                                    <field name="response_text"/>
+                                    <field name="response_numeric"/>
+                                    <field name="response_option_id"/>
+                                    <field name="response_date"/>
+                                    <field name="is_answered" invisible="1"/>
+                                    <field name="creates_defect"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Asset Responses" name="assets" invisible="not asset_response_ids">
+                            <field name="asset_response_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="asset_name"/>
+                                    <field name="asset_type"/>
+                                    <field name="asset_location"/>
+                                    <field name="overall_result" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Photos" name="photos">
+                            <group>
+                                <field name="extra_photo_ids" widget="many2many_binary"/>
+                            </group>
+                        </page>
+                        <page string="Signatures" name="signatures">
+                            <group>
+                                <group string="Inspector">
+                                    <field name="inspector_signature" widget="image"/>
+                                    <field name="inspector_signature_name"/>
+                                    <field name="inspector_signature_date"/>
+                                    <field name="inspector_license_number"/>
+                                    <field name="inspector_license_expiry"/>
+                                </group>
+                                <group string="Tenant/Resident">
+                                    <field name="tenant_signature" widget="image"/>
+                                    <field name="tenant_signature_name"/>
+                                    <field name="tenant_signature_date"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Inspection Kanban View -->
+    <record id="view_inspection_kanban" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.kanban</field>
+        <field name="model">property_fielder.inspection</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="overall_result">
+                <field name="name"/>
+                <field name="template_id"/>
+                <field name="property_id"/>
+                <field name="overall_result"/>
+                <field name="completion_percentage"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between">
+                            <strong><field name="name"/></strong>
+                            <field name="overall_result" widget="label_selection" options="{'classes': {'pending': 'warning', 'pass': 'success', 'fail': 'danger', 'incomplete': 'secondary'}}"/>
+                        </div>
+                        <div class="text-muted small">
+                            <field name="template_id"/>
+                        </div>
+                        <div class="text-muted small" t-if="record.property_id.value">
+                            <i class="fa fa-building" title="Property"/> <field name="property_id"/>
+                        </div>
+                        <div class="mt-2">
+                            <field name="completion_percentage" widget="progressbar"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_inspection_search" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.search</field>
+        <field name="model">property_fielder.inspection</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="template_id"/>
+                <field name="property_id"/>
+                <field name="inspector_id"/>
+                <filter name="filter_pending" string="Pending" domain="[('overall_result', '=', 'pending')]"/>
+                <filter name="filter_pass" string="Passed" domain="[('overall_result', '=', 'pass')]"/>
+                <filter name="filter_fail" string="Failed" domain="[('overall_result', '=', 'fail')]"/>
+                <separator/>
+                <filter name="filter_today" string="Today" domain="[('scheduled_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="group_result" string="Result" context="{'group_by': 'overall_result'}"/>
+                <filter name="group_template" string="Template" context="{'group_by': 'template_id'}"/>
+                <filter name="group_inspector" string="Inspector" context="{'group_by': 'inspector_id'}"/>
+                <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_inspection" model="ir.actions.act_window">
+        <field name="name">Inspections</field>
+        <field name="res_model">property_fielder.inspection</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_inspection_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No inspections yet
+            </p>
+            <p>
+                Inspections are created from jobs linked to inspection templates.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+
+

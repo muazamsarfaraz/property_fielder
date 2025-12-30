@@ -73,6 +73,19 @@
                             </li>
                         </ul>
                     </div>
+
+                    <!-- Confirmation Stats (visible when jobs exist) -->
+                    <div class="confirmation-stats" t-if="state.jobs.length > 0">
+                        <span class="confirmation-stat pending" t-att-title="'Jobs awaiting owner confirmation'">
+                            <i class="fa fa-clock"/> <t t-esc="confirmationPendingCount"/> pending
+                        </span>
+                        <span class="confirmation-stat confirmed" t-att-title="'Jobs confirmed by owner'">
+                            <i class="fa fa-check-circle"/> <t t-esc="confirmationConfirmedCount"/> confirmed
+                        </span>
+                        <span class="confirmation-stat declined" t-if="confirmationDeclinedCount > 0" t-att-title="'Jobs declined by owner - needs attention'">
+                            <i class="fa fa-times-circle"/> <t t-esc="confirmationDeclinedCount"/> declined
+                        </span>
+                    </div>
                 </div>
             </div>
 
