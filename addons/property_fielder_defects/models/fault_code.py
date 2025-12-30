@@ -80,11 +80,12 @@ class FaultCode(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
     color = fields.Integer(string='Color Index')
     active = fields.Boolean(default=True)
-    
-    _sql_constraints = [
-        ('code_category_unique', 'UNIQUE(code, category)', 
-         'Fault code must be unique within each category!'),
-    ]
+
+    # Constraints (Odoo 19 style)
+    _check_code_category_unique = models.Constraint(
+        'UNIQUE(code, category)',
+        'Fault code must be unique within each category!',
+    )
     
     @api.depends('severity_sla')
     def _compute_remediation_hours(self):

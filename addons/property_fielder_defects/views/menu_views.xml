@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Defects Menu (under Property Fielder) -->
+    <!-- Defects Menu (under Property Management) -->
     <menuitem id="menu_defects_root"
         name="Defects"
-        parent="property_fielder_property_management.menu_property_fielder_root"
-        sequence="30"/>
+        parent="property_fielder_property_management.menu_property_management_root"
+        sequence="35"/>
     
     <!-- All Defects -->
     <menuitem id="menu_defects_all"

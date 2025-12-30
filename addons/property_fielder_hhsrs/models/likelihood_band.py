@@ -23,7 +23,9 @@ class HHSRSLikelihoodBand(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'Likelihood band code must be unique!'),
-    ]
+    # Constraints (Odoo 19 style)
+    _check_code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'Likelihood band code must be unique!',
+    )
 

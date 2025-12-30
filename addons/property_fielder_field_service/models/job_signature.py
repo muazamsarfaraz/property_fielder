@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class JobSignature(models.Model):
@@ -116,9 +117,6 @@ class JobSignature(models.Model):
             raise ValidationError(_('No email address provided!'))
         
         # TODO: Implement email sending
-        # template = self.env.ref('property_fielder_field_service_mobile.signature_email_template')
-        # template.send_mail(self.id, force_send=True)
-        
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',

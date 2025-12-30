@@ -233,10 +233,12 @@ class PropertyInspection(models.Model):
 
     # Notes
     notes = fields.Text(string='Notes')
-    
-    _sql_constraints = [
-        ('name_unique', 'UNIQUE(name)', 'Inspection number must be unique!'),
-    ]
+
+    # Constraints (Odoo 19 style)
+    _check_name_unique = models.Constraint(
+        'UNIQUE(name)',
+        'Inspection number must be unique!',
+    )
 
     @api.model_create_multi
     def create(self, vals_list):

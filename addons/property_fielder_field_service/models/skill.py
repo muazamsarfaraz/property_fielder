@@ -52,10 +52,12 @@ class FieldServiceSkill(models.Model):
         compute='_compute_inspector_count',
         store=False
     )
-    
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'Skill code must be unique!'),
-    ]
+
+    # Constraints (Odoo 19 style)
+    _check_code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'Skill code must be unique!',
+    )
     
     @api.depends('name')
     def _compute_job_count(self):

@@ -493,11 +493,16 @@ class Property(models.Model):
         string='Access Notes',
         help='Additional notes about property access (dogs, alarms, etc.)'
     )
-    
-    _sql_constraints = [
-        ('property_number_unique', 'UNIQUE(property_number)', 'Property number must be unique!'),
-        ('uprn_unique', 'UNIQUE(uprn)', 'UPRN must be unique - this property reference is already in use!'),
-    ]
+
+    # Constraints (Odoo 19 style)
+    _check_property_number_unique = models.Constraint(
+        'UNIQUE(property_number)',
+        'Property number must be unique!',
+    )
+    _check_uprn_unique = models.Constraint(
+        'UNIQUE(uprn)',
+        'UPRN must be unique - this property reference is already in use!',
+    )
 
     @api.model_create_multi
     def create(self, vals_list):

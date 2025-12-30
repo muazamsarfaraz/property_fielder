@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 class FieldServiceController(http.Controller):
     """HTTP controllers for Field Service addon"""
 
-    @http.route('/property_fielder/config', type='json', auth='user', methods=['POST'])
+    @http.route('/property_fielder/config', type='jsonrpc', auth='user', methods=['POST'])
     def get_config(self):
         """Get configuration for dispatch view (Mapbox token, etc.)"""
         # Get Mapbox token from environment variable or system parameter

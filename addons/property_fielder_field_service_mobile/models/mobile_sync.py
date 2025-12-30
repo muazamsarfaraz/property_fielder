@@ -186,8 +186,10 @@ class MobileDevice(models.Model):
         string='Push Token',
         help='Token for push notifications'
     )
-    
-    _sql_constraints = [
-        ('device_id_unique', 'UNIQUE(device_id)', 'Device ID must be unique!'),
-    ]
+
+    # Constraints (Odoo 19 style)
+    _check_device_id_unique = models.Constraint(
+        'UNIQUE(device_id)',
+        'Device ID must be unique!',
+    )
 

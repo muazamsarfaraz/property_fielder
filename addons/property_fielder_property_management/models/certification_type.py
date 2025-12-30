@@ -60,10 +60,12 @@ class CertificationType(models.Model):
         string='Certifications',
         compute='_compute_certification_count'
     )
-    
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'Certification code must be unique!'),
-    ]
+
+    # Constraints (Odoo 19 style)
+    _check_code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'Certification code must be unique!',
+    )
 
     def _compute_certification_count(self):
         for cert_type in self:

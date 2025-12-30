@@ -3,7 +3,7 @@
     <!-- ============================================================ -->
     <!-- SCHEDULED ACTIONS (CRON JOBS) -->
     <!-- ============================================================ -->
-    
+
     <!-- Daily Appointment Reminder Cron -->
     <record id="ir_cron_appointment_reminder" model="ir.cron">
         <field name="name">Field Service: Send Appointment Reminders</field>
@@ -12,13 +12,11 @@
         <field name="code">model._cron_send_appointment_reminders()</field>
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
-        <field name="numbercall">-1</field>
         <field name="active" eval="True"/>
-        <field name="doall" eval="False"/>
         <!-- Run at 8 AM daily -->
         <field name="nextcall" eval="(datetime.now() + relativedelta(days=1)).replace(hour=8, minute=0, second=0)"/>
     </record>
-    
+
     <!-- Expired Token Cleanup Cron -->
     <record id="ir_cron_cleanup_expired_tokens" model="ir.cron">
         <field name="name">Field Service: Cleanup Expired Confirmation Tokens</field>
@@ -27,9 +25,7 @@
         <field name="code">model._cron_cleanup_expired_tokens()</field>
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
-        <field name="numbercall">-1</field>
         <field name="active" eval="True"/>
-        <field name="doall" eval="False"/>
         <!-- Run at midnight daily -->
         <field name="nextcall" eval="(datetime.now() + relativedelta(days=1)).replace(hour=0, minute=0, second=0)"/>
     </record>

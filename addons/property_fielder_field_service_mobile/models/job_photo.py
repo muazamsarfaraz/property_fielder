@@ -132,8 +132,10 @@ class PhotoTag(models.Model):
         string='Color',
         help='Color for UI display'
     )
-    
-    _sql_constraints = [
-        ('name_unique', 'UNIQUE(name)', 'Tag name must be unique!'),
-    ]
+
+    # Constraints (Odoo 19 style)
+    _check_name_unique = models.Constraint(
+        'UNIQUE(name)',
+        'Tag name must be unique!',
+    )
 

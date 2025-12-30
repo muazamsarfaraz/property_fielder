@@ -243,9 +243,11 @@ class Defect(models.Model):
     # Notes
     notes = fields.Text(string='Notes')
 
-    _sql_constraints = [
-        ('name_unique', 'UNIQUE(name)', 'Defect reference must be unique!'),
-    ]
+    # Constraints (Odoo 19 style)
+    _check_name_unique = models.Constraint(
+        'UNIQUE(name)',
+        'Defect reference must be unique!',
+    )
 
     # ============================================================
     # COMPUTED FIELDS

@@ -40,7 +40,9 @@ class HHSRSHazardType(models.Model):
     color = fields.Integer(string='Color Index')
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        ('code_unique', 'UNIQUE(code)', 'Hazard code must be unique!'),
-    ]
+    # Constraints (Odoo 19 style)
+    _check_code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'Hazard code must be unique!',
+    )
 
