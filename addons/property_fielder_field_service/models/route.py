@@ -109,12 +109,68 @@ class FieldServiceRoute(models.Model):
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled')
     ], string='Status', default='draft', required=True, tracking=True)
-    
+
     # Route Geometry (for map display)
     route_geometry = fields.Text(
         string='Route Geometry',
         help='GeoJSON geometry for route visualization'
     )
+
+    # ============================================================
+    # RE-OPTIMIZATION & INSPECTOR ACKNOWLEDGMENT
+    # ============================================================
+
+    needs_reoptimization = fields.Boolean(
+        string='Needs Re-optimization',
+        default=False,
+        tracking=True,
+        help='Route needs re-optimization due to schedule changes'
+    )
+    reoptimization_reason = fields.Char(
+        string='Re-optimization Reason',
+        help='Why re-optimization is needed'
+    )
+
+    # Inspector Acknowledgment
+    inspector_acknowledged = fields.Boolean(
+        string='Inspector Acknowledged',
+        default=False,
+        help='Inspector has acknowledged receipt of schedule'
+    )
+    inspector_acknowledged_date = fields.Datetime(
+        string='Acknowledged Date',
+        readonly=True
+    )
+    inspector_acknowledgment_token = fields.Char(
+        string='Acknowledgment Token',
+        copy=False
+    )
+
+    # Confirmation Stats (computed)
+    confirmed_job_count = fields.Integer(
+        string='Confirmed Jobs',
+        compute='_compute_confirmation_stats',
+        store=True
+    )
+    pending_confirmation_count = fields.Integer(
+        string='Pending Confirmations',
+        compute='_compute_confirmation_stats',
+        store=True
+    )
+    declined_job_count = fields.Integer(
+        string='Declined Jobs',
+        compute='_compute_confirmation_stats',
+        store=True
+    )
+
+    @api.depends('job_ids.confirmation_state')
+    def _compute_confirmation_stats(self):
+        """Compute confirmation statistics for route jobs."""
+        for route in self:
+            jobs = route.job_ids
+            route.confirmed_job_count = len(jobs.filtered(lambda j: j.confirmation_state == 'confirmed'))
+            route.pending_confirmation_count = len(jobs.filtered(lambda j: j.confirmation_state == 'pending'))
+            route.declined_job_count = len(jobs.filtered(lambda j: j.confirmation_state in ['declined', 'rescheduled']))
     
     @api.model_create_multi
     def create(self, vals_list):
@@ -172,3 +228,69 @@ class FieldServiceRoute(models.Model):
                 'default_route_ids': [(6, 0, self.ids)],
             },
         }
+
+    # ============================================================
+    # INSPECTOR ACKNOWLEDGMENT METHODS
+    # ============================================================
+
+    def _generate_acknowledgment_token(self):
+        """Generate a secure token for inspector acknowledgment."""
+        import secrets
+        self.ensure_one()
+        token = secrets.token_urlsafe(32)
+        self.write({'inspector_acknowledgment_token': token})
+        return token
+
+    def action_acknowledge_schedule(self):
+        """Inspector acknowledges receipt of schedule."""
+        self.ensure_one()
+        self.write({
+            'inspector_acknowledged': True,
+            'inspector_acknowledged_date': fields.Datetime.now(),
+            'inspector_acknowledgment_token': False,
+        })
+        self.message_post(
+            body=_('Schedule acknowledged by inspector %s') % self.inspector_id.name,
+            message_type='notification'
+        )
+
+    def action_reoptimize(self):
+        """Trigger re-optimization for this route."""
+        self.ensure_one()
+        # Get all jobs from this route
+        jobs = self.job_ids
+        if not jobs:
+            return
+
+        # Create new optimization run
+        optimization = self.env['property_fielder.optimization'].create({
+            'name': _('Re-optimization: %s') % self.name,
+            'optimization_date': self.route_date,
+            'job_ids': [(6, 0, jobs.ids)],
+            'inspector_ids': [(6, 0, [self.inspector_id.id])],
+            'state': 'draft',
+        })
+
+        # Clear re-optimization flag
+        self.write({
+            'needs_reoptimization': False,
+            'reoptimization_reason': False,
+        })
+
+        # Run optimization
+        optimization.action_run_optimization()
+
+        return {
+            'name': _('Re-optimization'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'property_fielder.optimization',
+            'view_mode': 'form',
+            'res_id': optimization.id,
+        }
+
+    def action_clear_reoptimization_flag(self):
+        """Clear the re-optimization flag without re-optimizing."""
+        self.write({
+            'needs_reoptimization': False,
+            'reoptimization_reason': False,
+        })

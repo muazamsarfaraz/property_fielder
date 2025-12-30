@@ -166,6 +166,103 @@ class FieldServiceJob(models.Model):
     
     # Notes
     notes = fields.Text(string='Notes', help='Additional notes about the job')
+
+    # ============================================================
+    # APPOINTMENT CONFIRMATION FIELDS
+    # ============================================================
+
+    # Job Type
+    job_type = fields.Selection([
+        ('inspection', 'Inspection'),
+        ('remediation', 'Remediation'),
+        ('maintenance', 'Maintenance'),
+        ('void_check', 'Void Check'),
+        ('other', 'Other'),
+    ], string='Job Type', default='inspection', tracking=True)
+
+    # Confirmation Token (for email links)
+    confirmation_token = fields.Char(
+        string='Confirmation Token',
+        copy=False,
+        help='Secure token for confirmation links'
+    )
+    confirmation_token_expiry = fields.Datetime(
+        string='Token Expiry',
+        copy=False,
+        help='When the confirmation token expires'
+    )
+
+    # Confirmation Status
+    confirmation_state = fields.Selection([
+        ('not_sent', 'Not Sent'),
+        ('pending', 'Pending Confirmation'),
+        ('confirmed', 'Confirmed'),
+        ('declined', 'Declined'),
+        ('rescheduled', 'Reschedule Requested'),
+    ], string='Confirmation Status', default='not_sent', tracking=True)
+
+    confirmation_date = fields.Datetime(
+        string='Confirmation Date',
+        readonly=True,
+        help='When the appointment was confirmed/declined'
+    )
+    confirmation_method = fields.Selection([
+        ('email_link', 'Email Link'),
+        ('phone', 'Phone'),
+        ('portal', 'Portal'),
+        ('auto', 'Auto-confirmed'),
+    ], string='Confirmation Method')
+
+    # Reschedule Request
+    proposed_reschedule_date = fields.Date(
+        string='Proposed Reschedule Date',
+        help='Date proposed by owner for rescheduling'
+    )
+    proposed_reschedule_time = fields.Char(
+        string='Proposed Time Window',
+        help='Time window proposed (e.g., "Morning", "14:00-16:00")'
+    )
+    reschedule_reason = fields.Text(
+        string='Reschedule Reason',
+        help='Reason given for reschedule/decline'
+    )
+
+    # Notification Tracking
+    owner_notified = fields.Boolean(
+        string='Owner Notified',
+        default=False,
+        help='Appointment notification sent to owner'
+    )
+    owner_notified_date = fields.Datetime(
+        string='Notification Sent',
+        readonly=True
+    )
+    reminder_sent = fields.Boolean(
+        string='Reminder Sent',
+        default=False,
+        help='24-hour reminder sent'
+    )
+    reminder_sent_date = fields.Datetime(
+        string='Reminder Sent Date',
+        readonly=True
+    )
+
+    # HHSRS Integration
+    is_hhsrs_remediation = fields.Boolean(
+        string='HHSRS Remediation',
+        default=False,
+        help='Is this job for HHSRS hazard remediation'
+    )
+    hhsrs_assessment_id = fields.Many2one(
+        'property_fielder.hhsrs.assessment',
+        string='HHSRS Assessment',
+        help='Source HHSRS assessment for remediation jobs'
+    )
+    awaab_deadline_id = fields.Many2one(
+        'property_fielder.awaab.deadline',
+        string='Awaab Deadline',
+        help='Linked Awaab\'s Law deadline'
+    )
     
     @api.model_create_multi
     def create(self, vals_list):
@@ -197,6 +294,183 @@ class FieldServiceJob(models.Model):
                 'default_current_date': self.scheduled_date,
             },
         }
+
+    # ============================================================
+    # CONFIRMATION TOKEN METHODS
+    # ============================================================
+
+    def _generate_confirmation_token(self):
+        """Generate a secure confirmation token for this job."""
+        import secrets
+        from datetime import timedelta
+
+        self.ensure_one()
+        token = secrets.token_urlsafe(32)
+        expiry = fields.Datetime.now() + timedelta(hours=72)
+        self.write({
+            'confirmation_token': token,
+            'confirmation_token_expiry': expiry,
+            'confirmation_state': 'pending',
+        })
+        return token
+
+    def _validate_confirmation_token(self, token):
+        """Validate a confirmation token. Returns the job if valid, False otherwise."""
+        if not token:
+            return False
+        job = self.sudo().search([
+            ('confirmation_token', '=', token),
+            ('confirmation_token_expiry', '>', fields.Datetime.now()),
+        ], limit=1)
+        return job if job else False
+
+    def action_confirm_appointment(self, method='email_link'):
+        """Confirm the appointment."""
+        self.ensure_one()
+        self.write({
+            'confirmation_state': 'confirmed',
+            'confirmation_date': fields.Datetime.now(),
+            'confirmation_method': method,
+            'confirmation_token': False,  # Clear token after use
+            'confirmation_token_expiry': False,
+        })
+        self.message_post(
+            body=_('Appointment confirmed by owner via %s') % method,
+            message_type='notification'
+        )
+
+    def action_decline_appointment(self, reason=''):
+        """Decline the appointment."""
+        self.ensure_one()
+        self.write({
+            'confirmation_state': 'declined',
+            'confirmation_date': fields.Datetime.now(),
+            'reschedule_reason': reason,
+            'confirmation_token': False,
+            'confirmation_token_expiry': False,
+        })
+        # Create change request for dispatcher
+        self.env['property_fielder.change.request'].create({
+            'job_id': self.id,
+            'request_type': 'cancel',
+            'requester_type': 'owner',
+            'requester_id': self.partner_id.id,
+            'reason': reason or _('Owner declined appointment'),
+            'state': 'pending',
+        })
+        self.message_post(
+            body=_('Appointment declined by owner. Reason: %s') % (reason or 'Not specified'),
+            message_type='notification'
+        )
+
+    def action_request_reschedule(self, proposed_date, proposed_time='', reason=''):
+        """Request a reschedule."""
+        self.ensure_one()
+        self.write({
+            'confirmation_state': 'rescheduled',
+            'proposed_reschedule_date': proposed_date,
+            'proposed_reschedule_time': proposed_time,
+            'reschedule_reason': reason,
+            'confirmation_token': False,
+            'confirmation_token_expiry': False,
+        })
+        # Create change request for dispatcher
+        self.env['property_fielder.change.request'].create({
+            'job_id': self.id,
+            'request_type': 'reschedule',
+            'requester_type': 'owner',
+            'requester_id': self.partner_id.id,
+            'requested_date': proposed_date,
+            'reason': reason or _('Owner requested reschedule to %s') % proposed_date,
+            'state': 'pending',
+        })
+        self.message_post(
+            body=_('Reschedule requested by owner to %s. Reason: %s') % (proposed_date, reason or 'Not specified'),
+            message_type='notification'
+        )
+
+    def _apply_reschedule(self, new_date):
+        """Apply a reschedule - update date and trigger re-optimization."""
+        self.ensure_one()
+        old_route = self.route_id
+        self.write({
+            'scheduled_date': new_date,
+            'confirmation_state': 'pending',
+            'route_id': False,  # Remove from current route
+            'sequence_in_route': 0,
+        })
+        # Mark old route as needing re-optimization
+        if old_route:
+            old_route.write({
+                'needs_reoptimization': True,
+                'reoptimization_reason': _('Job %s rescheduled to %s') % (self.name, new_date),
+            })
+        self.message_post(
+            body=_('Job rescheduled to %s. Removed from route.') % new_date,
+            message_type='notification'
+        )
+
+    # ============================================================
+    # CRON JOBS
+    # ============================================================
+
+    @api.model
+    def _cron_send_appointment_reminders(self):
+        """Send 24-hour appointment reminders for confirmed jobs."""
+        from datetime import timedelta
+        import logging
+        _logger = logging.getLogger(__name__)
+
+        tomorrow = fields.Date.today() + timedelta(days=1)
+
+        # Find jobs scheduled for tomorrow that are confirmed but haven't received reminder
+        jobs = self.search([
+            ('scheduled_date', '=', tomorrow),
+            ('confirmation_state', '=', 'confirmed'),
+            ('reminder_sent', '=', False),
+            ('owner_notified', '=', True),
+            ('state', 'not in', ['completed', 'cancelled']),
+        ])
+
+        _logger.info(f'Sending appointment reminders for {len(jobs)} jobs')
+
+        template = self.env.ref('property_fielder_field_service.email_template_appointment_reminder', raise_if_not_found=False)
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+
+        for job in jobs:
+            try:
+                if template and job.partner_id.email:
+                    template.with_context(base_url=base_url).send_mail(job.id, force_send=True)
+                    job.write({
+                        'reminder_sent': True,
+                        'reminder_sent_date': fields.Datetime.now(),
+                    })
+                    _logger.info(f'Reminder sent for job {job.name}')
+            except Exception as e:
+                _logger.error(f'Failed to send reminder for job {job.name}: {e}')
+
+        return True
+
+    @api.model
+    def _cron_cleanup_expired_tokens(self):
+        """Cleanup expired confirmation tokens."""
+        import logging
+        _logger = logging.getLogger(__name__)
+
+        # Find jobs with expired tokens
+        expired_jobs = self.search([
+            ('confirmation_token', '!=', False),
+            ('confirmation_token_expiry', '<', fields.Datetime.now()),
+        ])
+
+        if expired_jobs:
+            _logger.info(f'Cleaning up {len(expired_jobs)} expired confirmation tokens')
+            expired_jobs.write({
+                'confirmation_token': False,
+                'confirmation_token_expiry': False,
+            })
+
+        return True
 
     @api.model
     def action_create_test_data(self, count=20, scheduled_date=None):

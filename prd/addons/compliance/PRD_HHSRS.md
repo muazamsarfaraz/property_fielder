@@ -686,7 +686,99 @@ class AwaabDeadline(models.Model):
 
 ---
 
-## 10. Gemini Review Status
+## 10. HHSRS Remediation Job Creation
+
+### 10.1 Overview
+When an HHSRS assessment is confirmed, the system should automatically create a remediation job with appropriate priority and Awaab's Law deadline integration.
+
+### 10.2 Data Model Extensions
+
+#### `property_fielder.hhsrs.assessment` Extensions
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `remediation_job_id` | Many2one → job | Linked remediation job |
+| `remediation_required` | Boolean | Whether remediation is needed |
+| `remediation_type` | Selection | repair/replacement/removal/monitoring |
+| `estimated_cost` | Monetary | Estimated remediation cost |
+
+### 10.3 Remediation Job Creation Logic
+
+```python
+def action_confirm(self):
+    """Confirm the assessment and create remediation job if needed."""
+    self.ensure_one()
+    self.write({'state': 'confirmed'})
+
+    # Create remediation job for Cat 1 hazards (emergency)
+    if self.hhsrs_category == '1':
+        self._create_remediation_job(priority='3', is_emergency=True)
+    # Create remediation job for Cat 2 hazards (scheduled)
+    elif self.hhsrs_category == '2' and self.hhsrs_band in ['D', 'E', 'F']:
+        self._create_remediation_job(priority='2', is_emergency=False)
+
+def _create_remediation_job(self, priority='1', is_emergency=False):
+    """Create a field service job for hazard remediation."""
+    job_vals = {
+        'name': f'HHSRS Remediation: {self.hhsrs_hazard_type_id.name}',
+        'property_id': self.property_id.id,
+        'partner_id': self.property_id.partner_id.id,
+        'job_type': 'remediation',
+        'priority': priority,
+        'is_hhsrs_remediation': True,
+        'hhsrs_assessment_id': self.id,
+        'scheduled_date': self._get_remediation_deadline(is_emergency),
+        'notes': self._build_remediation_notes(),
+    }
+    job = self.env['property_fielder.job'].create(job_vals)
+    self.remediation_job_id = job.id
+
+    # Link to Awaab deadline if applicable
+    if self.hhsrs_hazard_type_id.is_awaab_covered:
+        self._create_awaab_deadline(job, is_emergency)
+
+def _get_remediation_deadline(self, is_emergency):
+    """Calculate deadline based on hazard category."""
+    if is_emergency:
+        return fields.Date.today()  # Same day for Cat 1
+    else:
+        # Reasonable time from config parameter
+        days = int(self.env['ir.config_parameter'].sudo().get_param(
+            'property_fielder_hhsrs.awaab_reasonable_time_days', '28'
+        ))
+        return fields.Date.today() + timedelta(days=days)
+```
+
+### 10.4 Job Model Extensions
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `job_type` | Selection | inspection/remediation/maintenance/void_check |
+| `is_hhsrs_remediation` | Boolean | Is this an HHSRS remediation job |
+| `hhsrs_assessment_id` | Many2one → assessment | Source HHSRS assessment |
+| `awaab_deadline_id` | Many2one → awaab.deadline | Linked Awaab deadline |
+
+### 10.5 Awaab Deadline Integration
+
+When a remediation job is created for an Awaab-covered hazard:
+1. Create Awaab deadline record linked to job
+2. Set deadlines based on hazard type (emergency/non-emergency/damp_mould)
+3. Update Awaab deadline status when job state changes:
+   - Job started → `repairs_start_met = True`
+   - Job completed → `completion_met = True`
+
+### 10.6 Priority Mapping
+
+| HHSRS Category | Band | Job Priority | Response Time |
+|----------------|------|--------------|---------------|
+| Category 1 | A, B, C | Urgent (3) | 24 hours |
+| Category 2 | D, E | High (2) | 7 days |
+| Category 2 | F, G | Normal (1) | 28 days |
+| Category 2 | H, I, J | Low (0) | Monitoring only |
+
+---
+
+## 11. Gemini Review Status
 
 | Criteria | Status |
 |----------|--------|

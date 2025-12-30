@@ -56,6 +56,7 @@ Technical:
         'data/sequence_data.xml',
         'data/skill_data.xml',
         'data/email_templates.xml',
+        'data/cron_data.xml',
 
         # Views (load actions first, then menus)
         'views/job_views.xml',
@@ -66,6 +67,7 @@ Technical:
         'views/change_request_views.xml',
         'views/dashboard.xml',
         'views/dispatch_view.xml',
+        'views/appointment_portal_templates.xml',
         'views/menu.xml',  # Load menu last after all actions are defined
 
         # Wizards

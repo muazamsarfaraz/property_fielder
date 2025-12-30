@@ -126,16 +126,22 @@ class ShareScheduleWizard(models.TransientModel):
         }
 
     def _send_to_inspectors(self):
-        """Send schedule to inspectors"""
+        """Send schedule to inspectors with acknowledgment token"""
         emails_sent = 0
         template = self.env.ref('property_fielder_field_service.email_template_inspector_schedule', raise_if_not_found=False)
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
 
         for route in self.route_ids:
             inspector = route.inspector_id
             if inspector and inspector.email:
+                # Generate acknowledgment token for inspector
+                route._generate_acknowledgment_token()
+
                 if template:
-                    template.with_context(custom_message=self.custom_message).send_mail(
-                        route.id, force_send=True)
+                    template.with_context(
+                        custom_message=self.custom_message,
+                        base_url=base_url
+                    ).send_mail(route.id, force_send=True)
                 else:
                     self._send_simple_email(inspector.email, route, 'inspector')
                 emails_sent += 1
@@ -143,17 +149,29 @@ class ShareScheduleWizard(models.TransientModel):
         return emails_sent
 
     def _send_to_owners(self):
-        """Send appointment notifications to property owners"""
+        """Send appointment notifications to property owners with confirmation tokens"""
         emails_sent = 0
         template = self.env.ref('property_fielder_field_service.email_template_owner_appointment', raise_if_not_found=False)
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
 
         for route in self.route_ids:
             for job in route.job_ids:
                 partner = job.partner_id
                 if partner and partner.email:
+                    # Generate confirmation token for owner
+                    job._generate_confirmation_token()
+
+                    # Mark as notified
+                    job.write({
+                        'owner_notified': True,
+                        'owner_notified_date': fields.Datetime.now(),
+                    })
+
                     if template:
-                        template.with_context(custom_message=self.custom_message).send_mail(
-                            job.id, force_send=True)
+                        template.with_context(
+                            custom_message=self.custom_message,
+                            base_url=base_url
+                        ).send_mail(job.id, force_send=True)
                     else:
                         self._send_simple_email(partner.email, job, 'owner')
                     emails_sent += 1

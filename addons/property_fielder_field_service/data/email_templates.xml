@@ -57,7 +57,17 @@
                                     {{ ctx.get('custom_message') }}
                                 </p>
                             </t>
-                            
+
+                            <!-- Acknowledgment Button -->
+                            <t t-if="object.inspector_acknowledgment_token">
+                                <div style="margin-top: 24px; text-align: center;">
+                                    <a t-attf-href="{{ ctx.get('base_url', '') }}/schedule/acknowledge/{{ object.inspector_acknowledgment_token }}"
+                                       style="display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                        ✓ Acknowledge Schedule
+                                    </a>
+                                </div>
+                            </t>
+
                             <p style="margin-top: 24px;">Have a great day!</p>
                         </td>
                     </tr>
@@ -115,13 +125,92 @@
                                     {{ ctx.get('custom_message') }}
                                 </p>
                             </t>
-                            
-                            <p style="margin-top: 24px;">
-                                <strong>Need to reschedule?</strong><br/>
-                                Please contact us as soon as possible if this time doesn't work for you.
+
+                            <!-- Confirmation Buttons -->
+                            <t t-if="object.confirmation_token">
+                                <div style="margin-top: 24px; text-align: center;">
+                                    <p style="margin-bottom: 16px;"><strong>Please confirm your appointment:</strong></p>
+                                    <table style="margin: 0 auto;">
+                                        <tr>
+                                            <td style="padding: 0 8px;">
+                                                <a t-attf-href="{{ ctx.get('base_url', '') }}/appointment/confirm/{{ object.confirmation_token }}"
+                                                   style="display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                                    ✓ Confirm
+                                                </a>
+                                            </td>
+                                            <td style="padding: 0 8px;">
+                                                <a t-attf-href="{{ ctx.get('base_url', '') }}/appointment/reschedule/{{ object.confirmation_token }}"
+                                                   style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                                    📅 Reschedule
+                                                </a>
+                                            </td>
+                                            <td style="padding: 0 8px;">
+                                                <a t-attf-href="{{ ctx.get('base_url', '') }}/appointment/decline/{{ object.confirmation_token }}"
+                                                   style="display: inline-block; padding: 12px 24px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                                    ✗ Cannot Attend
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </t>
+
+                            <t t-if="not object.confirmation_token">
+                                <p style="margin-top: 24px;">
+                                    <strong>Need to reschedule?</strong><br/>
+                                    Please contact us as soon as possible if this time doesn't work for you.
+                                </p>
+                            </t>
+
+                            <p style="margin-top: 24px;">Best regards,<br/>The Property Fielder Team</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Email Template: Appointment Reminder (24 hours before) -->
+    <record id="email_template_appointment_reminder" model="mail.template">
+        <field name="name">Appointment Reminder (24 Hours)</field>
+        <field name="model_id" ref="model_property_fielder_job"/>
+        <field name="email_from">{{ user.email_formatted }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="subject">Reminder: Inspection Tomorrow at {{ object.street }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 14px;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family: 'Lato', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h1 style="color: #28a745;">📅 Appointment Reminder</h1>
+                            <p>Dear {{ object.partner_id.name }},</p>
+                            <p>This is a friendly reminder that your inspection is scheduled for <strong>tomorrow</strong>:</p>
+
+                            <table style="margin: 20px 0; width: 100%; background-color: #f8f9fa; border-radius: 8px;">
+                                <tr>
+                                    <td style="padding: 15px;">
+                                        <p style="margin: 5px 0;"><strong>📍 Property:</strong> {{ object.street }}, {{ object.city }}</p>
+                                        <p style="margin: 5px 0;"><strong>📆 Date:</strong> {{ object.scheduled_date }}</p>
+                                        <p style="margin: 5px 0;"><strong>⏱️ Duration:</strong> Approximately {{ object.duration_minutes }} minutes</p>
+                                        <t t-if="object.inspector_id">
+                                            <p style="margin: 5px 0;"><strong>👤 Inspector:</strong> {{ object.inspector_id.name }}</p>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="color: #666;">
+                                Please ensure access to the property is available at the scheduled time.
                             </p>
-                            
-                            <p>Best regards,<br/>The Property Fielder Team</p>
+
+                            <p style="margin-top: 24px;">Best regards,<br/>The Property Fielder Team</p>
                         </td>
                     </tr>
                 </table>

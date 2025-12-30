@@ -183,3 +183,144 @@ class FieldServiceController(http.Controller):
                 'error': str(e)
             }
 
+    # ============================================================
+    # APPOINTMENT CONFIRMATION ENDPOINTS (Public - token-based auth)
+    # ============================================================
+
+    @http.route('/appointment/confirm/<string:token>', type='http', auth='public', website=True)
+    def appointment_confirm_page(self, token, **kwargs):
+        """Display appointment confirmation page."""
+        Job = request.env['property_fielder.job'].sudo()
+        job = Job._validate_confirmation_token(token)
+
+        if not job:
+            return request.render('property_fielder_field_service.appointment_token_invalid', {})
+
+        return request.render('property_fielder_field_service.appointment_confirm_page', {
+            'job': job,
+            'token': token,
+        })
+
+    @http.route('/appointment/confirm/<string:token>/submit', type='http', auth='public', methods=['POST'], csrf=False)
+    def appointment_confirm_submit(self, token, **kwargs):
+        """Process appointment confirmation."""
+        Job = request.env['property_fielder.job'].sudo()
+        job = Job._validate_confirmation_token(token)
+
+        if not job:
+            return request.render('property_fielder_field_service.appointment_token_invalid', {})
+
+        job.action_confirm_appointment(method='email_link')
+
+        return request.render('property_fielder_field_service.appointment_confirmed', {
+            'job': job,
+        })
+
+    @http.route('/appointment/decline/<string:token>', type='http', auth='public', website=True)
+    def appointment_decline_page(self, token, **kwargs):
+        """Display appointment decline page with reason form."""
+        Job = request.env['property_fielder.job'].sudo()
+        job = Job._validate_confirmation_token(token)
+
+        if not job:
+            return request.render('property_fielder_field_service.appointment_token_invalid', {})
+
+        return request.render('property_fielder_field_service.appointment_decline_page', {
+            'job': job,
+            'token': token,
+        })
+
+    @http.route('/appointment/decline/<string:token>/submit', type='http', auth='public', methods=['POST'], csrf=False)
+    def appointment_decline_submit(self, token, **kwargs):
+        """Process appointment decline."""
+        Job = request.env['property_fielder.job'].sudo()
+        job = Job._validate_confirmation_token(token)
+
+        if not job:
+            return request.render('property_fielder_field_service.appointment_token_invalid', {})
+
+        reason = kwargs.get('reason', '')
+        job.action_decline_appointment(reason=reason)
+
+        return request.render('property_fielder_field_service.appointment_declined', {
+            'job': job,
+        })
+
+    @http.route('/appointment/reschedule/<string:token>', type='http', auth='public', website=True)
+    def appointment_reschedule_page(self, token, **kwargs):
+        """Display appointment reschedule page with date picker."""
+        Job = request.env['property_fielder.job'].sudo()
+        job = Job._validate_confirmation_token(token)
+
+        if not job:
+            return request.render('property_fielder_field_service.appointment_token_invalid', {})
+
+        return request.render('property_fielder_field_service.appointment_reschedule_page', {
+            'job': job,
+            'token': token,
+        })
+
+    @http.route('/appointment/reschedule/<string:token>/submit', type='http', auth='public', methods=['POST'], csrf=False)
+    def appointment_reschedule_submit(self, token, **kwargs):
+        """Process reschedule request."""
+        Job = request.env['property_fielder.job'].sudo()
+        job = Job._validate_confirmation_token(token)
+
+        if not job:
+            return request.render('property_fielder_field_service.appointment_token_invalid', {})
+
+        proposed_date = kwargs.get('proposed_date')
+        proposed_time = kwargs.get('proposed_time', '')
+        reason = kwargs.get('reason', '')
+
+        if not proposed_date:
+            return request.render('property_fielder_field_service.appointment_reschedule_page', {
+                'job': job,
+                'token': token,
+                'error': 'Please select a preferred date.',
+            })
+
+        job.action_request_reschedule(
+            proposed_date=proposed_date,
+            proposed_time=proposed_time,
+            reason=reason
+        )
+
+        return request.render('property_fielder_field_service.appointment_reschedule_requested', {
+            'job': job,
+            'proposed_date': proposed_date,
+        })
+
+    # ============================================================
+    # INSPECTOR SCHEDULE ACKNOWLEDGMENT (Public - token-based auth)
+    # ============================================================
+
+    @http.route('/schedule/acknowledge/<string:token>', type='http', auth='public', website=True)
+    def schedule_acknowledge_page(self, token, **kwargs):
+        """Display schedule acknowledgment page for inspector."""
+        Route = request.env['property_fielder.route'].sudo()
+        route = Route.search([('inspector_acknowledgment_token', '=', token)], limit=1)
+
+        if not route:
+            return request.render('property_fielder_field_service.schedule_token_invalid', {})
+
+        return request.render('property_fielder_field_service.schedule_acknowledge_page', {
+            'route': route,
+            'token': token,
+        })
+
+    @http.route('/schedule/acknowledge/<string:token>/submit', type='http', auth='public', methods=['POST'], csrf=False)
+    def schedule_acknowledge_submit(self, token, **kwargs):
+        """Process schedule acknowledgment."""
+        Route = request.env['property_fielder.route'].sudo()
+        route = Route.search([('inspector_acknowledgment_token', '=', token)], limit=1)
+
+        if not route:
+            return request.render('property_fielder_field_service.schedule_token_invalid', {})
+
+        route.action_acknowledge_schedule()
+
+        return request.render('property_fielder_field_service.schedule_acknowledged', {
+            'route': route,
+        })
+

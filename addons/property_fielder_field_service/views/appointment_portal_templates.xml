@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- APPOINTMENT CONFIRMATION PORTAL TEMPLATES -->
+    <!-- ============================================================ -->
+    
+    <!-- Token Invalid Page -->
+    <template id="appointment_token_invalid" name="Appointment Token Invalid">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow">
+                            <div class="card-body py-5">
+                                <i class="fa fa-exclamation-triangle fa-4x text-warning mb-4"></i>
+                                <h2>Link Expired or Invalid</h2>
+                                <p class="text-muted">
+                                    This appointment confirmation link has expired or is no longer valid.
+                                    Please contact us if you need to reschedule your appointment.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Appointment Confirm Page -->
+    <template id="appointment_confirm_page" name="Confirm Appointment">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0"><i class="fa fa-calendar-check-o me-2"></i>Confirm Your Appointment</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <h5>Property</h5>
+                                        <p class="mb-1"><strong><t t-esc="job.property_id.name or job.name"/></strong></p>
+                                        <p class="text-muted mb-0" t-if="job.property_id.street">
+                                            <t t-esc="job.property_id.street"/><br/>
+                                            <t t-esc="job.property_id.city"/> <t t-esc="job.property_id.zip"/>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h5>Appointment Details</h5>
+                                        <p class="mb-1"><strong>Date:</strong> <t t-esc="job.scheduled_date"/></p>
+                                        <p class="mb-1"><strong>Time Window:</strong> 
+                                            <t t-esc="job.earliest_start"/> - <t t-esc="job.latest_end"/>
+                                        </p>
+                                        <p class="mb-0"><strong>Duration:</strong> <t t-esc="job.duration_minutes"/> minutes</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    By confirming, you agree to provide access to the property at the scheduled time.
+                                </div>
+                                
+                                <div class="d-flex gap-3 justify-content-center mt-4">
+                                    <form t-attf-action="/appointment/confirm/#{token}/submit" method="post">
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            <i class="fa fa-check me-2"></i>Confirm Appointment
+                                        </button>
+                                    </form>
+                                    <a t-attf-href="/appointment/reschedule/#{token}" class="btn btn-outline-primary btn-lg">
+                                        <i class="fa fa-calendar me-2"></i>Request Different Time
+                                    </a>
+                                    <a t-attf-href="/appointment/decline/#{token}" class="btn btn-outline-danger btn-lg">
+                                        <i class="fa fa-times me-2"></i>Cannot Attend
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Appointment Confirmed Success Page -->
+    <template id="appointment_confirmed" name="Appointment Confirmed">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow">
+                            <div class="card-body py-5">
+                                <i class="fa fa-check-circle fa-4x text-success mb-4"></i>
+                                <h2>Appointment Confirmed!</h2>
+                                <p class="text-muted mb-4">
+                                    Thank you for confirming your appointment.
+                                </p>
+                                <div class="bg-light p-3 rounded">
+                                    <p class="mb-1"><strong>Date:</strong> <t t-esc="job.scheduled_date"/></p>
+                                    <p class="mb-0"><strong>Property:</strong> <t t-esc="job.property_id.name or job.name"/></p>
+                                </div>
+                                <p class="mt-4 text-muted small">
+                                    You will receive a reminder 24 hours before your appointment.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <!-- Appointment Decline Page -->
+    <template id="appointment_decline_page" name="Decline Appointment">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-header bg-danger text-white">
+                                <h4 class="mb-0"><i class="fa fa-times-circle me-2"></i>Cannot Attend Appointment</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>Please let us know why you cannot attend this appointment:</p>
+                                <form t-attf-action="/appointment/decline/#{token}/submit" method="post">
+                                    <div class="mb-3">
+                                        <label for="reason" class="form-label">Reason (optional)</label>
+                                        <textarea name="reason" id="reason" class="form-control" rows="3" 
+                                                  placeholder="e.g., I will be away on holiday..."></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fa fa-times me-2"></i>Confirm Decline
+                                        </button>
+                                        <a t-attf-href="/appointment/confirm/#{token}" class="btn btn-outline-secondary">
+                                            <i class="fa fa-arrow-left me-2"></i>Go Back
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Appointment Declined Success Page -->
+    <template id="appointment_declined" name="Appointment Declined">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow">
+                            <div class="card-body py-5">
+                                <i class="fa fa-info-circle fa-4x text-info mb-4"></i>
+                                <h2>Appointment Declined</h2>
+                                <p class="text-muted">
+                                    We have received your response. Our team will contact you
+                                    to arrange an alternative appointment time.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Appointment Reschedule Page -->
+    <template id="appointment_reschedule_page" name="Reschedule Appointment">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card shadow">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="mb-0"><i class="fa fa-calendar me-2"></i>Request Different Time</h4>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="error">
+                                    <div class="alert alert-danger"><t t-esc="error"/></div>
+                                </t>
+                                <p>Current appointment: <strong><t t-esc="job.scheduled_date"/></strong></p>
+                                <form t-attf-action="/appointment/reschedule/#{token}/submit" method="post">
+                                    <div class="mb-3">
+                                        <label for="proposed_date" class="form-label">Preferred Date *</label>
+                                        <input type="date" name="proposed_date" id="proposed_date"
+                                               class="form-control" required="required"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="proposed_time" class="form-label">Preferred Time</label>
+                                        <select name="proposed_time" id="proposed_time" class="form-select">
+                                            <option value="">Any time</option>
+                                            <option value="morning">Morning (8am - 12pm)</option>
+                                            <option value="afternoon">Afternoon (12pm - 5pm)</option>
+                                            <option value="evening">Evening (5pm - 8pm)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="reason" class="form-label">Reason (optional)</label>
+                                        <textarea name="reason" id="reason" class="form-control" rows="2"></textarea>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fa fa-paper-plane me-2"></i>Submit Request
+                                        </button>
+                                        <a t-attf-href="/appointment/confirm/#{token}" class="btn btn-outline-secondary">
+                                            <i class="fa fa-arrow-left me-2"></i>Go Back
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Reschedule Requested Success Page -->
+    <template id="appointment_reschedule_requested" name="Reschedule Requested">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow">
+                            <div class="card-body py-5">
+                                <i class="fa fa-clock-o fa-4x text-primary mb-4"></i>
+                                <h2>Reschedule Request Received</h2>
+                                <p class="text-muted">
+                                    We have received your request to reschedule to
+                                    <strong><t t-esc="proposed_date"/></strong>.
+                                </p>
+                                <p class="text-muted">
+                                    Our team will review your request and send you a new
+                                    confirmation email with the updated appointment details.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================================================ -->
+    <!-- INSPECTOR SCHEDULE ACKNOWLEDGMENT TEMPLATES -->
+    <!-- ============================================================ -->
+
+    <!-- Schedule Token Invalid -->
+    <template id="schedule_token_invalid" name="Schedule Token Invalid">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow">
+                            <div class="card-body py-5">
+                                <i class="fa fa-exclamation-triangle fa-4x text-warning mb-4"></i>
+                                <h2>Link Invalid</h2>
+                                <p class="text-muted">
+                                    This schedule acknowledgment link is no longer valid.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Schedule Acknowledge Page -->
+    <template id="schedule_acknowledge_page" name="Acknowledge Schedule">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h4 class="mb-0"><i class="fa fa-clipboard me-2"></i>Your Schedule for <t t-esc="route.route_date"/></h4>
+                            </div>
+                            <div class="card-body">
+                                <h5>Route: <t t-esc="route.name"/></h5>
+                                <p class="text-muted">
+                                    <t t-esc="route.job_count"/> jobs |
+                                    <t t-esc="route.total_distance_km"/> km |
+                                    <t t-esc="route.total_time_minutes"/> minutes
+                                </p>
+
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Property</th>
+                                            <th>Time Window</th>
+                                            <th>Duration</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="route.job_ids" t-as="job">
+                                            <tr>
+                                                <td><t t-esc="job.sequence_in_route"/></td>
+                                                <td>
+                                                    <strong><t t-esc="job.property_id.name or job.name"/></strong><br/>
+                                                    <small class="text-muted"><t t-esc="job.property_id.street"/></small>
+                                                </td>
+                                                <td><t t-esc="job.earliest_start"/> - <t t-esc="job.latest_end"/></td>
+                                                <td><t t-esc="job.duration_minutes"/> min</td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+
+                                <form t-attf-action="/schedule/acknowledge/#{token}/submit" method="post" class="text-center mt-4">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fa fa-check me-2"></i>Acknowledge Schedule
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Schedule Acknowledged Success Page -->
+    <template id="schedule_acknowledged" name="Schedule Acknowledged">
+        <t t-call="web.frontend_layout">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow">
+                            <div class="card-body py-5">
+                                <i class="fa fa-check-circle fa-4x text-success mb-4"></i>
+                                <h2>Schedule Acknowledged</h2>
+                                <p class="text-muted">
+                                    Thank you for acknowledging your schedule for
+                                    <strong><t t-esc="route.route_date"/></strong>.
+                                </p>
+                                <p class="text-muted">
+                                    You have <t t-esc="route.job_count"/> jobs scheduled.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
+
