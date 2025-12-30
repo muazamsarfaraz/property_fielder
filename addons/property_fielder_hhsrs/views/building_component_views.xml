@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Building Component Tree View -->
+    <record id="view_building_component_tree" model="ir.ui.view">
+        <field name="name">property_fielder.building.component.tree</field>
+        <field name="model">property_fielder.building.component</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="condition == 'critical' or is_beyond_life" 
+                  decoration-warning="condition == 'poor'">
+                <field name="property_id"/>
+                <field name="component_type"/>
+                <field name="installation_date"/>
+                <field name="age_years"/>
+                <field name="expected_life"/>
+                <field name="is_beyond_life" widget="boolean"/>
+                <field name="condition" widget="badge"
+                       decoration-success="condition == 'good'"
+                       decoration-info="condition == 'fair'"
+                       decoration-warning="condition == 'poor'"
+                       decoration-danger="condition == 'critical'"/>
+                <field name="replacement_cost" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Building Component Form View -->
+    <record id="view_building_component_form" model="ir.ui.view">
+        <field name="name">property_fielder.building.component.form</field>
+        <field name="model">property_fielder.building.component</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Component">
+                            <field name="property_id"/>
+                            <field name="component_type"/>
+                            <field name="condition"/>
+                        </group>
+                        <group string="Age &amp; Lifespan">
+                            <field name="installation_date"/>
+                            <field name="age_years"/>
+                            <field name="expected_life"/>
+                            <field name="is_beyond_life" widget="boolean"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Renewal">
+                            <field name="last_renewed"/>
+                            <field name="next_renewal"/>
+                        </group>
+                        <group string="Cost">
+                            <field name="replacement_cost" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                    <group string="Photos">
+                        <field name="photo_ids" widget="many2many_binary" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Building Component Search View -->
+    <record id="view_building_component_search" model="ir.ui.view">
+        <field name="name">property_fielder.building.component.search</field>
+        <field name="model">property_fielder.building.component</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="property_id"/>
+                <field name="component_type"/>
+                <filter name="filter_critical" string="Critical" domain="[('condition', '=', 'critical')]"/>
+                <filter name="filter_beyond_life" string="Beyond Life" domain="[('is_beyond_life', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="group_type" string="Component Type" context="{'group_by': 'component_type'}"/>
+                    <filter name="group_condition" string="Condition" context="{'group_by': 'condition'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Building Component Action -->
+    <record id="action_building_component" model="ir.actions.act_window">
+        <field name="name">Building Components</field>
+        <field name="res_model">property_fielder.building.component</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add building components
+            </p>
+            <p>
+                Track building component conditions for Decent Homes Standard Criterion B.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+

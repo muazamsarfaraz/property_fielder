@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Inspection Report Template -->
+        <template id="report_inspection_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="inspection">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2 class="text-center">Inspection Report</h2>
+                            <h3 class="text-center"><span t-field="inspection.certification_type_id.name"/></h3>
+                            
+                            <!-- Property Information -->
+                            <div class="row mt-4 mb-4">
+                                <div class="col-6">
+                                    <h5>Property Details</h5>
+                                    <strong>Reference:</strong> <span t-field="inspection.name"/><br/>
+                                    <strong>Property:</strong> <span t-field="inspection.property_id.name"/><br/>
+                                    <strong>Address:</strong> <span t-field="inspection.property_id.street"/>, <span t-field="inspection.property_id.city"/><br/>
+                                    <strong>Postcode:</strong> <span t-field="inspection.property_id.zip"/><br/>
+                                </div>
+                                <div class="col-6">
+                                    <h5>Inspection Details</h5>
+                                    <strong>Scheduled Date:</strong> <span t-field="inspection.scheduled_date"/><br/>
+                                    <strong>Completed Date:</strong> <span t-field="inspection.completed_date"/><br/>
+                                    <strong>Inspector:</strong> <span t-field="inspection.inspector_id"/><br/>
+                                    <strong>Result:</strong> <span t-field="inspection.result"/><br/>
+                                </div>
+                            </div>
+                            
+                            <!-- Checklist Results -->
+                            <t t-if="inspection.checklist_item_ids">
+                                <h4 class="mt-4">Checklist Results</h4>
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50%;">Item</th>
+                                            <th style="width: 15%;">Category</th>
+                                            <th style="width: 15%;">Result</th>
+                                            <th style="width: 20%;">Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="inspection.checklist_item_ids" t-as="item">
+                                            <tr t-att-class="'table-danger' if item.result == 'fail' else ('table-warning' if item.result == 'na' else '')">
+                                                <td>
+                                                    <span t-field="item.name"/>
+                                                    <t t-if="item.is_mandatory">
+                                                        <span class="badge bg-danger">Required</span>
+                                                    </t>
+                                                </td>
+                                                <td><span t-field="item.category"/></td>
+                                                <td>
+                                                    <t t-if="item.result == 'pass'">✓ Pass</t>
+                                                    <t t-if="item.result == 'fail'">✗ Fail</t>
+                                                    <t t-if="item.result == 'na'">N/A</t>
+                                                </td>
+                                                <td><span t-field="item.notes"/></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </t>
+                            
+                            <!-- Photos -->
+                            <t t-if="inspection.photo_ids">
+                                <h4 class="mt-4">Inspection Photos</h4>
+                                <div class="row">
+                                    <t t-foreach="inspection.photo_ids" t-as="photo">
+                                        <div class="col-4 mb-3">
+                                            <img t-att-src="image_data_uri(photo.image)" 
+                                                 style="max-width: 100%; max-height: 200px; border: 1px solid #ddd;"/>
+                                            <p class="small mt-1">
+                                                <strong><span t-field="photo.name"/></strong><br/>
+                                                <span t-field="photo.category"/>
+                                                <t t-if="photo.is_before_photo"> (Before)</t>
+                                                <t t-if="photo.is_after_photo"> (After)</t>
+                                            </p>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            
+                            <!-- Notes -->
+                            <t t-if="inspection.notes">
+                                <h4 class="mt-4">Notes</h4>
+                                <p><span t-field="inspection.notes"/></p>
+                            </t>
+                            
+                            <!-- Signatures -->
+                            <div class="row mt-5">
+                                <div class="col-6" t-if="inspection.inspector_signature">
+                                    <h5>Inspector Signature</h5>
+                                    <img t-att-src="image_data_uri(inspection.inspector_signature)" 
+                                         style="max-height: 80px; border-bottom: 1px solid #000;"/>
+                                    <p class="mt-2">
+                                        <span t-field="inspection.inspector_id"/><br/>
+                                        <span t-field="inspection.inspector_signature_date"/>
+                                    </p>
+                                </div>
+                                <div class="col-6" t-if="inspection.tenant_signature">
+                                    <h5>Tenant/Witness Signature</h5>
+                                    <img t-att-src="image_data_uri(inspection.tenant_signature)" 
+                                         style="max-height: 80px; border-bottom: 1px solid #000;"/>
+                                    <p class="mt-2">
+                                        <span t-field="inspection.tenant_name"/><br/>
+                                        <span t-field="inspection.tenant_signature_date"/>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-4">
+                                <div class="col-12 text-center">
+                                    <small class="text-muted">
+                                        Report generated on <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        
+        <!-- Report Action -->
+        <record id="action_report_inspection" model="ir.actions.report">
+            <field name="name">Inspection Report</field>
+            <field name="model">property_fielder.property.inspection</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">property_fielder_property_management.report_inspection_document</field>
+            <field name="report_file">property_fielder_property_management.report_inspection_document</field>
+            <field name="binding_model_id" ref="model_property_fielder_property_inspection"/>
+            <field name="binding_type">report</field>
+        </record>
+        
+    </data>
+</odoo>
+

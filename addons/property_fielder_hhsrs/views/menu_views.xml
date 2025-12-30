@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Main HHSRS Menu (under Property Management) -->
+    <menuitem id="menu_hhsrs_root"
+              name="HHSRS &amp; Compliance"
+              parent="property_fielder_property_management.menu_property_management_root"
+              sequence="50"/>
+    
+    <!-- HHSRS Assessments -->
+    <menuitem id="menu_hhsrs_assessment"
+              name="HHSRS Assessments"
+              parent="menu_hhsrs_root"
+              action="action_hhsrs_assessment"
+              sequence="10"/>
+    
+    <!-- Awaab's Law -->
+    <menuitem id="menu_awaab"
+              name="Awaab's Law"
+              parent="menu_hhsrs_root"
+              sequence="20"/>
+    
+    <menuitem id="menu_awaab_deadlines"
+              name="Deadlines"
+              parent="menu_awaab"
+              action="action_awaab_deadline"
+              sequence="10"/>
+    
+    <menuitem id="menu_damp_mould"
+              name="Damp &amp; Mould Cases"
+              parent="menu_awaab"
+              action="action_damp_mould"
+              sequence="20"/>
+    
+    <!-- Decent Homes Standard -->
+    <menuitem id="menu_dhs"
+              name="Decent Homes Standard"
+              parent="menu_hhsrs_root"
+              sequence="30"/>
+    
+    <menuitem id="menu_dhs_assessment"
+              name="DHS Assessments"
+              parent="menu_dhs"
+              action="action_dhs_assessment"
+              sequence="10"/>
+    
+    <menuitem id="menu_building_components"
+              name="Building Components"
+              parent="menu_dhs"
+              action="action_building_component"
+              sequence="20"/>
+    
+    <!-- Configuration -->
+    <menuitem id="menu_hhsrs_config"
+              name="Configuration"
+              parent="menu_hhsrs_root"
+              sequence="100"/>
+    
+    <!-- Hazard Types Action -->
+    <record id="action_hazard_type" model="ir.actions.act_window">
+        <field name="name">Hazard Types</field>
+        <field name="res_model">property_fielder.hhsrs.hazard.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="menu_hazard_types"
+              name="Hazard Types"
+              parent="menu_hhsrs_config"
+              action="action_hazard_type"
+              sequence="10"/>
+    
+    <!-- Likelihood Bands Action -->
+    <record id="action_likelihood_band" model="ir.actions.act_window">
+        <field name="name">Likelihood Bands</field>
+        <field name="res_model">property_fielder.hhsrs.likelihood.band</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="menu_likelihood_bands"
+              name="Likelihood Bands"
+              parent="menu_hhsrs_config"
+              action="action_likelihood_band"
+              sequence="20"/>
+    
+    <!-- Vulnerable Groups Action -->
+    <record id="action_vulnerable_group" model="ir.actions.act_window">
+        <field name="name">Vulnerable Groups</field>
+        <field name="res_model">property_fielder.hhsrs.vulnerable.group</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="menu_vulnerable_groups"
+              name="Vulnerable Groups"
+              parent="menu_hhsrs_config"
+              action="action_vulnerable_group"
+              sequence="30"/>
+    
+</odoo>
+

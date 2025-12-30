@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Daily Awaab Deadline Check -->
+        <record id="cron_awaab_deadline_check" model="ir.cron">
+            <field name="name">Awaab's Law: Check Deadlines</field>
+            <field name="model_id" ref="model_property_fielder_awaab_deadline"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_awaab_deadlines()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall">False</field>
+        </record>
+        
+    </data>
+</odoo>
+

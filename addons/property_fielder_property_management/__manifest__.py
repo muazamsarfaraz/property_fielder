@@ -48,6 +48,7 @@ Features:
         'data/compliance_requirement_data.xml',
         'data/sequence_data.xml',
         'data/cron_data.xml',
+        'data/hhsrs_checklist_data.xml',
 
         # Wizards
         'wizard/certification_type_wizard_views.xml',
@@ -59,6 +60,8 @@ Features:
         # Views (order matters - actions must be defined before they are referenced)
         'views/certification_views.xml',
         'views/inspection_views.xml',
+        'views/inspection_photo_views.xml',
+        'views/inspection_checklist_views.xml',
         'views/property_image_views.xml',
         'views/property_document_views.xml',
         'views/property_views.xml',
@@ -68,12 +71,15 @@ Features:
         # Reports
         'reports/compliance_report.xml',
         'reports/certificate_report.xml',
+        'reports/inspection_report.xml',
+        'reports/portfolio_report.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'property_fielder_property_management/static/src/css/property_chatter.css',
             'property_fielder_property_management/static/src/css/photo_gallery.css',
             'property_fielder_property_management/static/src/css/property_map.css',
+            'property_fielder_property_management/static/src/css/property_ux_polish.css',
             'property_fielder_property_management/static/src/js/property_chatter.js',
             'property_fielder_property_management/static/src/js/property_map_widget.js',
             'property_fielder_property_management/static/src/xml/property_map_widget.xml',

@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- A. Physiological Requirements (11 hazards) -->
+        <record id="hazard_a1_damp" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Damp and Mould Growth</field>
+            <field name="code">A1</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats to health from dampness and mould growth</field>
+            <field name="assessment_guide">Check walls, ceilings, windows for condensation, rising damp, penetrating damp, and mould growth</field>
+            <field name="typical_remedies">Improve ventilation, install extractor fans, repair leaks, treat rising damp, apply mould treatment</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="hazard_a2_cold" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Excess Cold</field>
+            <field name="code">A2</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats to health from sub-optimal indoor temperatures</field>
+            <field name="assessment_guide">Check heating system, insulation, windows, draughts</field>
+            <field name="typical_remedies">Install/upgrade heating, improve insulation, replace windows, draught-proof</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="hazard_a3_heat" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Excess Heat</field>
+            <field name="code">A3</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats to health from excessively high indoor temperatures</field>
+            <field name="assessment_guide">Check ventilation, cooling, orientation, glazing</field>
+            <field name="typical_remedies">Improve ventilation, install blinds/shading, air conditioning</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <record id="hazard_a4_asbestos" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Asbestos and MMF</field>
+            <field name="code">A4</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats from asbestos-containing materials and man-made mineral fibres</field>
+            <field name="assessment_guide">Check for ACMs, condition of materials, management plan</field>
+            <field name="typical_remedies">Encapsulate, enclose, or remove ACMs by licensed contractor</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">40</field>
+        </record>
+        
+        <record id="hazard_a5_biocides" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Biocides</field>
+            <field name="code">A5</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats from chemicals used to treat timber and mould</field>
+            <field name="sequence">50</field>
+        </record>
+        
+        <record id="hazard_a6_co" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Carbon Monoxide and Fuel Combustion</field>
+            <field name="code">A6</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats from carbon monoxide and other combustion products</field>
+            <field name="assessment_guide">Check gas appliances, flues, ventilation, CO alarms</field>
+            <field name="typical_remedies">Service appliances, repair flues, install CO alarms, improve ventilation</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">60</field>
+        </record>
+        
+        <record id="hazard_a7_lead" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Lead</field>
+            <field name="code">A7</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats from lead in paint, pipes, or soil</field>
+            <field name="sequence">70</field>
+        </record>
+        
+        <record id="hazard_a8_radiation" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Radiation</field>
+            <field name="code">A8</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats from radon and other radioactive sources</field>
+            <field name="sequence">80</field>
+        </record>
+        
+        <record id="hazard_a9_gas" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Uncombusted Fuel Gas</field>
+            <field name="code">A9</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats from gas leaks</field>
+            <field name="assessment_guide">Check gas installations, joints, pipework</field>
+            <field name="typical_remedies">Repair leaks, replace faulty pipework</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">90</field>
+        </record>
+        
+        <record id="hazard_a10_vocs" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Volatile Organic Compounds</field>
+            <field name="code">A10</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats from VOCs in paints, furnishings, etc.</field>
+            <field name="sequence">100</field>
+        </record>
+        
+        <record id="hazard_a11_crowding" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Crowding and Space</field>
+            <field name="code">A11</field>
+            <field name="group">physiological</field>
+            <field name="description">Threats from lack of adequate living space</field>
+            <field name="assessment_guide">Check room sizes, number of occupants, living/sleeping arrangements</field>
+            <field name="sequence">110</field>
+        </record>
+        
+        <!-- B. Psychological Requirements (2 hazards) -->
+        <record id="hazard_b1_entry" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Entry by Intruders</field>
+            <field name="code">B1</field>
+            <field name="group">psychological</field>
+            <field name="description">Threats from difficulty in keeping the dwelling secure</field>
+            <field name="assessment_guide">Check locks, windows, entry points, lighting</field>
+            <field name="typical_remedies">Install secure locks, reinforce doors, improve lighting</field>
+            <field name="sequence">120</field>
+        </record>
+        
+        <record id="hazard_b2_lighting" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Lighting</field>
+            <field name="code">B2</field>
+            <field name="group">psychological</field>
+            <field name="description">Threats from inadequate natural and artificial light</field>
+            <field name="sequence">130</field>
+        </record>
+        
+        <record id="hazard_b3_noise" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Noise</field>
+            <field name="code">B3</field>
+            <field name="group">psychological</field>
+            <field name="description">Threats from excessive noise inside the dwelling</field>
+            <field name="sequence">140</field>
+        </record>
+
+        <!-- C. Protection Against Accidents (9 hazards) -->
+        <record id="hazard_c1_falls_baths" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Falls Associated with Baths</field>
+            <field name="code">C1</field>
+            <field name="group">protection</field>
+            <field name="description">Falls associated with baths, showers, and similar facilities</field>
+            <field name="assessment_guide">Check bath/shower surfaces, grab rails, flooring</field>
+            <field name="typical_remedies">Install grab rails, non-slip surfaces, level access shower</field>
+            <field name="sequence">150</field>
+        </record>
+
+        <record id="hazard_c2_falls_level" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Falls on Level Surfaces</field>
+            <field name="code">C2</field>
+            <field name="group">protection</field>
+            <field name="description">Falls on any level surface such as floors and yards</field>
+            <field name="assessment_guide">Check floor surfaces, thresholds, external paths</field>
+            <field name="typical_remedies">Repair uneven surfaces, secure rugs, improve lighting</field>
+            <field name="sequence">160</field>
+        </record>
+
+        <record id="hazard_c3_falls_stairs" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Falls on Stairs</field>
+            <field name="code">C3</field>
+            <field name="group">protection</field>
+            <field name="description">Falls on stairs, steps and ramps</field>
+            <field name="assessment_guide">Check stair dimensions, handrails, lighting, surface</field>
+            <field name="typical_remedies">Install handrails, improve lighting, repair treads</field>
+            <field name="sequence">170</field>
+        </record>
+
+        <record id="hazard_c4_falls_levels" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Falls Between Levels</field>
+            <field name="code">C4</field>
+            <field name="group">protection</field>
+            <field name="description">Falls from one level to another</field>
+            <field name="assessment_guide">Check windows, balconies, railings, restrictors</field>
+            <field name="typical_remedies">Install window restrictors, repair balcony rails</field>
+            <field name="sequence">180</field>
+        </record>
+
+        <record id="hazard_c5_electrical" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Electrical Hazards</field>
+            <field name="code">C5</field>
+            <field name="group">protection</field>
+            <field name="description">Hazards from electrical shock and burns</field>
+            <field name="assessment_guide">Check consumer unit, sockets, wiring, EICR</field>
+            <field name="typical_remedies">Rewire, upgrade consumer unit, install RCD protection</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">190</field>
+        </record>
+
+        <record id="hazard_c6_fire" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Fire</field>
+            <field name="code">C6</field>
+            <field name="group">protection</field>
+            <field name="description">Threats from fire and fire safety</field>
+            <field name="assessment_guide">Check smoke alarms, escape routes, fire doors, electrical safety</field>
+            <field name="typical_remedies">Install smoke alarms, fire doors, improve escape routes</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">200</field>
+        </record>
+
+        <record id="hazard_c7_flames" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Flames and Hot Surfaces</field>
+            <field name="code">C7</field>
+            <field name="group">protection</field>
+            <field name="description">Burns and scalds from flames and hot surfaces</field>
+            <field name="assessment_guide">Check radiators, pipes, cookers, fireguards</field>
+            <field name="typical_remedies">Install radiator covers, pipe insulation, guards</field>
+            <field name="sequence">210</field>
+        </record>
+
+        <record id="hazard_c8_collision" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Collision and Entrapment</field>
+            <field name="code">C8</field>
+            <field name="group">protection</field>
+            <field name="description">Physical collision with objects, trapping body parts</field>
+            <field name="assessment_guide">Check low headroom, glass, door closers</field>
+            <field name="typical_remedies">Install safety glass, remove obstructions</field>
+            <field name="sequence">220</field>
+        </record>
+
+        <record id="hazard_c9_explosions" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Explosions</field>
+            <field name="code">C9</field>
+            <field name="group">protection</field>
+            <field name="description">Threats from explosion of fuel or gas</field>
+            <field name="assessment_guide">Check gas installations, boilers</field>
+            <field name="typical_remedies">Service gas appliances, repair installations</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">230</field>
+        </record>
+
+        <!-- D. Protection Against Infection (7 hazards) -->
+        <record id="hazard_d1_hygiene" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Domestic Hygiene, Pests and Refuse</field>
+            <field name="code">D1</field>
+            <field name="group">infection</field>
+            <field name="description">Health threats from poor design affecting domestic hygiene</field>
+            <field name="assessment_guide">Check kitchen facilities, pest access, refuse storage</field>
+            <field name="typical_remedies">Improve kitchen, seal pest entry points, improve refuse storage</field>
+            <field name="sequence">240</field>
+        </record>
+
+        <record id="hazard_d2_food" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Food Safety</field>
+            <field name="code">D2</field>
+            <field name="group">infection</field>
+            <field name="description">Threats from unhygienic food storage and preparation</field>
+            <field name="assessment_guide">Check food storage, preparation areas, refrigeration</field>
+            <field name="sequence">250</field>
+        </record>
+
+        <record id="hazard_d3_personal" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Personal Hygiene, Sanitation and Drainage</field>
+            <field name="code">D3</field>
+            <field name="group">infection</field>
+            <field name="description">Threats from poor personal hygiene facilities</field>
+            <field name="assessment_guide">Check bathroom facilities, hot water, drainage</field>
+            <field name="typical_remedies">Repair/upgrade bathroom, improve hot water supply</field>
+            <field name="sequence">260</field>
+        </record>
+
+        <record id="hazard_d4_water" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Water Supply</field>
+            <field name="code">D4</field>
+            <field name="group">infection</field>
+            <field name="description">Threats from contaminated water supply</field>
+            <field name="assessment_guide">Check water supply, tanks, pipework, legionella risk</field>
+            <field name="typical_remedies">Replace lead pipes, clean tanks, treat for legionella</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">270</field>
+        </record>
+
+        <record id="hazard_d5_hot_water" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Hot Water Scalding</field>
+            <field name="code">D5</field>
+            <field name="group">infection</field>
+            <field name="description">Scalding from hot water</field>
+            <field name="assessment_guide">Check water temperature, thermostatic valves</field>
+            <field name="typical_remedies">Install thermostatic mixing valves</field>
+            <field name="sequence">280</field>
+        </record>
+
+        <record id="hazard_d6_legionella" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Legionella</field>
+            <field name="code">D6</field>
+            <field name="group">infection</field>
+            <field name="description">Threats from Legionella bacteria in water systems</field>
+            <field name="assessment_guide">Check water storage, temperatures, dead legs</field>
+            <field name="typical_remedies">Flush systems, maintain temperatures, remove dead legs</field>
+            <field name="is_awaab_covered">True</field>
+            <field name="sequence">290</field>
+        </record>
+
+        <record id="hazard_d7_sanitation" model="property_fielder.hhsrs.hazard.type">
+            <field name="name">Sanitation and Drainage Defects</field>
+            <field name="code">D7</field>
+            <field name="group">infection</field>
+            <field name="description">Threats from defective sanitation and drainage</field>
+            <field name="assessment_guide">Check drains, WC, sewage disposal</field>
+            <field name="typical_remedies">Repair drains, unblock, replace defective sanitary ware</field>
+            <field name="sequence">300</field>
+        </record>
+
+    </data>
+</odoo>
+

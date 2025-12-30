@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Awaab Deadline Tree View -->
+    <record id="view_awaab_deadline_tree" model="ir.ui.view">
+        <field name="name">property_fielder.awaab.deadline.tree</field>
+        <field name="model">property_fielder.awaab.deadline</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="state == 'overdue'" decoration-warning="breach_count > 0">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="hazard_type"/>
+                <field name="report_date"/>
+                <field name="investigation_deadline"/>
+                <field name="repairs_start_deadline"/>
+                <field name="completion_deadline"/>
+                <field name="breach_count" widget="badge" decoration-danger="breach_count > 0"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'pending'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-danger="state == 'overdue'"
+                       decoration-success="state == 'completed'"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Awaab Deadline Form View -->
+    <record id="view_awaab_deadline_form" model="ir.ui.view">
+        <field name="name">property_fielder.awaab.deadline.form</field>
+        <field name="model">property_fielder.awaab.deadline</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Property &amp; Hazard">
+                            <field name="property_id"/>
+                            <field name="hazard_type"/>
+                            <field name="report_date"/>
+                        </group>
+                        <group string="Linked Records">
+                            <field name="hhsrs_assessment_id"/>
+                            <field name="damp_mould_id"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Deadlines" name="deadlines">
+                            <group>
+                                <group string="Investigation">
+                                    <field name="investigation_deadline"/>
+                                    <field name="investigation_date"/>
+                                    <field name="investigation_met" widget="boolean_toggle"/>
+                                </group>
+                                <group string="Repairs Start">
+                                    <field name="repairs_start_deadline"/>
+                                    <field name="repairs_start_date"/>
+                                    <field name="repairs_start_met" widget="boolean_toggle"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Completion">
+                                    <field name="completion_deadline"/>
+                                    <field name="completion_date"/>
+                                    <field name="completion_met" widget="boolean_toggle"/>
+                                </group>
+                                <group string="Status">
+                                    <field name="breach_count"/>
+                                    <field name="total_days_stopped"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Tenant Notifications" name="notifications">
+                            <group>
+                                <field name="tenant_notified_investigation"/>
+                                <field name="tenant_notified_schedule"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Access Refusals" name="refusals">
+                            <field name="access_refusal_ids">
+                                <tree editable="bottom">
+                                    <field name="refusal_date"/>
+                                    <field name="reason"/>
+                                    <field name="days_stopped"/>
+                                    <field name="user_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Awaab Deadline Search View -->
+    <record id="view_awaab_deadline_search" model="ir.ui.view">
+        <field name="name">property_fielder.awaab.deadline.search</field>
+        <field name="model">property_fielder.awaab.deadline</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="property_id"/>
+                <filter name="filter_overdue" string="Overdue" domain="[('state', '=', 'overdue')]"/>
+                <filter name="filter_pending" string="Pending" domain="[('state', '=', 'pending')]"/>
+                <filter name="filter_emergency" string="Emergency" domain="[('hazard_type', '=', 'emergency')]"/>
+                <filter name="filter_damp_mould" string="Damp &amp; Mould" domain="[('hazard_type', '=', 'damp_mould')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="group_hazard" string="Hazard Type" context="{'group_by': 'hazard_type'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Awaab Deadline Action -->
+    <record id="action_awaab_deadline" model="ir.actions.act_window">
+        <field name="name">Awaab's Law Deadlines</field>
+        <field name="res_model">property_fielder.awaab.deadline</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_filter_overdue': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Awaab's Law deadlines
+            </p>
+            <p>
+                Deadlines are automatically created when damp/mould cases or emergency hazards are reported.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+

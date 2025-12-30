@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- HHSRS Assessment Report Action -->
+    <record id="action_report_hhsrs_assessment" model="ir.actions.report">
+        <field name="name">HHSRS Assessment Report</field>
+        <field name="model">property_fielder.hhsrs.assessment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">property_fielder_hhsrs.report_hhsrs_assessment</field>
+        <field name="report_file">property_fielder_hhsrs.report_hhsrs_assessment</field>
+        <field name="binding_model_id" ref="model_property_fielder_hhsrs_assessment"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- HHSRS Assessment Report Template -->
+    <template id="report_hhsrs_assessment">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>HHSRS Assessment Report</h2>
+                        <h3><t t-esc="doc.name"/></h3>
+                        
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Property:</strong> <t t-esc="doc.property_id.name"/><br/>
+                                <strong>Address:</strong> <t t-esc="doc.property_id.street or ''"/><br/>
+                                <strong>Assessment Date:</strong> <t t-esc="doc.assessment_date"/><br/>
+                                <strong>Assessor:</strong> <t t-esc="doc.assessor_id.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Hazard Type:</strong> <t t-esc="doc.hazard_type_id.name"/><br/>
+                                <strong>Location:</strong> <t t-esc="doc.location or 'N/A'"/><br/>
+                                <strong>Status:</strong> <t t-esc="doc.state"/>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">HHSRS Scoring</h4>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Likelihood Band</th>
+                                <td><t t-esc="doc.likelihood_band_id.name"/> (RSP: <t t-esc="doc.likelihood_band_id.rsp"/>)</td>
+                            </tr>
+                            <tr>
+                                <th>Outcome Class 1 (Death/Permanent)</th>
+                                <td><t t-esc="doc.outcome_prob_class_1"/>%</td>
+                            </tr>
+                            <tr>
+                                <th>Outcome Class 2 (Serious)</th>
+                                <td><t t-esc="doc.outcome_prob_class_2"/>%</td>
+                            </tr>
+                            <tr>
+                                <th>Outcome Class 3 (Moderate)</th>
+                                <td><t t-esc="doc.outcome_prob_class_3"/>%</td>
+                            </tr>
+                            <tr>
+                                <th>Outcome Class 4 (Minor)</th>
+                                <td><t t-esc="doc.outcome_prob_class_4"/>%</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="row mt-4">
+                            <div class="col-4 text-center">
+                                <h5>HHSRS Score</h5>
+                                <h2><t t-esc="'%.0f' % doc.hhsrs_score"/></h2>
+                            </div>
+                            <div class="col-4 text-center">
+                                <h5>Band</h5>
+                                <h2><t t-esc="doc.hhsrs_band"/></h2>
+                            </div>
+                            <div class="col-4 text-center">
+                                <h5>Category</h5>
+                                <h2 t-attf-class="#{doc.hhsrs_category == '1' and 'text-danger' or 'text-warning'}">
+                                    <t t-esc="doc.hhsrs_category"/>
+                                </h2>
+                            </div>
+                        </div>
+                        
+                        <t t-if="doc.deficiency_description">
+                            <h4 class="mt-4">Deficiency Description</h4>
+                            <p><t t-esc="doc.deficiency_description"/></p>
+                        </t>
+                        
+                        <t t-if="doc.recommended_action">
+                            <h4 class="mt-4">Recommended Action</h4>
+                            <p><t t-esc="doc.recommended_action"/></p>
+                            <p><strong>Estimated Cost:</strong> <t t-esc="doc.estimated_cost" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></p>
+                            <p><strong>Urgency:</strong> <t t-esc="doc.urgency"/></p>
+                        </t>
+                        
+                        <t t-if="doc.notes">
+                            <h4 class="mt-4">Notes</h4>
+                            <p><t t-esc="doc.notes"/></p>
+                        </t>
+                        
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+</odoo>
+

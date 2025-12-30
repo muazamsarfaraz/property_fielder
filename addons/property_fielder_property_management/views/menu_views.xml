@@ -59,9 +59,45 @@
         <menuitem id="menu_compliance_dashboard"
                   name="Compliance Dashboard"
                   parent="menu_property_management_compliance"
-                  action="action_compliance_dashboard"
+                  action="action_compliance_dashboard_stats"
                   sequence="10"/>
-        
+
+        <menuitem id="menu_compliance_properties"
+                  name="Property Compliance"
+                  parent="menu_property_management_compliance"
+                  action="action_compliance_dashboard"
+                  sequence="15"/>
+
+        <!-- Compliance Analytics Menu -->
+        <menuitem id="menu_compliance_analytics"
+                  name="Analytics"
+                  parent="menu_property_management_compliance"
+                  sequence="20"/>
+
+        <menuitem id="menu_certification_status_chart"
+                  name="Certification Status"
+                  parent="menu_compliance_analytics"
+                  action="action_certification_status_chart"
+                  sequence="10"/>
+
+        <menuitem id="menu_certification_flage_chart"
+                  name="By FLAGE+ Category"
+                  parent="menu_compliance_analytics"
+                  action="action_certification_flage_chart"
+                  sequence="20"/>
+
+        <menuitem id="menu_certification_expiry_chart"
+                  name="Expiry Timeline"
+                  parent="menu_compliance_analytics"
+                  action="action_certification_expiry_chart"
+                  sequence="30"/>
+
+        <menuitem id="menu_certification_pivot"
+                  name="Pivot Analysis"
+                  parent="menu_compliance_analytics"
+                  action="action_certification_pivot"
+                  sequence="40"/>
+
         <!-- Configuration Menu -->
         <menuitem id="menu_property_management_configuration"
                   name="Configuration"
@@ -86,7 +122,13 @@
                   parent="menu_property_management_configuration"
                   action="action_compliance_requirement"
                   sequence="20"/>
-        
+
+        <menuitem id="menu_checklist_template"
+                  name="Checklist Templates"
+                  parent="menu_property_management_configuration"
+                  action="action_checklist_template"
+                  sequence="25"/>
+
         <!-- Reports Menu -->
         <menuitem id="menu_property_management_reports"
                   name="Reports"

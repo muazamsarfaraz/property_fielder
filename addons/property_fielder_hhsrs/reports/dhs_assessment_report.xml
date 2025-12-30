@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- DHS Assessment Report Action -->
+    <record id="action_report_dhs_assessment" model="ir.actions.report">
+        <field name="name">Decent Homes Assessment Report</field>
+        <field name="model">property_fielder.dhs.assessment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">property_fielder_hhsrs.report_dhs_assessment</field>
+        <field name="report_file">property_fielder_hhsrs.report_dhs_assessment</field>
+        <field name="binding_model_id" ref="model_property_fielder_dhs_assessment"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- DHS Assessment Report Template -->
+    <template id="report_dhs_assessment">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Decent Homes Standard Assessment</h2>
+                        <h3><t t-esc="doc.name"/></h3>
+                        
+                        <div class="row mt-4">
+                            <div class="col-6">
+                                <strong>Property:</strong> <t t-esc="doc.property_id.name"/><br/>
+                                <strong>Address:</strong> <t t-esc="doc.property_id.street or ''"/><br/>
+                                <strong>Assessment Date:</strong> <t t-esc="doc.assessment_date"/><br/>
+                                <strong>Assessor:</strong> <t t-esc="doc.assessor_id.name"/>
+                            </div>
+                            <div class="col-6 text-center">
+                                <h4>Overall Status</h4>
+                                <h2 t-attf-class="#{doc.is_decent and 'text-success' or 'text-danger'}">
+                                    <t t-if="doc.is_decent">DECENT</t>
+                                    <t t-else="">NON-DECENT</t>
+                                </h2>
+                            </div>
+                        </div>
+                        
+                        <h4 class="mt-4">Criteria Assessment</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Criterion</th>
+                                    <th>Description</th>
+                                    <th>Auto-Check</th>
+                                    <th>Manual Assessment</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>A</strong></td>
+                                    <td>Statutory Minimum (Free from Cat 1 HHSRS hazards)</td>
+                                    <td><t t-if="doc.criterion_a_auto">✓</t><t t-else="">✗</t></td>
+                                    <td t-attf-class="#{doc.criterion_a_met and 'text-success' or 'text-danger'}">
+                                        <t t-if="doc.criterion_a_met">PASS</t><t t-else="">FAIL</t>
+                                    </td>
+                                    <td><t t-esc="doc.criterion_a_note or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>B</strong></td>
+                                    <td>Reasonable State of Repair</td>
+                                    <td><t t-if="doc.criterion_b_auto">✓</t><t t-else="">✗</t></td>
+                                    <td t-attf-class="#{doc.criterion_b_met and 'text-success' or 'text-danger'}">
+                                        <t t-if="doc.criterion_b_met">PASS</t><t t-else="">FAIL</t>
+                                    </td>
+                                    <td><t t-esc="doc.criterion_b_note or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>C</strong></td>
+                                    <td>Modern Facilities &amp; Services</td>
+                                    <td>-</td>
+                                    <td t-attf-class="#{doc.criterion_c_met and 'text-success' or 'text-danger'}">
+                                        <t t-if="doc.criterion_c_met">PASS</t><t t-else="">FAIL</t>
+                                    </td>
+                                    <td><t t-esc="doc.criterion_c_note or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>D</strong></td>
+                                    <td>Thermal Comfort (EPC E or better)</td>
+                                    <td><t t-if="doc.criterion_d_auto">✓</t><t t-else="">✗</t></td>
+                                    <td t-attf-class="#{doc.criterion_d_met and 'text-success' or 'text-danger'}">
+                                        <t t-if="doc.criterion_d_met">PASS</t><t t-else="">FAIL</t>
+                                    </td>
+                                    <td><t t-esc="doc.criterion_d_note or ''"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <t t-if="not doc.is_decent and doc.remediation_plan">
+                            <h4 class="mt-4">Remediation Plan</h4>
+                            <p><t t-esc="doc.remediation_plan"/></p>
+                            <t t-if="doc.target_date">
+                                <p><strong>Target Date:</strong> <t t-esc="doc.target_date"/></p>
+                            </t>
+                        </t>
+                        
+                        <t t-if="doc.notes">
+                            <h4 class="mt-4">Notes</h4>
+                            <p><t t-esc="doc.notes"/></p>
+                        </t>
+                        
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+</odoo>
+

@@ -38,34 +38,64 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="%(action_property_certification)d" type="action" class="oe_stat_button" icon="fa-certificate" context="{'default_property_id': id}">
-                                <field name="certification_count" widget="statbutton" string="Certificates"/>
+                                <div class="o_stat_info">
+                                    <field name="certification_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Certificates</span>
+                                </div>
                             </button>
                             <button name="%(action_property_inspection)d" type="action" class="oe_stat_button" icon="fa-clipboard-check" context="{'default_property_id': id}">
-                                <field name="inspection_count" widget="statbutton" string="Inspections"/>
+                                <div class="o_stat_info">
+                                    <field name="inspection_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Inspections</span>
+                                </div>
                             </button>
                             <button name="%(action_property_certification)d" type="action" class="oe_stat_button" icon="fa-exclamation-triangle" invisible="expired_certification_count == 0" context="{'default_property_id': id, 'search_default_expired': 1}">
-                                <field name="expired_certification_count" widget="statbutton" string="Expired"/>
+                                <div class="o_stat_info">
+                                    <field name="expired_certification_count" class="o_stat_value text-danger"/>
+                                    <span class="o_stat_text">Expired</span>
+                                </div>
                             </button>
                             <button class="oe_stat_button" icon="fa-camera" type="object" name="action_view_images">
-                                <field name="image_count" widget="statbutton" string="Photos"/>
+                                <div class="o_stat_info">
+                                    <field name="image_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Photos</span>
+                                </div>
                             </button>
                             <button class="oe_stat_button" icon="fa-file-text-o" type="object" name="action_view_documents">
-                                <field name="document_count" widget="statbutton" string="Documents"/>
+                                <div class="o_stat_info">
+                                    <field name="document_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Documents</span>
+                                </div>
                             </button>
                             <button class="oe_stat_button" icon="fa-key" type="object" name="action_view_key_sets">
-                                <field name="key_set_count" widget="statbutton" string="Keys"/>
+                                <div class="o_stat_info">
+                                    <field name="key_set_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Keys</span>
+                                </div>
                             </button>
                             <button class="oe_stat_button" icon="fa-tachometer" type="object" name="action_view_utility_meters">
-                                <field name="utility_meter_count" widget="statbutton" string="Meters"/>
+                                <div class="o_stat_info">
+                                    <field name="utility_meter_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Meters</span>
+                                </div>
                             </button>
                             <button class="oe_stat_button" icon="fa-shield" type="object" name="action_view_insurance">
-                                <field name="insurance_count" widget="statbutton" string="Insurance"/>
+                                <div class="o_stat_info">
+                                    <field name="insurance_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Insurance</span>
+                                </div>
                             </button>
                             <button class="oe_stat_button" icon="fa-cogs" type="object" name="action_view_assets">
-                                <field name="asset_count" widget="statbutton" string="Assets"/>
+                                <div class="o_stat_info">
+                                    <field name="asset_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Assets</span>
+                                </div>
                             </button>
                             <button class="oe_stat_button" icon="fa-bed" type="object" name="action_view_hmo_rooms" invisible="hmo_status == 'not_hmo'">
-                                <field name="hmo_room_count" widget="statbutton" string="Rooms"/>
+                                <div class="o_stat_info">
+                                    <field name="hmo_room_count" class="o_stat_value"/>
+                                    <span class="o_stat_text">Rooms</span>
+                                </div>
                             </button>
                         </div>
 
@@ -88,6 +118,7 @@
                                 <field name="bathrooms"/>
                                 <field name="reception_rooms"/>
                                 <field name="floor_area"/>
+                                <field name="number_of_floors"/>
                                 <field name="year_built"/>
                                 <field name="tenure"/>
                                 <field name="furnishing_state"/>
@@ -117,6 +148,20 @@
                                 <field name="epc_exempt"/>
                                 <field name="epc_exempt_reason" invisible="not epc_exempt"/>
                                 <field name="mees_compliant" widget="boolean_toggle" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group name="building_details" string="Building Details">
+                                <field name="construction_type"/>
+                                <field name="heating_type"/>
+                            </group>
+                            <group name="exterior_features" string="Exterior Features">
+                                <field name="has_garden"/>
+                                <field name="garden_type" invisible="not has_garden"/>
+                                <field name="has_parking"/>
+                                <field name="parking_type" invisible="not has_parking"/>
+                                <field name="parking_spaces" invisible="not has_parking"/>
                             </group>
                         </group>
 
@@ -167,20 +212,24 @@
                             </group>
                         </group>
                         
+                        <!-- NFR-UX-QW7: FLAGE+ Compliance with Traffic Light Indicators -->
                         <group name="compliance" string="FLAGE+ Compliance Status">
                             <group>
                                 <label for="flage_fire_status" string="Fire Safety"/>
                                 <div class="d-flex align-items-center gap-2">
+                                    <span class="flage-icon fire" title="Fire Safety Certificate">F</span>
                                     <field name="flage_fire_status" widget="badge" nolabel="1"/>
                                     <span class="text-muted small" invisible="not flage_fire_expiry">Exp: <field name="flage_fire_expiry" nolabel="1"/></span>
                                 </div>
                                 <label for="flage_legionella_status" string="Legionella"/>
                                 <div class="d-flex align-items-center gap-2">
+                                    <span class="flage-icon legionella" title="Legionella Risk Assessment">L</span>
                                     <field name="flage_legionella_status" widget="badge" nolabel="1"/>
                                     <span class="text-muted small" invisible="not flage_legionella_expiry">Exp: <field name="flage_legionella_expiry" nolabel="1"/></span>
                                 </div>
                                 <label for="flage_asbestos_status" string="Asbestos"/>
                                 <div class="d-flex align-items-center gap-2">
+                                    <span class="flage-icon asbestos" title="Asbestos Survey">A</span>
                                     <field name="flage_asbestos_status" widget="badge" nolabel="1"/>
                                     <span class="text-muted small" invisible="not flage_asbestos_expiry">Exp: <field name="flage_asbestos_expiry" nolabel="1"/></span>
                                 </div>
@@ -188,15 +237,20 @@
                             <group>
                                 <label for="flage_gas_status" string="Gas Safety"/>
                                 <div class="d-flex align-items-center gap-2">
+                                    <span class="flage-icon gas" title="Gas Safety Certificate (CP12)">G</span>
                                     <field name="flage_gas_status" widget="badge" nolabel="1"/>
                                     <span class="text-muted small" invisible="not flage_gas_expiry">Exp: <field name="flage_gas_expiry" nolabel="1"/></span>
                                 </div>
                                 <label for="flage_electrical_status" string="Electrical Safety"/>
                                 <div class="d-flex align-items-center gap-2">
+                                    <span class="flage-icon electrical" title="EICR - Electrical Installation Condition Report">E</span>
                                     <field name="flage_electrical_status" widget="badge" nolabel="1"/>
                                     <span class="text-muted small" invisible="not flage_electrical_expiry">Exp: <field name="flage_electrical_expiry" nolabel="1"/></span>
                                 </div>
-                                <field name="compliance_status" widget="badge"/>
+                                <label for="compliance_status" string="Overall Status"/>
+                                <div class="d-flex align-items-center gap-2">
+                                    <field name="compliance_status" widget="badge" nolabel="1"/>
+                                </div>
                             </group>
                         </group>
                         
@@ -430,7 +484,7 @@
             <field name="name">property_fielder.property.kanban</field>
             <field name="model">property_fielder.property</field>
             <field name="arch" type="xml">
-                <kanban class="o_kanban_small_column">
+                <kanban class="o_kanban_small_column pm_property_kanban">
                     <field name="id"/>
                     <field name="property_number"/>
                     <field name="name"/>
@@ -438,6 +492,8 @@
                     <field name="city"/>
                     <field name="image_small"/>
                     <field name="compliance_status"/>
+                    <field name="next_inspection_date"/>
+                    <field name="next_inspection_type"/>
                     <field name="flage_fire_status"/>
                     <field name="flage_legionella_status"/>
                     <field name="flage_asbestos_status"/>
@@ -445,33 +501,49 @@
                     <field name="flage_electrical_status"/>
                     <templates>
                         <t t-name="card">
-                            <div class="oe_kanban_global_click d-flex">
-                                <div class="o_kanban_image me-2">
-                                    <t t-if="record.image_small.raw_value">
-                                        <field name="image_small" widget="image" options="{'size': [80, 80]}"/>
-                                    </t>
-                                    <t t-else="">
-                                        <div class="o_kanban_image_default d-flex align-items-center justify-content-center bg-light rounded" style="width:80px;height:80px;">
-                                            <i class="fa fa-building fa-2x text-muted"/>
+                            <div class="oe_kanban_global_click">
+                                <!-- Header with Image and Compliance Badge -->
+                                <div class="d-flex align-items-start mb-2">
+                                    <div class="o_kanban_image me-2 flex-shrink-0">
+                                        <t t-if="record.image_small.raw_value">
+                                            <field name="image_small" widget="image" options="{'size': [80, 80]}"/>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="o_kanban_image_default d-flex align-items-center justify-content-center bg-light rounded" style="width:80px;height:80px;">
+                                                <i class="fa fa-building fa-2x text-muted"/>
+                                            </div>
+                                        </t>
+                                    </div>
+                                    <div class="o_kanban_details flex-grow-1">
+                                        <div class="o_kanban_record_top mb-1 d-flex justify-content-between align-items-start">
+                                            <strong class="text-truncate me-1"><field name="property_number"/> - <field name="name"/></strong>
+                                            <!-- Color-coded Compliance Badge -->
+                                            <span t-attf-class="badge flex-shrink-0 #{record.compliance_status.raw_value == 'compliant' ? 'text-bg-success' : (record.compliance_status.raw_value == 'expiring_soon' ? 'text-bg-warning' : (record.compliance_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-danger'))}">
+                                                <t t-if="record.compliance_status.raw_value == 'compliant'"><i class="fa fa-check-circle"/> OK</t>
+                                                <t t-elif="record.compliance_status.raw_value == 'expiring_soon'"><i class="fa fa-clock-o"/> Expiring</t>
+                                                <t t-elif="record.compliance_status.raw_value == 'expired'"><i class="fa fa-exclamation-circle"/> Expired</t>
+                                                <t t-else=""><i class="fa fa-times-circle"/> Non-Compliant</t>
+                                            </span>
                                         </div>
-                                    </t>
+                                        <div class="o_kanban_record_body text-muted small">
+                                            <div><field name="property_type"/> • <field name="city"/></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="o_kanban_details flex-grow-1">
-                                    <div class="o_kanban_record_top mb-1">
-                                        <strong><field name="property_number"/> - <field name="name"/></strong>
-                                    </div>
-                                    <div class="o_kanban_record_body text-muted small">
-                                        <div><field name="property_type"/> • <field name="city"/></div>
-                                    </div>
-                                    <div class="o_kanban_record_bottom mt-2">
-                                        <div class="d-flex gap-1 flex-wrap">
-                                            <!-- FLAGE+ Status Icons -->
-                                            <span t-attf-class="badge #{record.flage_fire_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_fire_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_fire_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Fire Safety">F</span>
-                                            <span t-attf-class="badge #{record.flage_legionella_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_legionella_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_legionella_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Legionella">L</span>
-                                            <span t-attf-class="badge #{record.flage_asbestos_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_asbestos_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_asbestos_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Asbestos">A</span>
-                                            <span t-attf-class="badge #{record.flage_gas_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_gas_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_gas_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Gas Safety">G</span>
-                                            <span t-attf-class="badge #{record.flage_electrical_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_electrical_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_electrical_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Electrical Safety">E</span>
-                                        </div>
+
+                                <!-- Next Inspection Date -->
+                                <div t-if="record.next_inspection_date.raw_value" class="small mb-2 text-primary">
+                                    <i class="fa fa-calendar"/> Next: <field name="next_inspection_type"/> - <field name="next_inspection_date"/>
+                                </div>
+
+                                <!-- FLAGE+ Status Icons -->
+                                <div class="o_kanban_record_bottom">
+                                    <div class="d-flex gap-1 flex-wrap" title="FLAGE+ Compliance Status">
+                                        <span t-attf-class="badge #{record.flage_fire_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_fire_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_fire_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Fire Safety">F</span>
+                                        <span t-attf-class="badge #{record.flage_legionella_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_legionella_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_legionella_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Legionella">L</span>
+                                        <span t-attf-class="badge #{record.flage_asbestos_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_asbestos_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_asbestos_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Asbestos">A</span>
+                                        <span t-attf-class="badge #{record.flage_gas_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_gas_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_gas_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Gas Safety">G</span>
+                                        <span t-attf-class="badge #{record.flage_electrical_status.raw_value == 'valid' ? 'text-bg-success' : (record.flage_electrical_status.raw_value == 'expiring' ? 'text-bg-warning' : (record.flage_electrical_status.raw_value == 'expired' ? 'text-bg-danger' : 'text-bg-secondary'))}" title="Electrical Safety">E</span>
                                     </div>
                                 </div>
                             </div>
@@ -494,28 +566,47 @@
                     <field name="zip"/>
                     <field name="partner_id"/>
                     <field name="tenant_id"/>
+                    <!-- Property Status Filters -->
                     <filter string="Active" name="active" domain="[('state', '=', 'active')]"/>
                     <filter string="Vacant" name="vacant" domain="[('state', '=', 'vacant')]"/>
                     <separator/>
+                    <!-- NFR-UX-QW6: Enhanced Compliance Filters -->
                     <filter string="Compliant" name="compliant" domain="[('compliance_status', '=', 'compliant')]"/>
                     <filter string="Expiring Soon" name="expiring_soon" domain="[('compliance_status', '=', 'expiring_soon')]"/>
                     <filter string="Expired" name="expired" domain="[('compliance_status', '=', 'expired')]"/>
                     <filter string="Non-Compliant" name="non_compliant" domain="[('compliance_status', '=', 'non_compliant')]"/>
                     <separator/>
+                    <!-- FLAGE+ Individual Category Filters -->
+                    <filter string="Fire Expired" name="fire_expired" domain="[('flage_fire_status', '=', 'expired')]"/>
+                    <filter string="Legionella Expired" name="legionella_expired" domain="[('flage_legionella_status', '=', 'expired')]"/>
+                    <filter string="Asbestos Expired" name="asbestos_expired" domain="[('flage_asbestos_status', '=', 'expired')]"/>
+                    <filter string="Gas Expired" name="gas_expired" domain="[('flage_gas_status', '=', 'expired')]"/>
+                    <filter string="Electrical Expired" name="electrical_expired" domain="[('flage_electrical_status', '=', 'expired')]"/>
+                    <separator/>
+                    <!-- Inspection Due Filters (for job creation workflow) -->
+                    <filter string="Inspections Due (14 days)" name="due_14_days" domain="['|', '|', '|', '|', ('flage_fire_status', '=', 'expiring'), ('flage_legionella_status', '=', 'expiring'), ('flage_asbestos_status', '=', 'expiring'), ('flage_gas_status', '=', 'expiring'), ('flage_electrical_status', '=', 'expiring')]"/>
+                    <filter string="Any Cert Expiring" name="any_expiring" domain="['|', '|', '|', '|', ('flage_fire_status', 'in', ['expiring', 'expired']), ('flage_legionella_status', 'in', ['expiring', 'expired']), ('flage_asbestos_status', 'in', ['expiring', 'expired']), ('flage_gas_status', 'in', ['expiring', 'expired']), ('flage_electrical_status', 'in', ['expiring', 'expired'])]"/>
+                    <separator/>
+                    <!-- HMO and Regulatory Filters -->
                     <filter string="HMO Properties" name="hmo" domain="[('hmo_status', '!=', 'not_hmo')]"/>
                     <filter string="Licensed HMO" name="hmo_licensed" domain="[('hmo_status', '=', 'licensed')]"/>
                     <filter string="MEES Non-Compliant" name="mees_fail" domain="[('mees_compliant', '=', False)]"/>
                     <filter string="Section 21 Banned" name="s21_banned" domain="[('section_21_banned', '=', True)]"/>
                     <separator/>
-                    <group expand="0" string="Group By">
-                        <filter string="Property Type" name="group_property_type" context="{'group_by': 'property_type'}"/>
-                        <filter string="City" name="group_city" context="{'group_by': 'city'}"/>
-                        <filter string="Owner" name="group_owner" context="{'group_by': 'partner_id'}"/>
-                        <filter string="Compliance Status" name="group_compliance" context="{'group_by': 'compliance_status'}"/>
-                        <filter string="EPC Rating" name="group_epc" context="{'group_by': 'epc_rating'}"/>
-                        <filter string="HMO Status" name="group_hmo" context="{'group_by': 'hmo_status'}"/>
-                        <filter string="Council Tax Band" name="group_council_tax" context="{'group_by': 'council_tax_band'}"/>
-                    </group>
+                    <!-- Property Features Filters -->
+                    <filter string="Has Garden" name="has_garden" domain="[('has_garden', '=', True)]"/>
+                    <filter string="Has Parking" name="has_parking" domain="[('has_parking', '=', True)]"/>
+                    <separator/>
+                    <!-- Group By Filters -->
+                    <filter string="Property Type" name="group_property_type" context="{'group_by': 'property_type'}"/>
+                    <filter string="City" name="group_city" context="{'group_by': 'city'}"/>
+                    <filter string="Owner" name="group_owner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Compliance Status" name="group_compliance" context="{'group_by': 'compliance_status'}"/>
+                    <filter string="EPC Rating" name="group_epc" context="{'group_by': 'epc_rating'}"/>
+                    <filter string="HMO Status" name="group_hmo" context="{'group_by': 'hmo_status'}"/>
+                    <filter string="Council Tax Band" name="group_council_tax" context="{'group_by': 'council_tax_band'}"/>
+                    <filter string="Construction Type" name="group_construction" context="{'group_by': 'construction_type'}"/>
+                    <filter string="Heating Type" name="group_heating" context="{'group_by': 'heating_type'}"/>
                 </search>
             </field>
         </record>

@@ -76,15 +76,149 @@
                                 <field name="report_filename" invisible="1"/>
                             </group>
                         </group>
+
+                        <!-- Property Access Information - Prominent for Inspectors -->
+                        <div class="alert alert-warning mb-3" role="alert" invisible="not property_id">
+                            <div class="row">
+                                <div class="col-md-12 mb-2">
+                                    <strong><i class="fa fa-map-marker"/> Property Address:</strong>
+                                    <span class="ms-2"><field name="property_address" nolabel="1"/></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <strong><i class="fa fa-key"/> Key Safe:</strong>
+                                    <div class="small"><field name="property_key_safe_location" nolabel="1" placeholder="Not specified"/></div>
+                                    <div class="small text-muted">Code: <field name="property_key_safe_code" nolabel="1" placeholder="N/A"/></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong><i class="fa fa-clock-o"/> Access Hours:</strong>
+                                    <div class="small"><field name="property_access_hours" nolabel="1" placeholder="Not specified"/></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong><i class="fa fa-phone"/> Access Contact:</strong>
+                                    <div class="small"><field name="property_access_contact_id" nolabel="1"/></div>
+                                    <div class="small"><field name="property_access_contact_phone" nolabel="1"/></div>
+                                </div>
+                            </div>
+                            <div class="row mt-2" invisible="not property_entry_instructions and not property_parking_instructions">
+                                <div class="col-md-6" invisible="not property_entry_instructions">
+                                    <strong><i class="fa fa-sign-in"/> Entry Instructions:</strong>
+                                    <div class="small"><field name="property_entry_instructions" nolabel="1"/></div>
+                                </div>
+                                <div class="col-md-6" invisible="not property_parking_instructions">
+                                    <strong><i class="fa fa-car"/> Parking:</strong>
+                                    <div class="small"><field name="property_parking_instructions" nolabel="1"/></div>
+                                </div>
+                            </div>
+                            <div class="row mt-2" invisible="not property_access_notes">
+                                <div class="col-md-12">
+                                    <strong><i class="fa fa-exclamation-triangle"/> Access Notes:</strong>
+                                    <div class="small"><field name="property_access_notes" nolabel="1"/></div>
+                                </div>
+                            </div>
+                        </div>
+
                         <notebook>
+                            <page string="Checklist" name="checklist">
+                                <div class="row mb-3">
+                                    <div class="col-md-8">
+                                        <button name="action_load_checklist" string="Load Checklist from Template" type="object" class="btn-secondary" icon="fa-download"/>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <div class="d-inline-block me-3">
+                                            <strong>Progress:</strong> <field name="checklist_progress" widget="progressbar"/>
+                                        </div>
+                                        <span class="badge text-bg-success me-1"><field name="checklist_passed"/> Passed</span>
+                                        <span class="badge text-bg-danger me-1"><field name="checklist_failed"/> Failed</span>
+                                        <span class="badge text-bg-secondary"><field name="checklist_completed"/>/<field name="checklist_count"/> Complete</span>
+                                    </div>
+                                </div>
+                                <field name="checklist_item_ids" context="{'default_inspection_id': active_id}">
+                                    <list editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="category"/>
+                                        <field name="name"/>
+                                        <field name="item_type" readonly="1"/>
+                                        <field name="is_mandatory" readonly="1" widget="boolean"/>
+                                        <field name="result" widget="badge" decoration-success="result == 'pass'" decoration-danger="result == 'fail'" decoration-muted="result == 'na'" decoration-warning="result == 'pending'"/>
+                                        <field name="reading_value" invisible="item_type != 'reading'"/>
+                                        <field name="reading_unit" invisible="item_type != 'reading'" readonly="1"/>
+                                        <field name="reading_in_range" invisible="item_type != 'reading'" readonly="1" widget="boolean"/>
+                                        <field name="has_defect" widget="boolean"/>
+                                        <field name="defect_severity" invisible="not has_defect" widget="badge" decoration-danger="defect_severity in ['high', 'critical']" decoration-warning="defect_severity == 'medium'"/>
+                                        <field name="notes" optional="hide"/>
+                                    </list>
+                                </field>
+                            </page>
                             <page string="Findings">
                                 <field name="findings" placeholder="Record inspection findings..."/>
                             </page>
                             <page string="Recommendations">
                                 <field name="recommendations" placeholder="Record recommendations..."/>
                             </page>
-                            <page string="Photos">
+                            <page string="Photos" name="photos">
+                                <div class="alert alert-info mb-3" role="alert">
+                                    <strong>📷 Inspection Photos</strong> - Capture structured photos with categories, before/after pairs, and annotations.
+                                </div>
+                                <field name="inspection_photo_ids" mode="kanban" context="{'default_inspection_id': active_id}">
+                                    <kanban class="o_kanban_small_column">
+                                        <field name="id"/>
+                                        <field name="name"/>
+                                        <field name="image_medium"/>
+                                        <field name="category"/>
+                                        <field name="location"/>
+                                        <field name="severity"/>
+                                        <field name="requires_action"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="oe_kanban_global_click">
+                                                    <div class="o_kanban_image mb-2">
+                                                        <field name="image_medium" widget="image" options="{'size': [150, 150]}"/>
+                                                    </div>
+                                                    <div class="o_kanban_details">
+                                                        <strong><field name="name"/></strong>
+                                                        <div class="small text-muted"><field name="location"/></div>
+                                                        <div class="mt-1">
+                                                            <span t-attf-class="badge #{record.category.raw_value == 'before' ? 'text-bg-info' : (record.category.raw_value == 'after' ? 'text-bg-success' : (record.category.raw_value == 'damage' ? 'text-bg-danger' : (record.category.raw_value == 'hazard' ? 'text-bg-warning' : 'text-bg-secondary')))}">
+                                                                <field name="category"/>
+                                                            </span>
+                                                            <span t-if="record.severity.raw_value" t-attf-class="badge #{record.severity.raw_value == 'critical' ? 'text-bg-danger' : (record.severity.raw_value == 'high' ? 'text-bg-warning' : 'text-bg-secondary')}">
+                                                                <field name="severity"/>
+                                                            </span>
+                                                            <span t-if="record.requires_action.raw_value" class="badge text-bg-danger">
+                                                                <i class="fa fa-exclamation-triangle"/> Action Required
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                </field>
+                                <separator string="Quick Photos (Legacy)"/>
                                 <field name="photo_ids" widget="many2many_binary"/>
+                            </page>
+                            <page string="Signatures" name="signatures">
+                                <div class="alert alert-info mb-3" role="alert">
+                                    <strong>✍️ Digital Signatures</strong> - Capture inspector and witness signatures for official documentation.
+                                </div>
+                                <group>
+                                    <group string="Inspector Signature">
+                                        <field name="inspector_signature" widget="image" class="oe_avatar"/>
+                                        <field name="inspector_signature_name"/>
+                                        <field name="inspector_signature_date" readonly="1"/>
+                                        <button name="action_sign_inspector" string="Sign as Inspector" type="object" class="btn-primary" invisible="inspector_signature_date"/>
+                                    </group>
+                                    <group string="Witness/Tenant Signature">
+                                        <field name="is_witnessed"/>
+                                        <field name="witness_signature" widget="image" class="oe_avatar" invisible="not is_witnessed"/>
+                                        <field name="witness_signature_name" invisible="not is_witnessed"/>
+                                        <field name="witness_signature_role" invisible="not is_witnessed"/>
+                                        <field name="witness_signature_date" readonly="1" invisible="not is_witnessed"/>
+                                        <button name="action_sign_witness" string="Confirm Witness Signature" type="object" class="btn-secondary" invisible="not is_witnessed or witness_signature_date"/>
+                                    </group>
+                                </group>
                             </page>
                             <page string="Notes">
                                 <field name="notes" placeholder="Additional notes..."/>

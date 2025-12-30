@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- DHS Assessment Tree View -->
+    <record id="view_dhs_assessment_tree" model="ir.ui.view">
+        <field name="name">property_fielder.dhs.assessment.tree</field>
+        <field name="model">property_fielder.dhs.assessment</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="is_decent" decoration-danger="not is_decent">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="assessment_date"/>
+                <field name="criterion_a_met" string="A"/>
+                <field name="criterion_b_met" string="B"/>
+                <field name="criterion_c_met" string="C"/>
+                <field name="criterion_d_met" string="D"/>
+                <field name="is_decent" widget="boolean"/>
+                <field name="target_date"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- DHS Assessment Form View -->
+    <record id="view_dhs_assessment_form" model="ir.ui.view">
+        <field name="name">property_fielder.dhs.assessment.form</field>
+        <field name="model">property_fielder.dhs.assessment</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Decent" bg_color="text-bg-success" invisible="not is_decent"/>
+                    <widget name="web_ribbon" title="Non-Decent" bg_color="text-bg-danger" invisible="is_decent"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Property">
+                            <field name="property_id"/>
+                            <field name="assessment_date"/>
+                            <field name="assessor_id"/>
+                        </group>
+                        <group string="Overall Result">
+                            <field name="is_decent" widget="boolean_toggle"/>
+                            <field name="target_date" invisible="is_decent"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Criteria Assessment" name="criteria">
+                            <group>
+                                <group string="A: Statutory Minimum (HHSRS)">
+                                    <field name="criterion_a_auto" widget="boolean" readonly="1"/>
+                                    <field name="criterion_a_met" widget="boolean_toggle"/>
+                                    <field name="criterion_a_note"/>
+                                </group>
+                                <group string="B: Reasonable State of Repair">
+                                    <field name="criterion_b_auto" widget="boolean" readonly="1"/>
+                                    <field name="criterion_b_met" widget="boolean_toggle"/>
+                                    <field name="criterion_b_note"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="C: Modern Facilities &amp; Services">
+                                    <field name="criterion_c_met" widget="boolean_toggle"/>
+                                    <field name="criterion_c_note"/>
+                                </group>
+                                <group string="D: Thermal Comfort (EPC E+)">
+                                    <field name="criterion_d_auto" widget="boolean" readonly="1"/>
+                                    <field name="criterion_d_met" widget="boolean_toggle"/>
+                                    <field name="criterion_d_note"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Remediation Plan" name="remediation" invisible="is_decent">
+                            <group>
+                                <field name="remediation_plan"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- DHS Assessment Search View -->
+    <record id="view_dhs_assessment_search" model="ir.ui.view">
+        <field name="name">property_fielder.dhs.assessment.search</field>
+        <field name="model">property_fielder.dhs.assessment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="property_id"/>
+                <filter name="filter_decent" string="Decent" domain="[('is_decent', '=', True)]"/>
+                <filter name="filter_non_decent" string="Non-Decent" domain="[('is_decent', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="group_decent" string="Decent Status" context="{'group_by': 'is_decent'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- DHS Assessment Action -->
+    <record id="action_dhs_assessment" model="ir.actions.act_window">
+        <field name="name">Decent Homes Assessments</field>
+        <field name="res_model">property_fielder.dhs.assessment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Decent Homes Standard assessment
+            </p>
+            <p>
+                Assess properties against the 4 Decent Homes Standard criteria.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+

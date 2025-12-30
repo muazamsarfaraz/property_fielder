@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Likelihood Band Tree View -->
+    <record id="view_likelihood_band_tree" model="ir.ui.view">
+        <field name="name">property_fielder.hhsrs.likelihood.band.tree</field>
+        <field name="model">property_fielder.hhsrs.likelihood.band</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="ratio"/>
+                <field name="rsp"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Likelihood Band Form View -->
+    <record id="view_likelihood_band_form" model="ir.ui.view">
+        <field name="name">property_fielder.hhsrs.likelihood.band.form</field>
+        <field name="model">property_fielder.hhsrs.likelihood.band</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="ratio"/>
+                        </group>
+                        <group>
+                            <field name="rsp"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+</odoo>
+

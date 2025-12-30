@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Damp & Mould Tree View -->
+    <record id="view_damp_mould_tree" model="ir.ui.view">
+        <field name="name">property_fielder.damp.mould.tree</field>
+        <field name="model">property_fielder.damp.mould</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="severity == 'severe'" decoration-warning="severity == 'moderate'">
+                <field name="name"/>
+                <field name="property_id"/>
+                <field name="reported_date"/>
+                <field name="location"/>
+                <field name="severity" widget="badge"
+                       decoration-success="severity == 'minor'"
+                       decoration-warning="severity == 'moderate'"
+                       decoration-danger="severity == 'severe'"/>
+                <field name="cause"/>
+                <field name="awaab_compliant" widget="boolean"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'reported'"
+                       decoration-warning="state == 'investigating'"
+                       decoration-primary="state == 'repairs_started'"
+                       decoration-success="state == 'resolved'"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Damp & Mould Form View -->
+    <record id="view_damp_mould_form" model="ir.ui.view">
+        <field name="name">property_fielder.damp.mould.form</field>
+        <field name="model">property_fielder.damp.mould</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start_investigation" string="Start Investigation" type="object"
+                            class="btn-primary" invisible="state != 'reported'"/>
+                    <button name="action_start_repairs" string="Start Repairs" type="object"
+                            class="btn-primary" invisible="state != 'investigating'"/>
+                    <button name="action_resolve" string="Resolve" type="object"
+                            class="btn-success" invisible="state != 'repairs_started'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="reported,investigating,repairs_started,resolved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_awaab_deadline)d" type="action"
+                                class="oe_stat_button" icon="fa-clock-o"
+                                context="{'search_default_damp_mould_id': active_id}">
+                            <field name="awaab_compliant" widget="boolean"/>
+                            <span>Awaab Deadline</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Property &amp; Reporting">
+                            <field name="property_id"/>
+                            <field name="reported_date"/>
+                            <field name="reported_by"/>
+                        </group>
+                        <group string="Issue Details">
+                            <field name="location"/>
+                            <field name="severity"/>
+                            <field name="cause"/>
+                            <field name="cause_identified"/>
+                            <field name="cause_date" invisible="not cause_identified"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Habitability" name="habitability">
+                            <group>
+                                <group>
+                                    <field name="is_uninhabitable"/>
+                                </group>
+                            </group>
+                            <group string="Decant" invisible="not is_uninhabitable">
+                                <group>
+                                    <field name="decant_required"/>
+                                    <field name="decant_arranged" invisible="not decant_required"/>
+                                </group>
+                                <group invisible="not decant_arranged">
+                                    <field name="decant_property_id"/>
+                                    <field name="decant_date_start"/>
+                                    <field name="decant_date_end"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Linked Records" name="linked">
+                            <group>
+                                <field name="awaab_deadline_id"/>
+                                <field name="hhsrs_assessment_id"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Evidence" name="evidence">
+                            <field name="photo_ids" widget="many2many_binary"/>
+                        </page>
+                        
+                        <page string="Timeline" name="timeline">
+                            <field name="timeline_ids">
+                                <tree>
+                                    <field name="date"/>
+                                    <field name="event_type"/>
+                                    <field name="description"/>
+                                    <field name="user_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Damp & Mould Search View -->
+    <record id="view_damp_mould_search" model="ir.ui.view">
+        <field name="name">property_fielder.damp.mould.search</field>
+        <field name="model">property_fielder.damp.mould</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="property_id"/>
+                <filter name="filter_severe" string="Severe" domain="[('severity', '=', 'severe')]"/>
+                <filter name="filter_non_compliant" string="Non-Compliant" domain="[('awaab_compliant', '=', False)]"/>
+                <filter name="filter_uninhabitable" string="Uninhabitable" domain="[('is_uninhabitable', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
+                    <filter name="group_severity" string="Severity" context="{'group_by': 'severity'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Damp & Mould Action -->
+    <record id="action_damp_mould" model="ir.actions.act_window">
+        <field name="name">Damp &amp; Mould Cases</field>
+        <field name="res_model">property_fielder.damp.mould</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Report a new damp or mould case
+            </p>
+            <p>
+                Track damp and mould issues with Awaab's Law compliance.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+

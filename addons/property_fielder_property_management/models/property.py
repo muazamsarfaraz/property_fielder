@@ -112,6 +112,74 @@ class Property(models.Model):
     reception_rooms = fields.Integer(string='Reception Rooms', default=1)
     floor_area = fields.Float(string='Floor Area (sqm)')
     year_built = fields.Integer(string='Year Built')
+    number_of_floors = fields.Integer(
+        string='Number of Floors',
+        default=1,
+        help='Total number of floors in the property/building'
+    )
+
+    # Construction & Building Details
+    construction_type = fields.Selection([
+        ('brick', 'Brick/Masonry'),
+        ('timber_frame', 'Timber Frame'),
+        ('concrete', 'Concrete'),
+        ('steel_frame', 'Steel Frame'),
+        ('stone', 'Stone'),
+        ('prefab', 'Prefabricated'),
+        ('mixed', 'Mixed Construction'),
+        ('other', 'Other')
+    ], string='Construction Type',
+       help='Primary construction material/method of the building')
+
+    # Heating System
+    heating_type = fields.Selection([
+        ('gas_central', 'Gas Central Heating'),
+        ('electric', 'Electric Heating'),
+        ('oil', 'Oil Central Heating'),
+        ('lpg', 'LPG Central Heating'),
+        ('storage_heaters', 'Storage Heaters'),
+        ('heat_pump', 'Heat Pump'),
+        ('underfloor', 'Underfloor Heating'),
+        ('communal', 'Communal/District Heating'),
+        ('solid_fuel', 'Solid Fuel (Coal/Wood)'),
+        ('none', 'No Central Heating'),
+        ('other', 'Other')
+    ], string='Heating Type',
+       help='Primary heating system in the property')
+
+    # Exterior Features
+    has_garden = fields.Boolean(
+        string='Has Garden',
+        default=False,
+        help='Property has a private garden or outdoor space'
+    )
+    garden_type = fields.Selection([
+        ('private', 'Private Garden'),
+        ('shared', 'Shared Garden'),
+        ('communal', 'Communal Gardens'),
+        ('balcony', 'Balcony Only'),
+        ('terrace', 'Roof Terrace'),
+        ('patio', 'Patio/Courtyard')
+    ], string='Garden Type')
+
+    has_parking = fields.Boolean(
+        string='Has Parking',
+        default=False,
+        help='Property has dedicated parking'
+    )
+    parking_type = fields.Selection([
+        ('garage', 'Garage'),
+        ('driveway', 'Driveway'),
+        ('allocated', 'Allocated Space'),
+        ('street', 'Street Permit'),
+        ('underground', 'Underground Parking'),
+        ('car_port', 'Car Port')
+    ], string='Parking Type')
+    parking_spaces = fields.Integer(
+        string='Parking Spaces',
+        default=0,
+        help='Number of parking spaces available'
+    )
 
     # Tenure & Ownership Details
     tenure = fields.Selection([
@@ -365,7 +433,21 @@ class Property(models.Model):
     certification_count = fields.Integer(compute='_compute_counts')
     inspection_count = fields.Integer(compute='_compute_counts')
     expired_certification_count = fields.Integer(compute='_compute_counts')
-    
+
+    # Next Inspection (for kanban cards)
+    next_inspection_date = fields.Date(
+        string='Next Inspection',
+        compute='_compute_next_inspection',
+        store=True,
+        help='Date of the next scheduled inspection'
+    )
+    next_inspection_type = fields.Char(
+        string='Next Inspection Type',
+        compute='_compute_next_inspection',
+        store=True,
+        help='Type of the next scheduled inspection'
+    )
+
     # Notes
     notes = fields.Text(string='Notes')
 
@@ -469,6 +551,23 @@ class Property(models.Model):
             property.expired_certification_count = len(
                 property.certification_ids.filtered(lambda c: c.status == 'expired')
             )
+
+    @api.depends('inspection_ids', 'inspection_ids.scheduled_date', 'inspection_ids.state')
+    def _compute_next_inspection(self):
+        """Compute the next scheduled inspection date and type for kanban display"""
+        today = fields.Date.today()
+        for prop in self:
+            # Get upcoming scheduled/draft inspections
+            upcoming = prop.inspection_ids.filtered(
+                lambda i: i.state in ('draft', 'scheduled') and i.scheduled_date and i.scheduled_date >= today
+            ).sorted(key=lambda i: i.scheduled_date)
+
+            if upcoming:
+                prop.next_inspection_date = upcoming[0].scheduled_date
+                prop.next_inspection_type = upcoming[0].certification_type_id.name or 'Inspection'
+            else:
+                prop.next_inspection_date = False
+                prop.next_inspection_type = False
 
     @api.depends('image_ids')
     def _compute_image_count(self):

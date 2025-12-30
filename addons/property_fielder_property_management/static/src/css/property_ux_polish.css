@@ -1,0 +1,230 @@
+/**
+ * Property Management - UX Polish (Phase 10)
+ * 
+ * Improvements based on Gemini UX analysis (Dec 2024)
+ * Target: Improve UX score from 5/10 to 8/10
+ */
+
+/* ===========================================
+   10.1 & 10.2: Compliance Badge Styling
+   =========================================== */
+
+/* Increase badge font size from default to 14px for readability (NFR-UX-QW2) */
+.o_list_view .badge,
+.o_kanban_view .badge,
+.o_form_view .badge {
+    font-size: 14px !important;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    min-width: 70px;
+    text-align: center;
+}
+
+/* Non-Compliant/Expired badges - RED background with white text (NFR-UX-QW1) */
+.o_list_view .badge.text-bg-danger,
+.o_kanban_view .badge.text-bg-danger,
+.o_form_view .badge.text-bg-danger,
+.badge[data-value="expired"],
+.badge[data-value="non_compliant"] {
+    background-color: #DC2626 !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+/* Expiring Soon badges - Amber/Warning */
+.badge[data-value="expiring"],
+.badge[data-value="expiring_soon"] {
+    background-color: #F59E0B !important;
+    color: #ffffff !important;
+}
+
+/* Valid/Compliant badges - Green */
+.badge[data-value="valid"],
+.badge[data-value="compliant"] {
+    background-color: #10B981 !important;
+    color: #ffffff !important;
+}
+
+/* Missing badges - Gray */
+.badge[data-value="missing"] {
+    background-color: #6B7280 !important;
+    color: #ffffff !important;
+}
+
+
+/* ===========================================
+   10.7: FLAGE+ Traffic Light Indicators
+   =========================================== */
+
+/* Traffic light container for FLAGE+ section */
+.flage-traffic-light {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.flage-traffic-light .traffic-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.flage-traffic-light .traffic-dot.valid {
+    background: linear-gradient(145deg, #10B981, #059669);
+}
+
+.flage-traffic-light .traffic-dot.expiring {
+    background: linear-gradient(145deg, #F59E0B, #D97706);
+}
+
+.flage-traffic-light .traffic-dot.expired {
+    background: linear-gradient(145deg, #EF4444, #DC2626);
+}
+
+.flage-traffic-light .traffic-dot.missing {
+    background: linear-gradient(145deg, #9CA3AF, #6B7280);
+}
+
+/* FLAGE+ Status badges with traffic light styling */
+.flage-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.flage-status-badge::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.flage-status-badge.status-valid {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.flage-status-badge.status-valid::before {
+    background: #10B981;
+}
+
+.flage-status-badge.status-expiring {
+    background: #FEF3C7;
+    color: #92400E;
+}
+.flage-status-badge.status-expiring::before {
+    background: #F59E0B;
+}
+
+.flage-status-badge.status-expired {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+.flage-status-badge.status-expired::before {
+    background: #EF4444;
+}
+
+.flage-status-badge.status-missing {
+    background: #F3F4F6;
+    color: #4B5563;
+}
+.flage-status-badge.status-missing::before {
+    background: #9CA3AF;
+}
+
+
+/* ===========================================
+   Property Form FLAGE+ Section Enhancement
+   =========================================== */
+
+/* Make FLAGE+ section more prominent */
+.o_form_view .o_group[name="compliance"] {
+    background: linear-gradient(to right, #f8fafc, #f1f5f9);
+    border-radius: 8px;
+    padding: 16px;
+    border-left: 4px solid #714B67;
+    margin-bottom: 16px;
+}
+
+.o_form_view .o_group[name="compliance"] .o_group_title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #714B67;
+}
+
+/* FLAGE+ category icons */
+.flage-icon {
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 8px;
+}
+
+.flage-icon.fire { background: #FEE2E2; color: #DC2626; }
+.flage-icon.legionella { background: #DBEAFE; color: #2563EB; }
+.flage-icon.asbestos { background: #FEF3C7; color: #D97706; }
+.flage-icon.gas { background: #E0E7FF; color: #4338CA; }
+.flage-icon.electrical { background: #FCE7F3; color: #BE185D; }
+
+
+/* ===========================================
+   Enhanced Property Kanban Cards
+   =========================================== */
+
+/* Property Kanban Card Container */
+.pm_property_kanban .o_kanban_record {
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.pm_property_kanban .o_kanban_record:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: #3B82F6;
+}
+
+/* Property Image in Kanban */
+.pm_property_kanban .o_kanban_image img {
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.pm_property_kanban .o_kanban_image_default {
+    border-radius: 6px;
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+}
+
+/* FLAGE+ Badges in Kanban */
+.pm_property_kanban .o_kanban_record_bottom .badge {
+    font-size: 11px !important;
+    min-width: 20px;
+    padding: 0.2em 0.4em;
+}
+
+/* Next Inspection Display */
+.pm_property_kanban .text-primary {
+    color: #2563EB !important;
+    background: #EFF6FF;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Compliance Status Badge Corner */
+.pm_property_kanban .o_kanban_record_top .badge {
+    font-size: 11px !important;
+    min-width: auto;
+}

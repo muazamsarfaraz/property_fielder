@@ -39,7 +39,55 @@ class PropertyInspection(models.Model):
         string='FLAGE+ Category',
         store=True
     )
-    
+
+    # Property Access Information (related from property for inspector reference)
+    property_key_safe_location = fields.Char(
+        related='property_id.key_safe_location',
+        string='Key Safe Location',
+        readonly=True
+    )
+    property_key_safe_code = fields.Char(
+        related='property_id.key_safe_code',
+        string='Key Safe Code',
+        readonly=True,
+        groups='property_fielder_property_management.group_property_manager'
+    )
+    property_entry_instructions = fields.Text(
+        related='property_id.entry_instructions',
+        string='Entry Instructions',
+        readonly=True
+    )
+    property_parking_instructions = fields.Text(
+        related='property_id.parking_instructions',
+        string='Parking Instructions',
+        readonly=True
+    )
+    property_access_contact_id = fields.Many2one(
+        related='property_id.access_contact_id',
+        string='Access Contact',
+        readonly=True
+    )
+    property_access_contact_phone = fields.Char(
+        related='property_id.access_contact_phone',
+        string='Access Contact Phone',
+        readonly=True
+    )
+    property_access_hours = fields.Char(
+        related='property_id.access_hours',
+        string='Access Hours',
+        readonly=True
+    )
+    property_access_notes = fields.Text(
+        related='property_id.access_notes',
+        string='Access Notes',
+        readonly=True
+    )
+    property_address = fields.Char(
+        related='property_id.full_address',
+        string='Property Address',
+        readonly=True
+    )
+
     # Scheduling
     scheduled_date = fields.Date(
         string='Scheduled Date',
@@ -96,13 +144,93 @@ class PropertyInspection(models.Model):
     # Documents
     report_file = fields.Binary(string='Inspection Report', attachment=True)
     report_filename = fields.Char(string='Report Filename')
-    
+
+    # Legacy simple photo attachments
     photo_ids = fields.Many2many(
         'ir.attachment',
-        string='Photos',
-        help='Photos taken during inspection'
+        string='Quick Photos',
+        help='Quick photos taken during inspection (legacy)'
     )
-    
+
+    # Structured Inspection Photos
+    inspection_photo_ids = fields.One2many(
+        'property_fielder.inspection.photo',
+        'inspection_id',
+        string='Inspection Photos',
+        help='Structured inspection photos with categories and annotations'
+    )
+    photo_count = fields.Integer(
+        string='Photo Count',
+        compute='_compute_photo_count'
+    )
+
+    # Checklist
+    checklist_item_ids = fields.One2many(
+        'property_fielder.inspection.checklist.item',
+        'inspection_id',
+        string='Checklist Items'
+    )
+    checklist_count = fields.Integer(
+        string='Checklist Items',
+        compute='_compute_checklist_stats'
+    )
+    checklist_completed = fields.Integer(
+        string='Completed Items',
+        compute='_compute_checklist_stats'
+    )
+    checklist_passed = fields.Integer(
+        string='Passed Items',
+        compute='_compute_checklist_stats'
+    )
+    checklist_failed = fields.Integer(
+        string='Failed Items',
+        compute='_compute_checklist_stats'
+    )
+    checklist_progress = fields.Float(
+        string='Checklist Progress (%)',
+        compute='_compute_checklist_stats'
+    )
+
+    # Signatures
+    inspector_signature = fields.Image(
+        string='Inspector Signature',
+        max_width=500,
+        max_height=200,
+        help='Digital signature of the inspector'
+    )
+    inspector_signature_date = fields.Datetime(
+        string='Inspector Signed Date'
+    )
+    inspector_signature_name = fields.Char(
+        string='Inspector Printed Name'
+    )
+
+    witness_signature = fields.Image(
+        string='Witness/Tenant Signature',
+        max_width=500,
+        max_height=200,
+        help='Digital signature of witness, tenant, or property owner'
+    )
+    witness_signature_date = fields.Datetime(
+        string='Witness Signed Date'
+    )
+    witness_signature_name = fields.Char(
+        string='Witness Printed Name'
+    )
+    witness_signature_role = fields.Selection([
+        ('tenant', 'Tenant'),
+        ('owner', 'Property Owner'),
+        ('agent', 'Managing Agent'),
+        ('contractor', 'Contractor'),
+        ('other', 'Other')
+    ], string='Witness Role')
+
+    is_witnessed = fields.Boolean(
+        string='Witnessed Inspection',
+        default=False,
+        help='Check if this inspection was witnessed by tenant/owner'
+    )
+
     # Notes
     notes = fields.Text(string='Notes')
     
@@ -116,6 +244,62 @@ class PropertyInspection(models.Model):
             if vals.get('name', _('New')) == _('New'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('property_fielder.property.inspection') or _('New')
         return super(PropertyInspection, self).create(vals_list)
+
+    @api.depends('inspection_photo_ids')
+    def _compute_photo_count(self):
+        for inspection in self:
+            inspection.photo_count = len(inspection.inspection_photo_ids)
+
+    @api.depends('checklist_item_ids', 'checklist_item_ids.result')
+    def _compute_checklist_stats(self):
+        for inspection in self:
+            items = inspection.checklist_item_ids
+            total = len(items)
+            completed = len(items.filtered(lambda i: i.result != 'pending'))
+            passed = len(items.filtered(lambda i: i.result == 'pass'))
+            failed = len(items.filtered(lambda i: i.result == 'fail'))
+
+            inspection.checklist_count = total
+            inspection.checklist_completed = completed
+            inspection.checklist_passed = passed
+            inspection.checklist_failed = failed
+            inspection.checklist_progress = (completed / total * 100) if total else 0
+
+    def action_load_checklist(self):
+        """Load checklist items from the certification type's template."""
+        self.ensure_one()
+        if not self.certification_type_id:
+            raise ValidationError(_('Please select a certification type first.'))
+
+        # Find template for this certification type
+        template = self.env['property_fielder.checklist.template'].search([
+            ('certification_type_id', '=', self.certification_type_id.id),
+            ('active', '=', True)
+        ], limit=1)
+
+        if not template:
+            raise ValidationError(_('No checklist template found for this certification type.'))
+
+        # Clear existing items
+        self.checklist_item_ids.unlink()
+
+        # Create items from template
+        for template_item in template.item_ids:
+            self.env['property_fielder.inspection.checklist.item'].create({
+                'inspection_id': self.id,
+                'template_item_id': template_item.id,
+                'sequence': template_item.sequence,
+                'name': template_item.name,
+                'category': template_item.category,
+                'item_type': template_item.item_type,
+                'is_mandatory': template_item.is_mandatory,
+                'reading_unit': template_item.reading_unit,
+                'reading_min': template_item.reading_min,
+                'reading_max': template_item.reading_max,
+                'help_text': template_item.help_text,
+            })
+
+        return True
 
     def action_schedule(self):
         """Schedule the inspection"""
@@ -151,6 +335,30 @@ class PropertyInspection(models.Model):
     def action_cancel(self):
         """Cancel the inspection"""
         self.write({'state': 'cancelled'})
+
+    def action_sign_inspector(self):
+        """Record inspector signature with timestamp."""
+        self.ensure_one()
+        if not self.inspector_signature:
+            raise ValidationError(_('Please provide a signature before signing.'))
+        self.write({
+            'inspector_signature_date': fields.Datetime.now(),
+            'inspector_signature_name': self.inspector_id.name if self.inspector_id else self.env.user.name,
+        })
+        return True
+
+    def action_sign_witness(self):
+        """Record witness signature with timestamp."""
+        self.ensure_one()
+        if not self.witness_signature:
+            raise ValidationError(_('Please provide a witness signature before signing.'))
+        if not self.witness_signature_name:
+            raise ValidationError(_('Please enter the witness name.'))
+        self.write({
+            'witness_signature_date': fields.Datetime.now(),
+            'is_witnessed': True,
+        })
+        return True
 
     def action_generate_certificate(self):
         """Generate a certification from this inspection"""

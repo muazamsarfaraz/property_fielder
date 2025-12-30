@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+
+        <!-- Inspection Photo Form View -->
+        <record id="view_inspection_photo_form" model="ir.ui.view">
+            <field name="name">property_fielder.inspection.photo.form</field>
+            <field name="model">property_fielder.inspection.photo</field>
+            <field name="arch" type="xml">
+                <form string="Inspection Photo">
+                    <sheet>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <field name="image" widget="image" class="oe_avatar"/>
+                            </div>
+                            <div class="col-md-8">
+                                <group>
+                                    <field name="name"/>
+                                    <field name="category"/>
+                                    <field name="room"/>
+                                    <field name="location"/>
+                                </group>
+                                <group string="Classification">
+                                    <field name="severity" invisible="category not in ['damage', 'hazard']"/>
+                                    <field name="requires_action"/>
+                                    <field name="paired_photo_id" invisible="category not in ['before', 'after']"/>
+                                </group>
+                            </div>
+                        </div>
+                        <notebook>
+                            <page string="Details">
+                                <group>
+                                    <group string="Metadata">
+                                        <field name="inspection_id" readonly="1"/>
+                                        <field name="property_id" readonly="1"/>
+                                        <field name="taken_date"/>
+                                        <field name="taken_by_id"/>
+                                        <field name="sequence"/>
+                                    </group>
+                                    <group string="Location Data">
+                                        <field name="latitude"/>
+                                        <field name="longitude"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Annotations">
+                                <field name="annotations" placeholder="Add annotations describing what is shown in this photo..."/>
+                            </page>
+                            <page string="Action Required" invisible="not requires_action">
+                                <field name="action_taken" placeholder="Describe action taken or required..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Inspection Photo Tree View -->
+        <record id="view_inspection_photo_tree" model="ir.ui.view">
+            <field name="name">property_fielder.inspection.photo.tree</field>
+            <field name="model">property_fielder.inspection.photo</field>
+            <field name="arch" type="xml">
+                <list string="Inspection Photos">
+                    <field name="sequence" widget="handle"/>
+                    <field name="image_small" widget="image" options="{'size': [50, 50]}"/>
+                    <field name="name"/>
+                    <field name="category" widget="badge"/>
+                    <field name="room"/>
+                    <field name="location"/>
+                    <field name="severity" widget="badge" optional="show"/>
+                    <field name="requires_action" widget="boolean"/>
+                    <field name="taken_date"/>
+                    <field name="taken_by_id"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Inspection Photo Kanban View -->
+        <record id="view_inspection_photo_kanban" model="ir.ui.view">
+            <field name="name">property_fielder.inspection.photo.kanban</field>
+            <field name="model">property_fielder.inspection.photo</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_small_column">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="image_medium"/>
+                    <field name="category"/>
+                    <field name="location"/>
+                    <field name="severity"/>
+                    <field name="requires_action"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_image mb-2">
+                                    <field name="image_medium" widget="image" options="{'size': [150, 150]}"/>
+                                </div>
+                                <div class="o_kanban_details">
+                                    <strong><field name="name"/></strong>
+                                    <div class="small text-muted"><field name="location"/></div>
+                                    <div class="mt-1">
+                                        <span t-attf-class="badge #{record.category.raw_value == 'before' ? 'text-bg-info' : (record.category.raw_value == 'after' ? 'text-bg-success' : (record.category.raw_value == 'damage' ? 'text-bg-danger' : (record.category.raw_value == 'hazard' ? 'text-bg-warning' : 'text-bg-secondary')))}">
+                                            <field name="category"/>
+                                        </span>
+                                        <span t-if="record.severity.raw_value" t-attf-class="badge #{record.severity.raw_value == 'critical' ? 'text-bg-danger' : (record.severity.raw_value == 'high' ? 'text-bg-warning' : 'text-bg-secondary')}">
+                                            <field name="severity"/>
+                                        </span>
+                                        <span t-if="record.requires_action.raw_value" class="badge text-bg-danger">
+                                            <i class="fa fa-exclamation-triangle"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Inspection Photo Search View -->
+        <record id="view_inspection_photo_search" model="ir.ui.view">
+            <field name="name">property_fielder.inspection.photo.search</field>
+            <field name="model">property_fielder.inspection.photo</field>
+            <field name="arch" type="xml">
+                <search string="Inspection Photos">
+                    <field name="name"/>
+                    <field name="inspection_id"/>
+                    <field name="property_id"/>
+                    <field name="location"/>
+                    <filter string="Before" name="before" domain="[('category', '=', 'before')]"/>
+                    <filter string="After" name="after" domain="[('category', '=', 'after')]"/>
+                    <filter string="Damage" name="damage" domain="[('category', '=', 'damage')]"/>
+                    <filter string="Hazard" name="hazard" domain="[('category', '=', 'hazard')]"/>
+                    <filter string="Action Required" name="action_required" domain="[('requires_action', '=', True)]"/>
+                    <separator/>
+                    <filter string="Category" name="group_category" context="{'group_by': 'category'}"/>
+                    <filter string="Room" name="group_room" context="{'group_by': 'room'}"/>
+                    <filter string="Severity" name="group_severity" context="{'group_by': 'severity'}"/>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+

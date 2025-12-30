@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+
+        <!-- Checklist Template Form View -->
+        <record id="view_checklist_template_form" model="ir.ui.view">
+            <field name="name">property_fielder.checklist.template.form</field>
+            <field name="model">property_fielder.checklist.template</field>
+            <field name="arch" type="xml">
+                <form string="Checklist Template">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" placeholder="Template Name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="certification_type_id"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="item_count"/>
+                            </group>
+                        </group>
+                        <field name="description" placeholder="Template description..."/>
+                        <notebook>
+                            <page string="Checklist Items">
+                                <field name="item_ids">
+                                    <list editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="category"/>
+                                        <field name="name"/>
+                                        <field name="item_type"/>
+                                        <field name="is_mandatory"/>
+                                        <field name="reading_unit" invisible="item_type != 'reading'"/>
+                                        <field name="reading_min" invisible="item_type != 'reading'"/>
+                                        <field name="reading_max" invisible="item_type != 'reading'"/>
+                                        <field name="help_text" optional="hide"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Checklist Template Tree View -->
+        <record id="view_checklist_template_tree" model="ir.ui.view">
+            <field name="name">property_fielder.checklist.template.tree</field>
+            <field name="model">property_fielder.checklist.template</field>
+            <field name="arch" type="xml">
+                <list string="Checklist Templates">
+                    <field name="name"/>
+                    <field name="certification_type_id"/>
+                    <field name="item_count"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Checklist Template Action -->
+        <record id="action_checklist_template" model="ir.actions.act_window">
+            <field name="name">Checklist Templates</field>
+            <field name="res_model">property_fielder.checklist.template</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- Inspection Checklist Item Form View (popup) -->
+        <record id="view_inspection_checklist_item_form" model="ir.ui.view">
+            <field name="name">property_fielder.inspection.checklist.item.form</field>
+            <field name="model">property_fielder.inspection.checklist.item</field>
+            <field name="arch" type="xml">
+                <form string="Checklist Item">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="category" readonly="1"/>
+                                <field name="item_type" readonly="1"/>
+                                <field name="is_mandatory" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="result" widget="radio" options="{'horizontal': true}"/>
+                            </group>
+                        </group>
+                        <group invisible="item_type != 'reading'">
+                            <group string="Reading">
+                                <field name="reading_value"/>
+                                <field name="reading_unit" readonly="1"/>
+                            </group>
+                            <group string="Acceptable Range">
+                                <field name="reading_min" readonly="1"/>
+                                <field name="reading_max" readonly="1"/>
+                                <field name="reading_in_range" readonly="1"/>
+                            </group>
+                        </group>
+                        <group invisible="item_type != 'text'">
+                            <field name="text_value"/>
+                        </group>
+                        <group string="Defect Information" invisible="result != 'fail'">
+                            <field name="has_defect"/>
+                            <field name="defect_severity" invisible="not has_defect"/>
+                            <field name="defect_description" invisible="not has_defect"/>
+                            <field name="remediation_required" invisible="not has_defect"/>
+                        </group>
+                        <group>
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </group>
+                        <group invisible="not help_text">
+                            <field name="help_text" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Inspection Checklist Item Tree View (inline) -->
+        <record id="view_inspection_checklist_item_tree" model="ir.ui.view">
+            <field name="name">property_fielder.inspection.checklist.item.tree</field>
+            <field name="model">property_fielder.inspection.checklist.item</field>
+            <field name="arch" type="xml">
+                <list string="Checklist Items" editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="category"/>
+                    <field name="name"/>
+                    <field name="item_type" readonly="1"/>
+                    <field name="is_mandatory" readonly="1"/>
+                    <field name="result" widget="badge" decoration-success="result == 'pass'" decoration-danger="result == 'fail'" decoration-muted="result == 'na'" decoration-warning="result == 'pending'"/>
+                    <field name="reading_value" invisible="item_type != 'reading'"/>
+                    <field name="reading_unit" invisible="item_type != 'reading'" readonly="1"/>
+                    <field name="reading_in_range" invisible="item_type != 'reading'" readonly="1"/>
+                    <field name="has_defect"/>
+                    <field name="defect_severity" invisible="not has_defect" widget="badge" decoration-danger="defect_severity in ['high', 'critical']" decoration-warning="defect_severity == 'medium'"/>
+                    <field name="notes" optional="hide"/>
+                </list>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+

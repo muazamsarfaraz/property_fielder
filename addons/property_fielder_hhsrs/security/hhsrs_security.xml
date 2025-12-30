@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- HHSRS Security Groups (inherit from property_fielder_property_management) -->
+        <!-- Users and Managers inherit from property_fielder_property_management groups -->
+
+        <!-- Record Rules -->
+
+        <!-- HHSRS Assessment: Users can see all, edit own drafts -->
+        <record id="rule_hhsrs_assessment_user" model="ir.rule">
+            <field name="name">HHSRS Assessment: User Read All</field>
+            <field name="model_id" ref="model_property_fielder_hhsrs_assessment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_property_management.group_property_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Awaab Deadline: All users can read and update -->
+        <record id="rule_awaab_deadline_user" model="ir.rule">
+            <field name="name">Awaab Deadline: User Access</field>
+            <field name="model_id" ref="model_property_fielder_awaab_deadline"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_property_management.group_property_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Damp & Mould: All users can read and update -->
+        <record id="rule_damp_mould_user" model="ir.rule">
+            <field name="name">Damp &amp; Mould: User Access</field>
+            <field name="model_id" ref="model_property_fielder_damp_mould"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_property_management.group_property_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- DHS Assessment: All users can read and update -->
+        <record id="rule_dhs_assessment_user" model="ir.rule">
+            <field name="name">DHS Assessment: User Access</field>
+            <field name="model_id" ref="model_property_fielder_dhs_assessment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('property_fielder_property_management.group_property_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+    </data>
+</odoo>
+

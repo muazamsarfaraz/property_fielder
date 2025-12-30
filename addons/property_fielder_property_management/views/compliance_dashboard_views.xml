@@ -1,7 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Compliance dashboard views can be added here in the future -->
+
+        <!-- Compliance Dashboard Form View -->
+        <record id="view_compliance_dashboard_form" model="ir.ui.view">
+            <field name="name">property_fielder.compliance.dashboard.form</field>
+            <field name="model">property_fielder.compliance.dashboard</field>
+            <field name="arch" type="xml">
+                <form string="Compliance Dashboard" create="false" edit="false">
+                    <sheet>
+                        <div class="oe_title mb-4">
+                            <h1><i class="fa fa-shield"/> Compliance Dashboard</h1>
+                        </div>
+
+                        <!-- Summary Stats Row -->
+                        <div class="row mb-4">
+                            <div class="col-md-2">
+                                <div class="card text-center bg-success text-white">
+                                    <div class="card-body py-3">
+                                        <h2 class="mb-0"><field name="compliant_count" nolabel="1"/></h2>
+                                        <small>Compliant</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card text-center bg-warning">
+                                    <div class="card-body py-3">
+                                        <h2 class="mb-0"><field name="expiring_30_count" nolabel="1"/></h2>
+                                        <small>Expiring 30d</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card text-center bg-info text-white">
+                                    <div class="card-body py-3">
+                                        <h2 class="mb-0"><field name="expiring_60_count" nolabel="1"/></h2>
+                                        <small>Expiring 60d</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card text-center bg-secondary text-white">
+                                    <div class="card-body py-3">
+                                        <h2 class="mb-0"><field name="expiring_90_count" nolabel="1"/></h2>
+                                        <small>Expiring 90d</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card text-center bg-danger text-white">
+                                    <div class="card-body py-3">
+                                        <h2 class="mb-0"><field name="expired_count" nolabel="1"/></h2>
+                                        <small>Expired</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card text-center bg-dark text-white">
+                                    <div class="card-body py-3">
+                                        <h2 class="mb-0"><field name="non_compliant_count" nolabel="1"/></h2>
+                                        <small>Non-Compliant</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Portfolio Compliance -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <strong><i class="fa fa-pie-chart"/> Portfolio Compliance</strong>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <h1 class="display-4"><field name="compliance_percentage" nolabel="1" widget="float" digits="[3,1]"/>%</h1>
+                                        <p class="text-muted"><field name="compliant_count" nolabel="1"/> of <field name="total_properties" nolabel="1"/> properties</p>
+                                        <field name="compliance_percentage" widget="progressbar" nolabel="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <strong><i class="fa fa-calendar-check-o"/> Inspections</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Pending</span>
+                                            <span class="badge text-bg-primary"><field name="pending_inspections" nolabel="1"/></span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Overdue</span>
+                                            <span class="badge text-bg-danger"><field name="overdue_inspections" nolabel="1"/></span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Completed This Month</span>
+                                            <span class="badge text-bg-success"><field name="inspections_this_month" nolabel="1"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header bg-secondary text-white">
+                                        <strong><i class="fa fa-bolt"/> Quick Actions</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <button name="action_view_expired" type="object" class="btn btn-danger btn-block mb-2 w-100">
+                                            <i class="fa fa-exclamation-triangle"/> View Expired
+                                        </button>
+                                        <button name="action_view_expiring" type="object" class="btn btn-warning btn-block mb-2 w-100">
+                                            <i class="fa fa-clock-o"/> View Expiring Soon
+                                        </button>
+                                        <button name="action_view_overdue_inspections" type="object" class="btn btn-info btn-block mb-2 w-100">
+                                            <i class="fa fa-calendar-times-o"/> Overdue Inspections
+                                        </button>
+                                        <hr/>
+                                        <button name="action_schedule_overdue_inspections" type="object" class="btn btn-outline-primary btn-block mb-2 w-100">
+                                            <i class="fa fa-calendar-plus-o"/> Schedule All Overdue
+                                        </button>
+                                        <button name="action_generate_portfolio_report" type="object" class="btn btn-outline-success btn-block mb-2 w-100">
+                                            <i class="fa fa-file-pdf-o"/> Generate Portfolio Report
+                                        </button>
+                                        <button name="action_send_expiry_reminders" type="object" class="btn btn-outline-warning btn-block w-100">
+                                            <i class="fa fa-bell"/> Send Expiry Reminders
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FLAGE+ Breakdown -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-dark text-white">
+                                <strong><i class="fa fa-check-square"/> FLAGE+ Compliance Breakdown</strong>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-2 text-center">
+                                        <h5><i class="fa fa-fire text-danger"/> Fire</h5>
+                                        <span class="badge text-bg-success"><field name="fire_compliant" nolabel="1"/> OK</span>
+                                        <span class="badge text-bg-danger"><field name="fire_issues" nolabel="1"/> Issues</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <h5><i class="fa fa-tint text-info"/> Legionella</h5>
+                                        <span class="badge text-bg-success"><field name="legionella_compliant" nolabel="1"/> OK</span>
+                                        <span class="badge text-bg-danger"><field name="legionella_issues" nolabel="1"/> Issues</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <h5><i class="fa fa-warning text-warning"/> Asbestos</h5>
+                                        <span class="badge text-bg-success"><field name="asbestos_compliant" nolabel="1"/> OK</span>
+                                        <span class="badge text-bg-danger"><field name="asbestos_issues" nolabel="1"/> Issues</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <h5><i class="fa fa-fire-extinguisher text-primary"/> Gas</h5>
+                                        <span class="badge text-bg-success"><field name="gas_compliant" nolabel="1"/> OK</span>
+                                        <span class="badge text-bg-danger"><field name="gas_issues" nolabel="1"/> Issues</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <h5><i class="fa fa-bolt text-warning"/> Electrical</h5>
+                                        <span class="badge text-bg-success"><field name="electrical_compliant" nolabel="1"/> OK</span>
+                                        <span class="badge text-bg-danger"><field name="electrical_issues" nolabel="1"/> Issues</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <h5><i class="fa fa-leaf text-success"/> EPC</h5>
+                                        <span class="badge text-bg-success"><field name="epc_compliant" nolabel="1"/> OK</span>
+                                        <span class="badge text-bg-danger"><field name="epc_issues" nolabel="1"/> Issues</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts & Analytics -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <strong><i class="fa fa-bar-chart"/> Charts &amp; Analytics</strong>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <button name="action_view_status_chart" type="object" class="btn btn-outline-primary btn-block w-100 mb-2">
+                                            <i class="fa fa-pie-chart fa-2x d-block mb-1"/>
+                                            Status Distribution
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button name="action_view_flage_chart" type="object" class="btn btn-outline-success btn-block w-100 mb-2">
+                                            <i class="fa fa-pie-chart fa-2x d-block mb-1"/>
+                                            By FLAGE+ Category
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button name="action_view_expiry_chart" type="object" class="btn btn-outline-warning btn-block w-100 mb-2">
+                                            <i class="fa fa-bar-chart fa-2x d-block mb-1"/>
+                                            Expiry Timeline
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button name="action_view_pivot_analysis" type="object" class="btn btn-outline-info btn-block w-100 mb-2">
+                                            <i class="fa fa-table fa-2x d-block mb-1"/>
+                                            Pivot Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Compliance Dashboard Action -->
+        <record id="action_compliance_dashboard_stats" model="ir.actions.act_window">
+            <field name="name">Compliance Dashboard</field>
+            <field name="res_model">property_fielder.compliance.dashboard</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'form_view_initial_mode': 'readonly'}</field>
+        </record>
+
     </data>
 </odoo>
 

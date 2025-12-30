@@ -3405,3 +3405,97 @@
     background: var(--pf-gray-900);
     transform: scale(1.1);
 }
+
+
+/* ========================================
+   PHASE 10: UX POLISH (Production Analysis)
+   ======================================== */
+
+/* 10.4: Increase Search Bar Width (NFR-UX-QW4) */
+.search-view-row .search-filter {
+    min-width: 300px;
+    flex: 1 1 300px;
+}
+
+.search-filter .form-control {
+    min-width: 200px;
+}
+
+/* 10.3: Tooltips for Filter Pills - Visual indicator that tooltip exists */
+.filter-pill[title] {
+    position: relative;
+}
+
+.filter-pill[title]:hover::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    background: var(--pf-primary);
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
+/* 10.5 & 10.8: Certification Type Icons & Inspector Name Display */
+.job-cert-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    color: var(--pf-gray-600);
+    margin-left: 4px;
+}
+
+.job-cert-type .cert-icon {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+/* Certification Type Icons - FLAGE+ color coding */
+.cert-icon.fire { background: #FEE2E2; color: #DC2626; }
+.cert-icon.legionella { background: #DBEAFE; color: #2563EB; }
+.cert-icon.asbestos { background: #FEF3C7; color: #D97706; }
+.cert-icon.gas { background: #E0E7FF; color: #4338CA; }
+.cert-icon.electrical { background: #FCE7F3; color: #BE185D; }
+.cert-icon.epc { background: #D1FAE5; color: #059669; }
+.cert-icon.pat { background: #F3E8FF; color: #7C3AED; }
+.cert-icon.other { background: #F3F4F6; color: #6B7280; }
+
+/* Inspector name display on job card */
+.job-inspector {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.6rem;
+    color: var(--pf-primary);
+    background: var(--pf-primary-bg);
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+}
+
+.job-inspector i {
+    font-size: 0.55rem;
+}
+
+/* 10.9: General Tooltips - Better visibility */
+[title] {
+    cursor: help;
+}
+
+/* Tooltip styling via native browser - ensure good contrast */
+.filter-pill[title],
+.job-status-icon[title],
+.job-cert-type[title],
+.cert-icon[title] {
+    cursor: pointer;
+}

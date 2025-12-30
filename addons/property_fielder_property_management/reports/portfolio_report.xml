@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Portfolio Compliance Summary Report Template -->
+        <template id="report_portfolio_compliance_document">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2 class="text-center">Portfolio Compliance Summary</h2>
+                        <p class="text-center text-muted">
+                            Generated on <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                        </p>
+                        
+                        <!-- Summary Statistics -->
+                        <div class="row mt-4 mb-4">
+                            <div class="col-12">
+                                <h4>Summary Statistics</h4>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <td><strong>Total Properties</strong></td>
+                                        <td><span t-esc="len(docs)"/></td>
+                                        <td><strong>Compliant</strong></td>
+                                        <td class="bg-success text-white"><span t-esc="len([p for p in docs if p.compliance_status == 'compliant'])"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Expiring Soon</strong></td>
+                                        <td class="bg-warning"><span t-esc="len([p for p in docs if p.compliance_status == 'expiring_soon'])"/></td>
+                                        <td><strong>Expired</strong></td>
+                                        <td class="bg-danger text-white"><span t-esc="len([p for p in docs if p.compliance_status == 'expired'])"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- FLAGE+ Summary -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h4>FLAGE+ Status Overview</h4>
+                                <table class="table table-sm table-bordered">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Category</th>
+                                            <th class="text-center">Valid</th>
+                                            <th class="text-center">Expiring</th>
+                                            <th class="text-center">Expired</th>
+                                            <th class="text-center">Missing</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Fire Safety</strong></td>
+                                            <td class="text-center bg-success text-white"><span t-esc="len([p for p in docs if p.flage_fire_status == 'valid'])"/></td>
+                                            <td class="text-center bg-warning"><span t-esc="len([p for p in docs if p.flage_fire_status == 'expiring'])"/></td>
+                                            <td class="text-center bg-danger text-white"><span t-esc="len([p for p in docs if p.flage_fire_status == 'expired'])"/></td>
+                                            <td class="text-center bg-secondary text-white"><span t-esc="len([p for p in docs if p.flage_fire_status == 'missing'])"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Legionella</strong></td>
+                                            <td class="text-center bg-success text-white"><span t-esc="len([p for p in docs if p.flage_legionella_status == 'valid'])"/></td>
+                                            <td class="text-center bg-warning"><span t-esc="len([p for p in docs if p.flage_legionella_status == 'expiring'])"/></td>
+                                            <td class="text-center bg-danger text-white"><span t-esc="len([p for p in docs if p.flage_legionella_status == 'expired'])"/></td>
+                                            <td class="text-center bg-secondary text-white"><span t-esc="len([p for p in docs if p.flage_legionella_status == 'missing'])"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Asbestos</strong></td>
+                                            <td class="text-center bg-success text-white"><span t-esc="len([p for p in docs if p.flage_asbestos_status == 'valid'])"/></td>
+                                            <td class="text-center bg-warning"><span t-esc="len([p for p in docs if p.flage_asbestos_status == 'expiring'])"/></td>
+                                            <td class="text-center bg-danger text-white"><span t-esc="len([p for p in docs if p.flage_asbestos_status == 'expired'])"/></td>
+                                            <td class="text-center bg-secondary text-white"><span t-esc="len([p for p in docs if p.flage_asbestos_status == 'missing'])"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Gas Safety</strong></td>
+                                            <td class="text-center bg-success text-white"><span t-esc="len([p for p in docs if p.flage_gas_status == 'valid'])"/></td>
+                                            <td class="text-center bg-warning"><span t-esc="len([p for p in docs if p.flage_gas_status == 'expiring'])"/></td>
+                                            <td class="text-center bg-danger text-white"><span t-esc="len([p for p in docs if p.flage_gas_status == 'expired'])"/></td>
+                                            <td class="text-center bg-secondary text-white"><span t-esc="len([p for p in docs if p.flage_gas_status == 'missing'])"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Electrical</strong></td>
+                                            <td class="text-center bg-success text-white"><span t-esc="len([p for p in docs if p.flage_electrical_status == 'valid'])"/></td>
+                                            <td class="text-center bg-warning"><span t-esc="len([p for p in docs if p.flage_electrical_status == 'expiring'])"/></td>
+                                            <td class="text-center bg-danger text-white"><span t-esc="len([p for p in docs if p.flage_electrical_status == 'expired'])"/></td>
+                                            <td class="text-center bg-secondary text-white"><span t-esc="len([p for p in docs if p.flage_electrical_status == 'missing'])"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Properties Requiring Attention -->
+                        <h4>Properties Requiring Attention</h4>
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Address</th>
+                                    <th>Status</th>
+                                    <th>Issues</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="[p for p in docs if p.compliance_status in ['expired', 'expiring_soon', 'non_compliant']]" t-as="property">
+                                    <tr t-att-class="'table-danger' if property.compliance_status == 'expired' else ('table-warning' if property.compliance_status == 'expiring_soon' else '')">
+                                        <td><span t-field="property.name"/></td>
+                                        <td><span t-field="property.street"/>, <span t-field="property.city"/></td>
+                                        <td><span t-field="property.compliance_status"/></td>
+                                        <td>
+                                            <t t-foreach="property.certification_ids.filtered(lambda c: c.status in ['expired', 'expiring_soon'])" t-as="cert">
+                                                <span class="badge" t-att-class="'bg-danger' if cert.status == 'expired' else 'bg-warning'">
+                                                    <span t-field="cert.certification_type_id.code"/> - <span t-field="cert.expiry_date"/>
+                                                </span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        
+                        <!-- Full Property List -->
+                        <div style="page-break-before: always;"/>
+                        <h4>Complete Property List</h4>
+                        <table class="table table-sm table-bordered" style="font-size: 9px;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Ref</th>
+                                    <th>Property</th>
+                                    <th>City</th>
+                                    <th>Status</th>
+                                    <th>Fire</th>
+                                    <th>Leg.</th>
+                                    <th>Asb.</th>
+                                    <th>Gas</th>
+                                    <th>Elec.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="docs" t-as="property">
+                                    <tr>
+                                        <td><span t-field="property.property_number"/></td>
+                                        <td><span t-field="property.name"/></td>
+                                        <td><span t-field="property.city"/></td>
+                                        <td><span t-field="property.compliance_status"/></td>
+                                        <td><span t-field="property.flage_fire_status"/></td>
+                                        <td><span t-field="property.flage_legionella_status"/></td>
+                                        <td><span t-field="property.flage_asbestos_status"/></td>
+                                        <td><span t-field="property.flage_gas_status"/></td>
+                                        <td><span t-field="property.flage_electrical_status"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+        
+        <!-- Report Action -->
+        <record id="action_report_portfolio_compliance" model="ir.actions.report">
+            <field name="name">Portfolio Compliance Summary</field>
+            <field name="model">property_fielder.property</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">property_fielder_property_management.report_portfolio_compliance_document</field>
+            <field name="report_file">property_fielder_property_management.report_portfolio_compliance_document</field>
+        </record>
+        
+    </data>
+</odoo>
+

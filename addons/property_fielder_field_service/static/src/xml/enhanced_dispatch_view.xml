@@ -125,22 +125,27 @@
                             <!-- Jobs Tab Content -->
                             <div class="sidebar-tab-content" t-if="state.sidebarTab === 'jobs'">
                                 <!-- Quick Filter Pills (Issue 4 - visible filter toggles) -->
+                                <!-- NFR-UX-QW3: Added descriptive tooltips to filter pills -->
                                 <div class="quick-filter-pills">
                                     <button t-attf-class="filter-pill {{ state.activeQuickFilter === 'all' ? 'active' : '' }}"
-                                            t-on-click="() => this.setQuickFilter('all')">
+                                            t-on-click="() => this.setQuickFilter('all')"
+                                            title="Show all jobs for the selected date, regardless of status">
                                         All <span class="pill-count"><t t-esc="state.jobs.length"/></span>
                                     </button>
                                     <button t-attf-class="filter-pill filter-unassigned {{ state.activeQuickFilter === 'unassigned' ? 'active' : '' }}"
-                                            t-on-click="() => this.setQuickFilter('unassigned')">
+                                            t-on-click="() => this.setQuickFilter('unassigned')"
+                                            title="Jobs not yet assigned to an inspector or route - select these to optimize">
                                         Unassigned <span class="pill-count"><t t-esc="unassignedCount"/></span>
                                     </button>
                                     <button t-attf-class="filter-pill filter-scheduled {{ state.activeQuickFilter === 'scheduled' ? 'active' : '' }}"
-                                            t-on-click="() => this.setQuickFilter('scheduled')">
+                                            t-on-click="() => this.setQuickFilter('scheduled')"
+                                            title="Jobs that have been assigned to a route and are ready for dispatch">
                                         Scheduled <span class="pill-count"><t t-esc="scheduledCount"/></span>
                                     </button>
                                     <button t-attf-class="filter-pill filter-urgent {{ state.activeQuickFilter === 'urgent' ? 'active' : '' }}"
                                             t-on-click="() => this.setQuickFilter('urgent')"
-                                            t-if="urgentCount > 0">
+                                            t-if="urgentCount > 0"
+                                            title="High priority jobs or jobs past their deadline - requires immediate attention">
                                         <span class="urgent-dot"/> Urgent <span class="pill-count"><t t-esc="urgentCount"/></span>
                                     </button>
                                 </div>
@@ -207,7 +212,7 @@
                                                 <div class="job-property-name" t-esc="getPropertyName(job)"/>
                                                 <!-- Address line (hidden in compact mode) -->
                                                 <div class="job-address" t-if="!state.compactViewMode" t-esc="getJobAddress(job)"/>
-                                                <!-- Meta row: icon-based status + urgent indicator + times -->
+                                                <!-- Meta row: icon-based status + urgent indicator + times + cert type + inspector -->
                                                 <div class="job-item-meta">
                                                     <!-- Icon-based status indicator (Gemini UX: use icons instead of text) -->
                                                     <span t-attf-class="job-status-icon status-{{ job.state }}" t-att-title="getStatusLabel(job.state)">
@@ -219,7 +224,16 @@
                                                         <i t-if="job.state === 'completed'" class="fa fa-check"/>
                                                         <i t-if="job.state === 'cancelled'" class="fa fa-ban"/>
                                                     </span>
-                                                    <!-- GEMINI UX: Removed redundant status text - colored border already indicates status -->
+                                                    <!-- NFR-UX-QW5: Certification type icon with FLAGE+ color coding -->
+                                                    <span class="job-cert-type" t-att-title="getCertTypeName(job)">
+                                                        <span t-attf-class="cert-icon {{ getCertTypeClass(job) }}">
+                                                            <t t-esc="getCertTypeIcon(job)"/>
+                                                        </span>
+                                                    </span>
+                                                    <!-- NFR-UX-3.4: Inspector name if assigned -->
+                                                    <span class="job-inspector" t-if="job.inspector_id and job.inspector_id[1]" t-att-title="'Assigned to: ' + job.inspector_id[1]">
+                                                        <i class="fa fa-user-circle-o"/> <t t-esc="getInspectorShortName(job)"/>
+                                                    </span>
                                                     <!-- Overdue indicator with icon (replaces "LATE" text) -->
                                                     <span class="job-overdue-icon" t-if="isJobOverdue(job)" title="Overdue - Past deadline">
                                                         <i class="fa fa-exclamation-triangle"/>

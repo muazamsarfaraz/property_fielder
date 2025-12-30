@@ -306,5 +306,82 @@
             </field>
         </record>
 
+        <!-- Certification Graph View - By Status (Pie Chart) -->
+        <record id="view_property_certification_graph_status" model="ir.ui.view">
+            <field name="name">property_fielder.property.certification.graph.status</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="arch" type="xml">
+                <graph string="Certification Status" type="pie">
+                    <field name="status" type="row"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Certification Graph View - By FLAGE+ Category -->
+        <record id="view_property_certification_graph_flage" model="ir.ui.view">
+            <field name="name">property_fielder.property.certification.graph.flage</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="priority">100</field>
+            <field name="arch" type="xml">
+                <graph string="By FLAGE+ Category" type="pie">
+                    <field name="flage_category" type="row"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Certification Graph View - Expiry Timeline -->
+        <record id="view_property_certification_graph_expiry" model="ir.ui.view">
+            <field name="name">property_fielder.property.certification.graph.expiry</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="priority">200</field>
+            <field name="arch" type="xml">
+                <graph string="Expiry Timeline" type="bar" stacked="True">
+                    <field name="expiry_date" interval="month" type="row"/>
+                    <field name="flage_category" type="col"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Certification Pivot View -->
+        <record id="view_property_certification_pivot" model="ir.ui.view">
+            <field name="name">property_fielder.property.certification.pivot</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="arch" type="xml">
+                <pivot string="Certification Analysis">
+                    <field name="flage_category" type="row"/>
+                    <field name="status" type="col"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Actions for Analytics -->
+        <record id="action_certification_status_chart" model="ir.actions.act_window">
+            <field name="name">Certification Status</field>
+            <field name="res_model">property_fielder.property.certification</field>
+            <field name="view_mode">graph,list,form</field>
+            <field name="view_id" ref="view_property_certification_graph_status"/>
+        </record>
+
+        <record id="action_certification_flage_chart" model="ir.actions.act_window">
+            <field name="name">By FLAGE+ Category</field>
+            <field name="res_model">property_fielder.property.certification</field>
+            <field name="view_mode">graph,list,form</field>
+            <field name="view_id" ref="view_property_certification_graph_flage"/>
+        </record>
+
+        <record id="action_certification_expiry_chart" model="ir.actions.act_window">
+            <field name="name">Expiry Timeline</field>
+            <field name="res_model">property_fielder.property.certification</field>
+            <field name="view_mode">graph,list,form</field>
+            <field name="view_id" ref="view_property_certification_graph_expiry"/>
+        </record>
+
+        <record id="action_certification_pivot" model="ir.actions.act_window">
+            <field name="name">Certification Analysis</field>
+            <field name="res_model">property_fielder.property.certification</field>
+            <field name="view_mode">pivot,graph,list,form</field>
+            <field name="view_id" ref="view_property_certification_pivot"/>
+        </record>
+
     </data>
 </odoo>

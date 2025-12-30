@@ -264,6 +264,59 @@ export class EnhancedDispatchView extends Component {
     }
 
     /**
+     * NFR-UX-QW5: Get certification type name from job name
+     */
+    getCertTypeName(job) {
+        const taskType = this.getTaskType(job);
+        return taskType || 'Inspection';
+    }
+
+    /**
+     * NFR-UX-QW5: Get CSS class for certification type icon (FLAGE+ color coding)
+     */
+    getCertTypeClass(job) {
+        const taskType = this.getTaskType(job).toLowerCase();
+        if (taskType.includes('fire') || taskType.includes('smoke') || taskType.includes('alarm')) return 'fire';
+        if (taskType.includes('legionella') || taskType.includes('water')) return 'legionella';
+        if (taskType.includes('asbestos')) return 'asbestos';
+        if (taskType.includes('gas') || taskType.includes('boiler') || taskType.includes('cp12')) return 'gas';
+        if (taskType.includes('electric') || taskType.includes('eicr') || taskType.includes('pat')) return 'electrical';
+        if (taskType.includes('epc') || taskType.includes('energy')) return 'epc';
+        return 'other';
+    }
+
+    /**
+     * NFR-UX-QW5: Get icon letter/symbol for certification type
+     */
+    getCertTypeIcon(job) {
+        const taskType = this.getTaskType(job).toLowerCase();
+        if (taskType.includes('fire') || taskType.includes('smoke') || taskType.includes('alarm')) return 'F';
+        if (taskType.includes('legionella') || taskType.includes('water')) return 'L';
+        if (taskType.includes('asbestos')) return 'A';
+        if (taskType.includes('gas') || taskType.includes('boiler') || taskType.includes('cp12')) return 'G';
+        if (taskType.includes('electric') || taskType.includes('eicr')) return 'E';
+        if (taskType.includes('pat')) return 'P';
+        if (taskType.includes('epc') || taskType.includes('energy')) return 'E';
+        return '•';
+    }
+
+    /**
+     * NFR-UX-3.4: Get short inspector name for display on job card
+     */
+    getInspectorShortName(job) {
+        if (!job.inspector_id || !job.inspector_id[1]) return '';
+        const fullName = job.inspector_id[1];
+        // Get first name or initials
+        const parts = fullName.split(' ');
+        if (parts.length >= 2) {
+            // Return first name only (e.g., "John" from "John Smith")
+            return parts[0];
+        }
+        // If single word, return as-is but truncate if too long
+        return fullName.length > 10 ? fullName.substring(0, 8) + '...' : fullName;
+    }
+
+    /**
      * Check if a job is overdue (deadline has passed)
      */
     isJobOverdue(job) {

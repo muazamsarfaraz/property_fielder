@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- HHSRS Inspection Checklist Template -->
+        <record id="checklist_template_hhsrs" model="property_fielder.checklist.template">
+            <field name="name">HHSRS Quarterly Inspection Checklist</field>
+            <field name="certification_type_id" ref="cert_type_hhsrs"/>
+            <field name="description">Comprehensive HHSRS inspection covering key hazard categories. Rate each hazard as Pass (no issue), Fail (hazard present), or N/A (not applicable).</field>
+        </record>
+        
+        <!-- A. Physiological Requirements - Hygrothermal Conditions -->
+        <record id="hhsrs_item_damp" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Damp and mould growth: Check walls, ceilings, windows for condensation, rising/penetrating damp, mould</field>
+            <field name="category">A1. Damp &amp; Mould</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="hhsrs_item_excess_cold" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Excess cold: Heating working, adequate insulation, windows sealed, no draughts</field>
+            <field name="category">A2. Excess Cold</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="hhsrs_item_excess_heat" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Excess heat: Adequate ventilation, thermostat controls working</field>
+            <field name="category">A3. Excess Heat</field>
+            <field name="item_type">check</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <!-- B. Pollutants -->
+        <record id="hhsrs_item_asbestos" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Asbestos: No exposed/damaged ACMs, management plan in place if applicable</field>
+            <field name="category">B1. Asbestos</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">40</field>
+        </record>
+        
+        <record id="hhsrs_item_carbon_monoxide" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Carbon monoxide: CO alarms present, tested, gas appliances vented correctly</field>
+            <field name="category">B3. Carbon Monoxide</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">50</field>
+        </record>
+        
+        <!-- C. Space, Security, Light &amp; Noise -->
+        <record id="hhsrs_item_crowding" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Crowding and space: Adequate living space for occupants</field>
+            <field name="category">C1. Crowding</field>
+            <field name="item_type">check</field>
+            <field name="sequence">60</field>
+        </record>
+        
+        <record id="hhsrs_item_entry" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Entry by intruders: Locks on doors/windows working, secure entry</field>
+            <field name="category">C2. Entry by Intruders</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">70</field>
+        </record>
+        
+        <record id="hhsrs_item_lighting" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Lighting: Adequate natural and artificial light in all rooms</field>
+            <field name="category">C3. Lighting</field>
+            <field name="item_type">check</field>
+            <field name="sequence">80</field>
+        </record>
+        
+        <!-- D. Hygiene, Sanitation &amp; Water Supply -->
+        <record id="hhsrs_item_water_supply" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Domestic hygiene: Kitchen facilities adequate, pest-free, clean</field>
+            <field name="category">D1. Domestic Hygiene</field>
+            <field name="item_type">check</field>
+            <field name="sequence">90</field>
+        </record>
+        
+        <record id="hhsrs_item_sanitation" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Personal hygiene: Bathroom facilities working, hot water available</field>
+            <field name="category">D3. Personal Hygiene</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">100</field>
+        </record>
+        
+        <record id="hhsrs_item_water" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Water supply: Clean water available, no contamination risk</field>
+            <field name="category">D4. Water Supply</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">110</field>
+        </record>
+        
+        <!-- E. Falls -->
+        <record id="hhsrs_item_falls_stairs" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Falls on stairs: Handrails secure, treads even, good lighting</field>
+            <field name="category">E2. Falls on Stairs</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">120</field>
+        </record>
+        
+        <record id="hhsrs_item_falls_level" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Falls on level: Floor surfaces even, no trip hazards, rugs secured</field>
+            <field name="category">E3. Falls on Level</field>
+            <field name="item_type">check</field>
+            <field name="sequence">130</field>
+        </record>
+        
+        <record id="hhsrs_item_falls_windows" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Falls between levels: Window restrictors fitted, balcony rails secure</field>
+            <field name="category">E4. Falls Between Levels</field>
+            <field name="item_type">check</field>
+            <field name="sequence">140</field>
+        </record>
+        
+        <!-- F. Electric, Fire &amp; Burns -->
+        <record id="hhsrs_item_electrical" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Electrical hazards: Sockets not overloaded, no exposed wiring, RCD protection</field>
+            <field name="category">F1. Electrical Hazards</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">150</field>
+        </record>
+        
+        <record id="hhsrs_item_fire" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Fire: Smoke alarms present and working, escape routes clear, fire doors functioning</field>
+            <field name="category">F2. Fire</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">160</field>
+        </record>
+        
+        <record id="hhsrs_item_hot_surfaces" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Hot surfaces: Radiator covers if needed, pipework insulated</field>
+            <field name="category">F4. Hot Surfaces</field>
+            <field name="item_type">check</field>
+            <field name="sequence">170</field>
+        </record>
+        
+        <!-- G. Structural -->
+        <record id="hhsrs_item_structural" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Structural collapse: No significant cracks, walls stable, roof intact</field>
+            <field name="category">G1. Structural Collapse</field>
+            <field name="item_type">check</field>
+            <field name="is_mandatory">True</field>
+            <field name="sequence">180</field>
+        </record>
+        
+        <!-- Additional readings -->
+        <record id="hhsrs_item_temp_reading" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Room temperature reading (°C) - living room</field>
+            <field name="category">Readings</field>
+            <field name="item_type">reading</field>
+            <field name="unit_of_measure">°C</field>
+            <field name="expected_min">18</field>
+            <field name="expected_max">24</field>
+            <field name="sequence">190</field>
+        </record>
+        
+        <record id="hhsrs_item_humidity" model="property_fielder.checklist.template.item">
+            <field name="template_id" ref="checklist_template_hhsrs"/>
+            <field name="name">Relative humidity reading (%)</field>
+            <field name="category">Readings</field>
+            <field name="item_type">reading</field>
+            <field name="unit_of_measure">%</field>
+            <field name="expected_min">40</field>
+            <field name="expected_max">60</field>
+            <field name="sequence">200</field>
+        </record>
+        
+    </data>
+</odoo>
+

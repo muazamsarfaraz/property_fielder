@@ -92,7 +92,72 @@
             <field name="sequence">70</field>
             <field name="color">4</field>
         </record>
-        
+
+        <!-- HHSRS - Housing Health and Safety Rating System (Quarterly - 60 min) -->
+        <record id="cert_type_hhsrs" model="property_fielder.certification.type">
+            <field name="name">HHSRS Inspection</field>
+            <field name="code">HHSRS</field>
+            <field name="flage_category">other</field>
+            <field name="description">Housing Health and Safety Rating System (HHSRS) inspection covering all 29 hazard categories. Required quarterly for social housing to identify Category 1 and Category 2 hazards.</field>
+            <field name="validity_period">91</field>
+            <field name="warning_period">14</field>
+            <field name="default_duration_minutes">60</field>
+            <field name="sequence">80</field>
+            <field name="color">6</field>
+        </record>
+
+        <!-- Damp and Mould Check (Awaab's Law - Monthly for properties with history) -->
+        <record id="cert_type_damp_mould" model="property_fielder.certification.type">
+            <field name="name">Damp &amp; Mould Inspection</field>
+            <field name="code">DAMP</field>
+            <field name="flage_category">other</field>
+            <field name="description">Damp and Mould Inspection as required by Awaab's Law (Social Housing Regulation Act 2023). Emergency response within 24 hours for hazards, 7 days for investigation, 28 days for repair.</field>
+            <field name="validity_period">91</field>
+            <field name="warning_period">14</field>
+            <field name="default_duration_minutes">30</field>
+            <field name="sequence">85</field>
+            <field name="color">9</field>
+        </record>
+
+        <!-- Smoke &amp; CO Alarm Testing (Annual but quarterly visual check recommended) -->
+        <record id="cert_type_smoke_co" model="property_fielder.certification.type">
+            <field name="name">Smoke &amp; CO Alarm Check</field>
+            <field name="code">SMOKE_CO</field>
+            <field name="flage_category">fire</field>
+            <field name="description">Smoke and Carbon Monoxide Alarm testing as required by the Smoke and Carbon Monoxide Alarm (England) Regulations 2015 (amended 2022). Required at start of each tenancy, quarterly checks recommended.</field>
+            <field name="validity_period">91</field>
+            <field name="warning_period">14</field>
+            <field name="default_duration_minutes">20</field>
+            <field name="sequence">15</field>
+            <field name="color">1</field>
+        </record>
+
+        <!-- Heating System Service (Annual) -->
+        <record id="cert_type_heating" model="property_fielder.certification.type">
+            <field name="name">Heating System Service</field>
+            <field name="code">HEATING</field>
+            <field name="flage_category">gas</field>
+            <field name="description">Annual heating system service and maintenance check. Often combined with Gas Safety Certificate inspection.</field>
+            <field name="validity_period">365</field>
+            <field name="warning_period">30</field>
+            <field name="default_duration_minutes">45</field>
+            <field name="sequence">45</field>
+            <field name="color">3</field>
+        </record>
+
+        <!-- Water Temperature Check (Monthly for Legionella control) -->
+        <record id="cert_type_water_temp" model="property_fielder.certification.type">
+            <field name="name">Water Temperature Check</field>
+            <field name="code">WATER_TEMP</field>
+            <field name="flage_category">legionella</field>
+            <field name="description">Monthly water temperature monitoring for Legionella control. Hot water should be stored at 60°C and distributed at 50°C. Cold water should be below 20°C.</field>
+            <field name="validity_period">30</field>
+            <field name="warning_period">7</field>
+            <field name="default_duration_minutes">15</field>
+            <field name="sequence">25</field>
+            <field name="color">5</field>
+        </record>
+
     </data>
 </odoo>
 

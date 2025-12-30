@@ -2144,6 +2144,63 @@ TRIGGER: Cat 1/Emergency fault AND 2+ failed access attempts
 | NFR-M11 | Import SHALL log all imported records for audit | HIGH |
 | NFR-M12 | Import SHALL support rollback of failed batch imports | MEDIUM |
 
+### 12.8 UX Requirements (Production Analysis - December 2024)
+
+> **Design Decision (Per Gemini UX Analysis):** Following production UX analysis using Gemini 2.0 Flash, the following UX requirements were identified to improve the property manager workflow. Initial UX score: 5/10. Target: 8/10.
+
+#### 12.8.1 Property List View
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| NFR-UX-1.1 | Property cards SHALL use color-coded compliance badges (green=Compliant, amber=Expiring, red=Non-Compliant/Missing) | HIGH |
+| NFR-UX-1.2 | Property list SHALL provide advanced filtering by location, compliance status, property type, owner | HIGH |
+| NFR-UX-1.3 | Compliance badges SHALL use minimum 14px font size for readability | MEDIUM |
+| NFR-UX-1.4 | Property cards SHALL display tenant name and key action buttons (View, Schedule Inspection) | MEDIUM |
+| NFR-UX-1.5 | Property cards SHALL show next inspection date if scheduled | MEDIUM |
+| NFR-UX-1.6 | Property cards SHALL show property thumbnail image if available | MEDIUM |
+
+#### 12.8.2 Property Detail Form
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| NFR-UX-2.1 | FLAGE+ compliance section SHALL use traffic light indicators (green/amber/red circles) for each category | HIGH |
+| NFR-UX-2.2 | Form fields SHALL use modern Odoo widgets (date pickers, searchable dropdowns) where available | MEDIUM |
+| NFR-UX-2.3 | Tab labels SHALL include descriptive icons alongside text | LOW |
+| NFR-UX-2.4 | FLAGE+ section SHALL be prominently positioned and visible without scrolling | HIGH |
+| NFR-UX-2.5 | Compliance status badges SHALL include expiry date or "Missing" label | HIGH |
+
+#### 12.8.3 Dispatch View
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| NFR-UX-3.1 | Search bar SHALL be minimum 300px wide on desktop for prominent discovery | MEDIUM |
+| NFR-UX-3.2 | Filter pills (All/Unassigned/Scheduled/Urgent) SHALL have tooltips explaining each status | HIGH |
+| NFR-UX-3.3 | Job cards SHALL display job type icons (wrench for repair, clipboard for inspection) | MEDIUM |
+| NFR-UX-3.4 | Job cards SHALL display inspector name if assigned | HIGH |
+| NFR-UX-3.5 | Job cards SHALL display certification type being inspected | HIGH |
+| NFR-UX-3.6 | Empty states SHALL provide helpful guidance and call-to-action buttons | HIGH |
+
+#### 12.8.4 General UX Standards
+
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| NFR-UX-4.1 | All icons and filters SHALL have descriptive tooltips | MEDIUM |
+| NFR-UX-4.2 | Visual hierarchy SHALL guide users with consistent whitespace (8px, 16px, 24px grid) | LOW |
+| NFR-UX-4.3 | All views SHALL be mobile-responsive (minimum 375px viewport) | HIGH |
+| NFR-UX-4.4 | Loading states SHALL display skeleton loaders or spinners | MEDIUM |
+| NFR-UX-4.5 | Error states SHALL display user-friendly messages with retry options | HIGH |
+| NFR-UX-4.6 | Success states SHALL provide visual confirmation (toast notifications) | MEDIUM |
+
+#### 12.8.5 Quick Wins (Immediate Improvements)
+
+| ID | Requirement | Priority | Effort |
+|----|-------------|----------|--------|
+| NFR-UX-QW1 | Change Non-Compliant badge to red background with white text | HIGH | 1 hour |
+| NFR-UX-QW2 | Increase compliance badge font size from 10px to 14px | HIGH | 1 hour |
+| NFR-UX-QW3 | Add tooltips to Dispatch filter pills | HIGH | 2 hours |
+| NFR-UX-QW4 | Increase Dispatch search bar width to 300px minimum | MEDIUM | 1 hour |
+| NFR-UX-QW5 | Add inspection type icons to job cards in Dispatch view | MEDIUM | 4 hours |
+
 ---
 
 ## 13. Implementation Phases

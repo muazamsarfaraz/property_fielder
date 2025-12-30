@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- HHSRS Vulnerable Groups -->
+        <record id="vulnerable_group_elderly" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Elderly (65+)</field>
+            <field name="code">ELDERLY</field>
+            <field name="description">Persons aged 65 years and over</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="vulnerable_group_children_under_5" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Children Under 5</field>
+            <field name="code">CHILD_U5</field>
+            <field name="description">Children under 5 years of age</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="vulnerable_group_children_5_14" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Children 5-14</field>
+            <field name="code">CHILD_5_14</field>
+            <field name="description">Children aged 5 to 14 years</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <record id="vulnerable_group_disabled" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Disabled Persons</field>
+            <field name="code">DISABLED</field>
+            <field name="description">Persons with physical or mental disabilities</field>
+            <field name="sequence">40</field>
+        </record>
+        
+        <record id="vulnerable_group_respiratory" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Respiratory Conditions</field>
+            <field name="code">RESPIRATORY</field>
+            <field name="description">Persons with asthma, COPD, or other respiratory conditions</field>
+            <field name="sequence">50</field>
+        </record>
+        
+        <record id="vulnerable_group_immunocompromised" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Immunocompromised</field>
+            <field name="code">IMMUNO</field>
+            <field name="description">Persons with weakened immune systems</field>
+            <field name="sequence">60</field>
+        </record>
+        
+        <record id="vulnerable_group_pregnant" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Pregnant Women</field>
+            <field name="code">PREGNANT</field>
+            <field name="description">Pregnant women</field>
+            <field name="sequence">70</field>
+        </record>
+        
+        <record id="vulnerable_group_mobility" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Mobility Impaired</field>
+            <field name="code">MOBILITY</field>
+            <field name="description">Persons with mobility impairments</field>
+            <field name="sequence">80</field>
+        </record>
+        
+        <record id="vulnerable_group_visual" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Visually Impaired</field>
+            <field name="code">VISUAL</field>
+            <field name="description">Persons with visual impairments</field>
+            <field name="sequence">90</field>
+        </record>
+        
+        <record id="vulnerable_group_hearing" model="property_fielder.hhsrs.vulnerable.group">
+            <field name="name">Hearing Impaired</field>
+            <field name="code">HEARING</field>
+            <field name="description">Persons with hearing impairments</field>
+            <field name="sequence">100</field>
+        </record>
+        
+    </data>
+</odoo>
+

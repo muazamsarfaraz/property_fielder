@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- HHSRS Assessment Sequence -->
+        <record id="seq_hhsrs_assessment" model="ir.sequence">
+            <field name="name">HHSRS Assessment Sequence</field>
+            <field name="code">property_fielder.hhsrs.assessment</field>
+            <field name="prefix">HHSRS/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <!-- Damp & Mould Case Sequence -->
+        <record id="seq_damp_mould" model="ir.sequence">
+            <field name="name">Damp &amp; Mould Case Sequence</field>
+            <field name="code">property_fielder.damp.mould</field>
+            <field name="prefix">DM/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <!-- DHS Assessment Sequence -->
+        <record id="seq_dhs_assessment" model="ir.sequence">
+            <field name="name">DHS Assessment Sequence</field>
+            <field name="code">property_fielder.dhs.assessment</field>
+            <field name="prefix">DHS/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>
+

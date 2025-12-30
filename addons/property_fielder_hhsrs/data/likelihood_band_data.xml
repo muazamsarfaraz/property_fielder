@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Official 16 HHSRS Likelihood Bands with Representative Scale Points (RSP) -->
+        
+        <record id="likelihood_band_l1" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 1</field>
+            <field name="code">L1</field>
+            <field name="ratio">1 in 1</field>
+            <field name="rsp">1.0</field>
+            <field name="description">Certain</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="likelihood_band_l2" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 2</field>
+            <field name="code">L2</field>
+            <field name="ratio">1 in 2</field>
+            <field name="rsp">0.5</field>
+            <field name="description">Very High</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="likelihood_band_l3" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 3</field>
+            <field name="code">L3</field>
+            <field name="ratio">1 in 3</field>
+            <field name="rsp">0.33</field>
+            <field name="description">High</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <record id="likelihood_band_l4" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 6</field>
+            <field name="code">L4</field>
+            <field name="ratio">1 in 6</field>
+            <field name="rsp">0.167</field>
+            <field name="description">Moderately High</field>
+            <field name="sequence">40</field>
+        </record>
+        
+        <record id="likelihood_band_l5" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 10</field>
+            <field name="code">L5</field>
+            <field name="ratio">1 in 10</field>
+            <field name="rsp">0.1</field>
+            <field name="description">Moderate</field>
+            <field name="sequence">50</field>
+        </record>
+        
+        <record id="likelihood_band_l6" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 18</field>
+            <field name="code">L6</field>
+            <field name="ratio">1 in 18</field>
+            <field name="rsp">0.056</field>
+            <field name="description">Moderately Low</field>
+            <field name="sequence">60</field>
+        </record>
+        
+        <record id="likelihood_band_l7" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 32</field>
+            <field name="code">L7</field>
+            <field name="ratio">1 in 32</field>
+            <field name="rsp">0.031</field>
+            <field name="description">Low</field>
+            <field name="sequence">70</field>
+        </record>
+        
+        <record id="likelihood_band_l8" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 56</field>
+            <field name="code">L8</field>
+            <field name="ratio">1 in 56</field>
+            <field name="rsp">0.018</field>
+            <field name="description">Very Low</field>
+            <field name="sequence">80</field>
+        </record>
+        
+        <record id="likelihood_band_l9" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 100</field>
+            <field name="code">L9</field>
+            <field name="ratio">1 in 100</field>
+            <field name="rsp">0.01</field>
+            <field name="description">Remote</field>
+            <field name="sequence">90</field>
+        </record>
+        
+        <record id="likelihood_band_l10" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 180</field>
+            <field name="code">L10</field>
+            <field name="ratio">1 in 180</field>
+            <field name="rsp">0.0056</field>
+            <field name="description">Very Remote</field>
+            <field name="sequence">100</field>
+        </record>
+        
+        <record id="likelihood_band_l11" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 320</field>
+            <field name="code">L11</field>
+            <field name="ratio">1 in 320</field>
+            <field name="rsp">0.0031</field>
+            <field name="description">Extremely Remote</field>
+            <field name="sequence">110</field>
+        </record>
+        
+        <record id="likelihood_band_l12" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 560</field>
+            <field name="code">L12</field>
+            <field name="ratio">1 in 560</field>
+            <field name="rsp">0.0018</field>
+            <field name="description">Negligible</field>
+            <field name="sequence">120</field>
+        </record>
+        
+        <record id="likelihood_band_l13" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 1,000</field>
+            <field name="code">L13</field>
+            <field name="ratio">1 in 1,000</field>
+            <field name="rsp">0.001</field>
+            <field name="description">Very Negligible</field>
+            <field name="sequence">130</field>
+        </record>
+        
+        <record id="likelihood_band_l14" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 1,800</field>
+            <field name="code">L14</field>
+            <field name="ratio">1 in 1,800</field>
+            <field name="rsp">0.00056</field>
+            <field name="description">Almost Negligible</field>
+            <field name="sequence">140</field>
+        </record>
+        
+        <record id="likelihood_band_l15" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">1 in 3,200</field>
+            <field name="code">L15</field>
+            <field name="ratio">1 in 3,200</field>
+            <field name="rsp">0.00031</field>
+            <field name="description">Practically Negligible</field>
+            <field name="sequence">150</field>
+        </record>
+        
+        <record id="likelihood_band_l16" model="property_fielder.hhsrs.likelihood.band">
+            <field name="name">&lt; 1 in 32,000</field>
+            <field name="code">L16</field>
+            <field name="ratio">&lt; 1 in 32,000</field>
+            <field name="rsp">0.00003</field>
+            <field name="description">Infinitesimal</field>
+            <field name="sequence">160</field>
+        </record>
+        
+    </data>
+</odoo>
+

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vulnerable Group Tree View -->
+    <record id="view_vulnerable_group_tree" model="ir.ui.view">
+        <field name="name">property_fielder.hhsrs.vulnerable.group.tree</field>
+        <field name="model">property_fielder.hhsrs.vulnerable.group</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Vulnerable Group Form View -->
+    <record id="view_vulnerable_group_form" model="ir.ui.view">
+        <field name="name">property_fielder.hhsrs.vulnerable.group.form</field>
+        <field name="model">property_fielder.hhsrs.vulnerable.group</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+</odoo>
+
