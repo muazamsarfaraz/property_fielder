@@ -87,7 +87,13 @@ class InspectionTemplate(models.Model):
         default=0,
         help='Minimum number of photos required'
     )
-    
+
+    is_asset_based = fields.Boolean(
+        string='Asset-Based Template',
+        default=False,
+        help='Template is for asset-based inspections (e.g., CP12, EICR) where items are repeated per asset'
+    )
+
     # Statistics
     item_count = fields.Integer(
         string='Item Count',

@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ============================================== -->
+        <!-- GAS SAFETY FAULT CODES (GIUSP) -->
+        <!-- ============================================== -->
+        
+        <record id="fault_code_gas_id" model="property_fielder.fault.code">
+            <field name="name">Immediately Dangerous</field>
+            <field name="code">ID</field>
+            <field name="category">gas</field>
+            <field name="industry_standard">GIUSP</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Isolate gas supply immediately. Do not use appliance until repaired by Gas Safe registered engineer.</field>
+            <field name="description">A gas installation or appliance that poses an immediate danger to life or property. Must be made safe immediately.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="fault_code_gas_ar" model="property_fielder.fault.code">
+            <field name="name">At Risk</field>
+            <field name="code">AR</field>
+            <field name="category">gas</field>
+            <field name="industry_standard">GIUSP</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Appliance should not be used until repaired. Arrange repair within 7 days.</field>
+            <field name="description">A gas installation or appliance that is not immediately dangerous but could become so if circumstances change.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="fault_code_gas_ncs" model="property_fielder.fault.code">
+            <field name="name">Not to Current Standard</field>
+            <field name="code">NCS</field>
+            <field name="category">gas</field>
+            <field name="industry_standard">GIUSP</field>
+            <field name="severity_sla">advisory</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Recommend upgrade to current standards at next service or when convenient.</field>
+            <field name="description">Installation does not meet current standards but is not unsafe. Advisory only.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <!-- ============================================== -->
+        <!-- ELECTRICAL FAULT CODES (18th Edition) -->
+        <!-- ============================================== -->
+        
+        <record id="fault_code_elec_c1" model="property_fielder.fault.code">
+            <field name="name">Danger Present</field>
+            <field name="code">C1</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Isolate circuit immediately. Risk of injury. Repair before use.</field>
+            <field name="description">Danger present. Risk of injury. Immediate remedial action required.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="fault_code_elec_c2" model="property_fielder.fault.code">
+            <field name="name">Potentially Dangerous</field>
+            <field name="code">C2</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Urgent remedial action required within 28 days.</field>
+            <field name="description">Potentially dangerous. Urgent remedial action required.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="fault_code_elec_c3" model="property_fielder.fault.code">
+            <field name="name">Improvement Recommended</field>
+            <field name="code">C3</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">advisory</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Improvement recommended but not required for safety.</field>
+            <field name="description">Improvement recommended. Does not affect safety but would improve installation.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <record id="fault_code_elec_fi" model="property_fielder.fault.code">
+            <field name="name">Further Investigation</field>
+            <field name="code">FI</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">advisory</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Further investigation required without delay.</field>
+            <field name="description">Further investigation required to determine extent of defect.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">40</field>
+        </record>
+        
+        <!-- ============================================== -->
+        <!-- FIRE SAFETY FAULT CODES (RRO 2005) -->
+        <!-- ============================================== -->
+        
+        <record id="fault_code_fire_fsh" model="property_fielder.fault.code">
+            <field name="name">Fire Safety Hazard</field>
+            <field name="code">FSH</field>
+            <field name="category">fire</field>
+            <field name="industry_standard">RRO 2005</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Immediate action required. Fire risk present.</field>
+            <field name="description">Significant fire safety hazard requiring immediate remediation.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="fault_code_fire_fsr" model="property_fielder.fault.code">
+            <field name="name">Fire Safety Risk</field>
+            <field name="code">FSR</field>
+            <field name="category">fire</field>
+            <field name="industry_standard">RRO 2005</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Action required within 7 days to reduce fire risk.</field>
+            <field name="description">Fire safety risk that should be addressed urgently.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="fault_code_fire_fsi" model="property_fielder.fault.code">
+            <field name="name">Fire Safety Improvement</field>
+            <field name="code">FSI</field>
+            <field name="category">fire</field>
+            <field name="industry_standard">RRO 2005</field>
+            <field name="severity_sla">advisory</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Improvement recommended to enhance fire safety.</field>
+            <field name="description">Fire safety improvement recommended but not mandatory.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- LEGIONELLA FAULT CODES (HSE L8) -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_leg_lac" model="property_fielder.fault.code">
+            <field name="name">Legionella Action Critical</field>
+            <field name="code">LAC</field>
+            <field name="category">legionella</field>
+            <field name="industry_standard">HSE L8</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Immediate action required. High legionella risk detected.</field>
+            <field name="description">Critical legionella risk requiring immediate remediation.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="fault_code_leg_lrf" model="property_fielder.fault.code">
+            <field name="name">Legionella Risk Found</field>
+            <field name="code">LRF</field>
+            <field name="category">legionella</field>
+            <field name="industry_standard">HSE L8</field>
+            <field name="severity_sla">standard</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Remediation required within 28 days.</field>
+            <field name="description">Legionella risk identified requiring remediation.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="fault_code_leg_lmi" model="property_fielder.fault.code">
+            <field name="name">Legionella Minor Issue</field>
+            <field name="code">LMI</field>
+            <field name="category">legionella</field>
+            <field name="industry_standard">HSE L8</field>
+            <field name="severity_sla">advisory</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Minor improvement recommended.</field>
+            <field name="description">Minor legionella control issue. Advisory only.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- ASBESTOS FAULT CODES (CAR 2012) -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_asb_adf" model="property_fielder.fault.code">
+            <field name="name">Asbestos Danger Found</field>
+            <field name="code">ADF</field>
+            <field name="category">asbestos</field>
+            <field name="industry_standard">CAR 2012</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Immediate action required. Damaged asbestos found. Restrict access.</field>
+            <field name="description">Damaged or friable asbestos requiring immediate action.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="fault_code_asb_ard" model="property_fielder.fault.code">
+            <field name="name">Asbestos Removal Due</field>
+            <field name="code">ARD</field>
+            <field name="category">asbestos</field>
+            <field name="industry_standard">CAR 2012</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Asbestos removal required within 7 days.</field>
+            <field name="description">Asbestos requiring removal or encapsulation.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="fault_code_asb_aim" model="property_fielder.fault.code">
+            <field name="name">Asbestos In-situ Management</field>
+            <field name="code">AIM</field>
+            <field name="category">asbestos</field>
+            <field name="industry_standard">CAR 2012</field>
+            <field name="severity_sla">advisory</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Continue in-situ management. Monitor condition.</field>
+            <field name="description">Asbestos in good condition. Manage in place with regular monitoring.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- GENERAL FAULT CODES -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_gen_cat1" model="property_fielder.fault.code">
+            <field name="name">Category 1 Defect</field>
+            <field name="code">CAT1</field>
+            <field name="category">general</field>
+            <field name="industry_standard">General</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Immediate action required within 24 hours.</field>
+            <field name="description">Category 1 defect requiring immediate remediation.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="fault_code_gen_cat2" model="property_fielder.fault.code">
+            <field name="name">Category 2 Defect</field>
+            <field name="code">CAT2</field>
+            <field name="category">general</field>
+            <field name="industry_standard">General</field>
+            <field name="severity_sla">standard</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Remediation required within 28 days.</field>
+            <field name="description">Category 2 defect requiring standard remediation.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- ADDITIONAL GAS CODES (GIUSP Extended) -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_gas_idav" model="property_fielder.fault.code">
+            <field name="name">Immediately Dangerous - Abandoned Valve</field>
+            <field name="code">IDAV</field>
+            <field name="category">gas</field>
+            <field name="industry_standard">GIUSP</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Cap or remove abandoned valve immediately.</field>
+            <field name="description">Abandoned gas valve that could leak - immediate danger.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">11</field>
+        </record>
+
+        <record id="fault_code_gas_idfl" model="property_fielder.fault.code">
+            <field name="name">Immediately Dangerous - Flue Failure</field>
+            <field name="code">IDFL</field>
+            <field name="category">gas</field>
+            <field name="industry_standard">GIUSP</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Do not use appliance. Disconnect and make safe. Repair flue before reconnection.</field>
+            <field name="description">Flue not properly discharging products of combustion - carbon monoxide risk.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">12</field>
+        </record>
+
+        <record id="fault_code_gas_idlk" model="property_fielder.fault.code">
+            <field name="name">Immediately Dangerous - Gas Leak</field>
+            <field name="code">IDLK</field>
+            <field name="category">gas</field>
+            <field name="industry_standard">GIUSP</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Isolate gas supply at meter. Ventilate property. Do not operate electrical switches. Call gas emergency.</field>
+            <field name="description">Active gas leak detected - immediate explosion/fire risk.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">13</field>
+        </record>
+
+        <record id="fault_code_gas_arv" model="property_fielder.fault.code">
+            <field name="name">At Risk - Ventilation</field>
+            <field name="code">ARV</field>
+            <field name="category">gas</field>
+            <field name="industry_standard">GIUSP</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Improve ventilation within 7 days. Do not block existing vents.</field>
+            <field name="description">Inadequate ventilation for gas appliance - potential CO buildup.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">21</field>
+        </record>
+
+        <record id="fault_code_gas_ars" model="property_fielder.fault.code">
+            <field name="name">At Risk - Service Overdue</field>
+            <field name="code">ARS</field>
+            <field name="category">gas</field>
+            <field name="industry_standard">GIUSP</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Service appliance within 7 days.</field>
+            <field name="description">Gas appliance service significantly overdue - may develop faults.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">22</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- ADDITIONAL ELECTRICAL CODES (18th Edition Extended) -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_elec_c1_ec" model="property_fielder.fault.code">
+            <field name="name">Danger - Exposed Conductors</field>
+            <field name="code">C1-EC</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Isolate circuit. No access until repaired.</field>
+            <field name="description">Live conductors accessible - immediate electric shock risk.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">11</field>
+        </record>
+
+        <record id="fault_code_elec_c1_ov" model="property_fielder.fault.code">
+            <field name="name">Danger - Overloaded Circuit</field>
+            <field name="code">C1-OV</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Reduce load immediately. Upgrade circuit as soon as possible.</field>
+            <field name="description">Circuit significantly overloaded - fire risk from overheating.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">12</field>
+        </record>
+
+        <record id="fault_code_elec_c2_rcd" model="property_fielder.fault.code">
+            <field name="name">Potentially Dangerous - RCD Failure</field>
+            <field name="code">C2-RCD</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Replace or repair RCD within 7 days.</field>
+            <field name="description">RCD not tripping correctly - no protection against electric shock.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">21</field>
+        </record>
+
+        <record id="fault_code_elec_c2_bnd" model="property_fielder.fault.code">
+            <field name="name">Potentially Dangerous - Bonding Defect</field>
+            <field name="code">C2-BND</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Install or repair bonding within 28 days.</field>
+            <field name="description">Missing or defective main/supplementary bonding.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">22</field>
+        </record>
+
+        <record id="fault_code_elec_c2_ir" model="property_fielder.fault.code">
+            <field name="name">Potentially Dangerous - Low Insulation</field>
+            <field name="code">C2-IR</field>
+            <field name="category">electrical</field>
+            <field name="industry_standard">BS 7671 (18th Edition)</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Investigate and repair within 28 days.</field>
+            <field name="description">Insulation resistance below acceptable level.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">23</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- ADDITIONAL FIRE SAFETY CODES (RRO 2005 Extended) -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_fire_fsh_er" model="property_fielder.fault.code">
+            <field name="name">Fire Hazard - Escape Route Blocked</field>
+            <field name="code">FSH-ER</field>
+            <field name="category">fire</field>
+            <field name="industry_standard">RRO 2005</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Clear escape route immediately. Remove all obstructions.</field>
+            <field name="description">Fire escape route is blocked - life risk in emergency.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">11</field>
+        </record>
+
+        <record id="fault_code_fire_fsh_fd" model="property_fielder.fault.code">
+            <field name="name">Fire Hazard - Fire Door Defective</field>
+            <field name="code">FSH-FD</field>
+            <field name="category">fire</field>
+            <field name="industry_standard">RRO 2005</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Repair or replace fire door immediately.</field>
+            <field name="description">Fire door not closing or sealing properly - smoke/fire spread risk.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">12</field>
+        </record>
+
+        <record id="fault_code_fire_fsr_sm" model="property_fielder.fault.code">
+            <field name="name">Fire Risk - Smoke Alarm Missing</field>
+            <field name="code">FSR-SM</field>
+            <field name="category">fire</field>
+            <field name="industry_standard">RRO 2005</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Install smoke alarm within 24 hours.</field>
+            <field name="description">Required smoke alarm missing or not working.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">21</field>
+        </record>
+
+        <record id="fault_code_fire_fsr_co" model="property_fielder.fault.code">
+            <field name="name">Fire Risk - CO Alarm Missing</field>
+            <field name="code">FSR-CO</field>
+            <field name="category">fire</field>
+            <field name="industry_standard">RRO 2005</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Install CO alarm within 24 hours.</field>
+            <field name="description">Required CO alarm missing where solid fuel or gas appliances present.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">22</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- WATER/PLUMBING FAULT CODES -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_water_wlk" model="property_fielder.fault.code">
+            <field name="name">Water Leak - Active</field>
+            <field name="code">WLK</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Water Regulations</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Isolate water supply. Repair leak immediately.</field>
+            <field name="description">Active water leak causing damage or waste.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="fault_code_water_nhw" model="property_fielder.fault.code">
+            <field name="name">No Hot Water</field>
+            <field name="code">NHW</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Housing Act 2004</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Repair hot water system within 24-48 hours.</field>
+            <field name="description">Hot water supply not functioning - essential amenity.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">31</field>
+        </record>
+
+        <record id="fault_code_water_nheat" model="property_fielder.fault.code">
+            <field name="name">No Heating</field>
+            <field name="code">NHEAT</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Housing Act 2004</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Repair heating system within 24-48 hours (winter priority).</field>
+            <field name="description">Heating system not functioning - essential amenity.</field>
+            <field name="photo_mandatory">False</field>
+            <field name="sequence">32</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- STRUCTURAL FAULT CODES -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_struct_sd" model="property_fielder.fault.code">
+            <field name="name">Structural Damage - Major</field>
+            <field name="code">SD-M</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Building Regulations</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Evacuate if necessary. Structural engineer assessment required.</field>
+            <field name="description">Major structural damage affecting building safety.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="fault_code_struct_cr" model="property_fielder.fault.code">
+            <field name="name">Cracking - Structural</field>
+            <field name="code">CR-S</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Building Regulations</field>
+            <field name="severity_sla">standard</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Monitor and assess. May require structural survey.</field>
+            <field name="description">Structural cracking requiring assessment.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">41</field>
+        </record>
+
+        <record id="fault_code_struct_dm" model="property_fielder.fault.code">
+            <field name="name">Damp - Rising</field>
+            <field name="code">DMP-R</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Housing Act 2004</field>
+            <field name="severity_sla">standard</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Investigate DPC. Treat rising damp within 28 days.</field>
+            <field name="description">Rising damp affecting walls - health hazard.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">42</field>
+        </record>
+
+        <record id="fault_code_struct_dmp" model="property_fielder.fault.code">
+            <field name="name">Damp - Penetrating</field>
+            <field name="code">DMP-P</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Housing Act 2004</field>
+            <field name="severity_sla">standard</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Identify source and repair within 28 days.</field>
+            <field name="description">Penetrating damp from external source - health hazard.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">43</field>
+        </record>
+
+        <record id="fault_code_struct_mld" model="property_fielder.fault.code">
+            <field name="name">Mould Growth</field>
+            <field name="code">MLD</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Awaab's Law</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Address within Awaab's Law deadlines. Investigate cause and remediate.</field>
+            <field name="description">Mould growth present - health hazard under Awaab's Law.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">44</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- SECURITY FAULT CODES -->
+        <!-- ============================================== -->
+
+        <record id="fault_code_sec_lock" model="property_fielder.fault.code">
+            <field name="name">Security - Lock Failure</field>
+            <field name="code">SEC-LK</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Housing Act 2004</field>
+            <field name="severity_sla">immediate</field>
+            <field name="requires_immediate_action">True</field>
+            <field name="action_required">Secure property immediately. Replace locks within 24 hours.</field>
+            <field name="description">Door or window lock not functioning - security risk.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="fault_code_sec_win" model="property_fielder.fault.code">
+            <field name="name">Security - Window Damage</field>
+            <field name="code">SEC-WN</field>
+            <field name="category">general</field>
+            <field name="industry_standard">Housing Act 2004</field>
+            <field name="severity_sla">urgent</field>
+            <field name="requires_immediate_action">False</field>
+            <field name="action_required">Board up if necessary. Repair/replace within 7 days.</field>
+            <field name="description">Window damaged affecting security or weather protection.</field>
+            <field name="photo_mandatory">True</field>
+            <field name="sequence">51</field>
+        </record>
+
+    </data>
+</odoo>
+

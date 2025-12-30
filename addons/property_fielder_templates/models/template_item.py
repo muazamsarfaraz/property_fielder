@@ -57,6 +57,7 @@ class TemplateItem(models.Model):
         ('pass_fail', 'Pass/Fail/N/A'),
         ('gas_severity', 'Gas Severity (ID/AR/NCS)'),
         ('electrical_code', 'Electrical Code (C1/C2/C3/FI)'),
+        ('hhsrs_severity', 'HHSRS Severity (1-4)'),
         ('numeric', 'Numeric'),
         ('text', 'Text'),
         ('photo', 'Photo'),
@@ -126,7 +127,28 @@ class TemplateItem(models.Model):
         default=1,
         help='Minimum number of photos required'
     )
-    
+
+    # Numeric/Reading Validation
+    unit_of_measure = fields.Char(
+        string='Unit of Measure',
+        help='Unit for numeric/reading values (e.g., mbar, V, A)'
+    )
+
+    min_value = fields.Float(
+        string='Minimum Value',
+        help='Minimum acceptable value for numeric responses'
+    )
+
+    max_value = fields.Float(
+        string='Maximum Value',
+        help='Maximum acceptable value for numeric responses'
+    )
+
+    default_value = fields.Char(
+        string='Default Value',
+        help='Default value to pre-fill for this item'
+    )
+
     # Skip Logic
     condition_ids = fields.One2many(
         'property_fielder.condition.trigger',

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Fault Code List View -->
+    <record id="view_fault_code_list" model="ir.ui.view">
+        <field name="name">property_fielder.fault.code.list</field>
+        <field name="model">property_fielder.fault.code</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category" widget="badge"/>
+                <field name="industry_standard"/>
+                <field name="severity_sla" widget="badge" decoration-danger="severity_sla == 'immediate'" decoration-warning="severity_sla == 'urgent'" decoration-info="severity_sla == 'standard'" decoration-muted="severity_sla == 'advisory'"/>
+                <field name="remediation_hours"/>
+                <field name="requires_immediate_action"/>
+                <field name="photo_mandatory"/>
+                <field name="active" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Fault Code Form View -->
+    <record id="view_fault_code_form" model="ir.ui.view">
+        <field name="name">property_fielder.fault.code.form</field>
+        <field name="model">property_fielder.fault.code</field>
+        <field name="arch" type="xml">
+            <form string="Fault Code">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="code"/>
+                        <h1>
+                            <field name="code" placeholder="Code (e.g., ID, C1)"/>
+                        </h1>
+                        <field name="name" placeholder="Full Name"/>
+                    </div>
+                    <group>
+                        <group string="Classification">
+                            <field name="category"/>
+                            <field name="industry_standard"/>
+                            <field name="certification_type_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group string="SLA Settings">
+                            <field name="severity_sla"/>
+                            <field name="remediation_hours"/>
+                            <field name="requires_immediate_action"/>
+                            <field name="photo_mandatory"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Detailed description of this fault code..."/>
+                    </group>
+                    <group>
+                        <field name="action_required" placeholder="What action is required when this fault is found..."/>
+                    </group>
+                    <group>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Fault Code Search View -->
+    <record id="view_fault_code_search" model="ir.ui.view">
+        <field name="name">property_fielder.fault.code.search</field>
+        <field name="model">property_fielder.fault.code</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category"/>
+                <filter name="filter_gas" string="Gas" domain="[('category', '=', 'gas')]"/>
+                <filter name="filter_electrical" string="Electrical" domain="[('category', '=', 'electrical')]"/>
+                <filter name="filter_fire" string="Fire" domain="[('category', '=', 'fire')]"/>
+                <filter name="filter_legionella" string="Legionella" domain="[('category', '=', 'legionella')]"/>
+                <filter name="filter_asbestos" string="Asbestos" domain="[('category', '=', 'asbestos')]"/>
+                <separator/>
+                <filter name="filter_immediate" string="Immediate" domain="[('severity_sla', '=', 'immediate')]"/>
+                <filter name="filter_urgent" string="Urgent" domain="[('severity_sla', '=', 'urgent')]"/>
+                <separator/>
+                <filter name="group_category" string="Category" context="{'group_by': 'category'}"/>
+                <filter name="group_severity" string="Severity" context="{'group_by': 'severity_sla'}"/>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Fault Code Action -->
+    <record id="action_fault_code" model="ir.actions.act_window">
+        <field name="name">Fault Codes</field>
+        <field name="res_model">property_fielder.fault.code</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fault_code_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define industry fault codes
+            </p>
+            <p>
+                Fault codes define the severity and SLA requirements for different types of defects.
+            </p>
+        </field>
+    </record>
+    
+</odoo>
+

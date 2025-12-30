@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fault_code_user,property_fielder.fault.code.user,model_property_fielder_fault_code,group_defects_user,1,0,0,0
+access_fault_code_manager,property_fielder.fault.code.manager,model_property_fielder_fault_code,group_defects_manager,1,1,1,1
+access_defect_user,property_fielder.defect.user,model_property_fielder_defect,group_defects_user,1,1,1,0
+access_defect_manager,property_fielder.defect.manager,model_property_fielder_defect,group_defects_manager,1,1,1,1
+access_defect_photo_user,property_fielder.defect.photo.user,model_property_fielder_defect_photo,group_defects_user,1,1,1,0
+access_defect_photo_manager,property_fielder.defect.photo.manager,model_property_fielder_defect_photo,group_defects_manager,1,1,1,1
+access_access_attempt_user,property_fielder.access.attempt.user,model_property_fielder_access_attempt,group_defects_user,1,1,1,0
+access_access_attempt_manager,property_fielder.access.attempt.manager,model_property_fielder_access_attempt,group_defects_manager,1,1,1,1
+

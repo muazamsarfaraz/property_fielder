@@ -1,0 +1,1160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ============================================== -->
+        <!-- TEMPLATE 1: Quick Visit Inspection -->
+        <!-- ============================================== -->
+        <record id="template_quick_visit" model="property_fielder.inspection.template">
+            <field name="name">Quick Visit Inspection</field>
+            <field name="code">QUICK</field>
+            <field name="description">A brief property check covering essential safety and condition items. Suitable for routine visits or follow-up inspections.</field>
+            <field name="version">1</field>
+            <field name="state">active</field>
+            <field name="estimated_duration">30</field>
+            <field name="requires_signature">False</field>
+            <field name="requires_photos">True</field>
+            <field name="min_photos">2</field>
+        </record>
+        
+        <!-- Quick Visit - Section 1: Access & Exterior -->
+        <record id="section_quick_access" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_quick_visit"/>
+            <field name="name">Access &amp; Exterior</field>
+            <field name="code">QUICK_ACCESS</field>
+            <field name="sequence">10</field>
+            <field name="description">Check property access and external condition</field>
+        </record>
+        
+        <record id="item_quick_access_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_quick_access"/>
+            <field name="question">Property accessible as expected?</field>
+            <field name="code">QUICK_ACC_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">yes_no</field>
+            <field name="is_required">True</field>
+        </record>
+        
+        <record id="item_quick_access_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_quick_access"/>
+            <field name="question">External areas in acceptable condition?</field>
+            <field name="code">QUICK_ACC_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">pass_fail</field>
+        </record>
+        
+        <!-- Quick Visit - Section 2: Safety Checks -->
+        <record id="section_quick_safety" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_quick_visit"/>
+            <field name="name">Safety Checks</field>
+            <field name="code">QUICK_SAFETY</field>
+            <field name="sequence">20</field>
+            <field name="description">Quick safety verification</field>
+        </record>
+        
+        <record id="item_quick_safety_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_quick_safety"/>
+            <field name="question">Smoke alarms present and working?</field>
+            <field name="code">QUICK_SAF_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+        
+        <record id="item_quick_safety_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_quick_safety"/>
+            <field name="question">CO detector present (if gas appliances)?</field>
+            <field name="code">QUICK_SAF_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">pass_fail</field>
+            <field name="creates_defect">True</field>
+        </record>
+        
+        <record id="item_quick_safety_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_quick_safety"/>
+            <field name="question">Any visible damp or mould?</field>
+            <field name="code">QUICK_SAF_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">yes_no</field>
+            <field name="creates_defect">True</field>
+        </record>
+        
+        <!-- Quick Visit - Section 3: General Condition -->
+        <record id="section_quick_condition" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_quick_visit"/>
+            <field name="name">General Condition</field>
+            <field name="code">QUICK_COND</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <record id="item_quick_cond_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_quick_condition"/>
+            <field name="question">Overall property condition</field>
+            <field name="code">QUICK_COND_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+        </record>
+        
+        <record id="item_quick_cond_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_quick_condition"/>
+            <field name="question">Photo of property front</field>
+            <field name="code">QUICK_COND_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">photo</field>
+            <field name="photo_required">True</field>
+        </record>
+        
+        <record id="item_quick_cond_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_quick_condition"/>
+            <field name="question">Additional notes</field>
+            <field name="code">QUICK_COND_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">text</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- TEMPLATE 2: Gas Safety Record (CP12) -->
+        <!-- ============================================== -->
+        <record id="template_gas_safety" model="property_fielder.inspection.template">
+            <field name="name">Gas Safety Record (CP12)</field>
+            <field name="code">CP12</field>
+            <field name="description">Landlord Gas Safety Record as required by Gas Safety (Installation and Use) Regulations 1998. Must be completed by a Gas Safe registered engineer.</field>
+            <field name="version">1</field>
+            <field name="state">active</field>
+            <field name="estimated_duration">60</field>
+            <field name="requires_signature">True</field>
+            <field name="requires_photos">False</field>
+            <field name="is_asset_based">True</field>
+        </record>
+
+        <!-- CP12 - Section 1: Property Details -->
+        <record id="section_cp12_property" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_gas_safety"/>
+            <field name="name">Property Details</field>
+            <field name="code">CP12_PROP</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="item_cp12_prop_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_property"/>
+            <field name="question">Number of gas appliances at property</field>
+            <field name="code">CP12_PROP_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">numeric</field>
+            <field name="is_required">True</field>
+            <field name="min_value">0</field>
+            <field name="max_value">20</field>
+        </record>
+
+        <record id="item_cp12_prop_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_property"/>
+            <field name="question">Gas meter location</field>
+            <field name="code">CP12_PROP_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">text</field>
+        </record>
+
+        <!-- CP12 - Section 2: Gas Appliance (Repeatable per appliance) -->
+        <record id="section_cp12_appliance" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_gas_safety"/>
+            <field name="name">Gas Appliance Check</field>
+            <field name="code">CP12_APP</field>
+            <field name="sequence">20</field>
+            <field name="is_repeatable">True</field>
+            <field name="description">Complete for each gas appliance. Add additional sections as needed.</field>
+        </record>
+
+        <record id="item_cp12_app_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Appliance location</field>
+            <field name="code">CP12_APP_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">text</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="item_cp12_app_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Appliance type</field>
+            <field name="code">CP12_APP_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">select_one</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <!-- Appliance type options -->
+        <record id="opt_app_type_boiler" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_cp12_app_2"/>
+            <field name="label">Boiler</field>
+            <field name="value">BOILER</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="opt_app_type_fire" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_cp12_app_2"/>
+            <field name="label">Gas Fire</field>
+            <field name="value">FIRE</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="opt_app_type_cooker" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_cp12_app_2"/>
+            <field name="label">Cooker/Hob</field>
+            <field name="value">COOKER</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="opt_app_type_water" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_cp12_app_2"/>
+            <field name="label">Water Heater</field>
+            <field name="value">WATER</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="item_cp12_app_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Make/Model</field>
+            <field name="code">CP12_APP_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">text</field>
+        </record>
+
+        <record id="item_cp12_app_4" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Flue type</field>
+            <field name="code">CP12_APP_04</field>
+            <field name="sequence">40</field>
+            <field name="response_type">select_one</field>
+        </record>
+
+        <record id="opt_flue_open" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_cp12_app_4"/>
+            <field name="label">Open Flue</field>
+            <field name="value">OPEN</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="opt_flue_room" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_cp12_app_4"/>
+            <field name="label">Room Sealed</field>
+            <field name="value">SEALED</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="opt_flue_flueless" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_cp12_app_4"/>
+            <field name="label">Flueless</field>
+            <field name="value">FLUELESS</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="opt_flue_na" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_cp12_app_4"/>
+            <field name="label">N/A</field>
+            <field name="value">NA</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="item_cp12_app_5" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Operating pressure (mbar)</field>
+            <field name="code">CP12_APP_05</field>
+            <field name="sequence">50</field>
+            <field name="response_type">reading</field>
+            <field name="unit_of_measure">mbar</field>
+        </record>
+
+        <record id="item_cp12_app_6" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Flue flow / spillage test satisfactory?</field>
+            <field name="code">CP12_APP_06</field>
+            <field name="sequence">60</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_cp12_app_7" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Ventilation satisfactory?</field>
+            <field name="code">CP12_APP_07</field>
+            <field name="sequence">70</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_cp12_app_8" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Visual condition of flue/termination satisfactory?</field>
+            <field name="code">CP12_APP_08</field>
+            <field name="sequence">80</field>
+            <field name="response_type">pass_fail</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_cp12_app_9" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Appliance safe to use?</field>
+            <field name="code">CP12_APP_09</field>
+            <field name="sequence">90</field>
+            <field name="response_type">yes_no</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_cp12_app_10" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_appliance"/>
+            <field name="question">Defects identified</field>
+            <field name="code">CP12_APP_10</field>
+            <field name="sequence">100</field>
+            <field name="response_type">text</field>
+            <field name="help_text">List any defects or remedial action required</field>
+        </record>
+
+        <!-- CP12 - Section 3: Overall Assessment -->
+        <record id="section_cp12_overall" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_gas_safety"/>
+            <field name="name">Overall Assessment</field>
+            <field name="code">CP12_OVERALL</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="item_cp12_overall_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_overall"/>
+            <field name="question">Gas installation pipework visual inspection satisfactory?</field>
+            <field name="code">CP12_OVR_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="item_cp12_overall_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_overall"/>
+            <field name="question">Emergency controls acceptable?</field>
+            <field name="code">CP12_OVR_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="item_cp12_overall_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_overall"/>
+            <field name="question">Gas tightness test satisfactory?</field>
+            <field name="code">CP12_OVR_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_cp12_overall_4" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_cp12_overall"/>
+            <field name="question">Engineer comments</field>
+            <field name="code">CP12_OVR_04</field>
+            <field name="sequence">40</field>
+            <field name="response_type">text</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- TEMPLATE 3: EICR (Electrical Installation Condition Report) -->
+        <!-- ============================================== -->
+        <record id="template_eicr" model="property_fielder.inspection.template">
+            <field name="name">Electrical Installation Condition Report (EICR)</field>
+            <field name="code">EICR</field>
+            <field name="description">Electrical Installation Condition Report as required by The Electrical Safety Standards in the Private Rented Sector (England) Regulations 2020.</field>
+            <field name="version">1</field>
+            <field name="state">active</field>
+            <field name="estimated_duration">120</field>
+            <field name="requires_signature">True</field>
+            <field name="requires_photos">False</field>
+            <field name="is_asset_based">True</field>
+        </record>
+
+        <!-- EICR - Section 1: Details of Installation -->
+        <record id="section_eicr_details" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_eicr"/>
+            <field name="name">Details of the Installation</field>
+            <field name="code">EICR_DET</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="item_eicr_det_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_details"/>
+            <field name="question">Maximum demand (Amps)</field>
+            <field name="code">EICR_DET_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">reading</field>
+            <field name="unit_of_measure">A</field>
+        </record>
+
+        <record id="item_eicr_det_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_details"/>
+            <field name="question">Number of circuits</field>
+            <field name="code">EICR_DET_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">numeric</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="item_eicr_det_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_details"/>
+            <field name="question">Type of earthing arrangement</field>
+            <field name="code">EICR_DET_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">select_one</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="opt_earth_tncs" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_det_3"/>
+            <field name="label">TN-C-S</field>
+            <field name="value">TNCS</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="opt_earth_tns" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_det_3"/>
+            <field name="label">TN-S</field>
+            <field name="value">TNS</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="opt_earth_tt" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_det_3"/>
+            <field name="label">TT</field>
+            <field name="value">TT</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- EICR - Section 2: Supply Characteristics -->
+        <record id="section_eicr_supply" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_eicr"/>
+            <field name="name">Supply Characteristics</field>
+            <field name="code">EICR_SUP</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="item_eicr_sup_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_supply"/>
+            <field name="question">Nominal voltage (V)</field>
+            <field name="code">EICR_SUP_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">reading</field>
+            <field name="unit_of_measure">V</field>
+            <field name="default_value">230</field>
+        </record>
+
+        <record id="item_eicr_sup_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_supply"/>
+            <field name="question">Prospective fault current (kA)</field>
+            <field name="code">EICR_SUP_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">reading</field>
+            <field name="unit_of_measure">kA</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="item_eicr_sup_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_supply"/>
+            <field name="question">External earth fault loop impedance Ze (Ω)</field>
+            <field name="code">EICR_SUP_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">reading</field>
+            <field name="unit_of_measure">Ω</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <!-- EICR - Section 3: Observations (Repeatable) -->
+        <record id="section_eicr_obs" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_eicr"/>
+            <field name="name">Observations</field>
+            <field name="code">EICR_OBS</field>
+            <field name="sequence">30</field>
+            <field name="is_repeatable">True</field>
+            <field name="description">Record each observation with classification code</field>
+        </record>
+
+        <record id="item_eicr_obs_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_obs"/>
+            <field name="question">Observation</field>
+            <field name="code">EICR_OBS_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">text</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="item_eicr_obs_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_obs"/>
+            <field name="question">Classification code</field>
+            <field name="code">EICR_OBS_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">select_one</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="opt_code_c1" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_obs_2"/>
+            <field name="label">C1 - Danger present</field>
+            <field name="value">C1</field>
+            <field name="sequence">10</field>
+            <field name="is_failure">True</field>
+            <field name="score">100</field>
+        </record>
+        <record id="opt_code_c2" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_obs_2"/>
+            <field name="label">C2 - Potentially dangerous</field>
+            <field name="value">C2</field>
+            <field name="sequence">20</field>
+            <field name="is_failure">True</field>
+            <field name="score">75</field>
+        </record>
+        <record id="opt_code_c3" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_obs_2"/>
+            <field name="label">C3 - Improvement recommended</field>
+            <field name="value">C3</field>
+            <field name="sequence">30</field>
+            <field name="score">25</field>
+        </record>
+        <record id="opt_code_fi" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_obs_2"/>
+            <field name="label">FI - Further investigation required</field>
+            <field name="value">FI</field>
+            <field name="sequence">40</field>
+            <field name="is_failure">True</field>
+            <field name="score">50</field>
+        </record>
+
+        <!-- EICR - Section 4: Overall Assessment -->
+        <record id="section_eicr_overall" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_eicr"/>
+            <field name="name">Overall Assessment</field>
+            <field name="code">EICR_OVERALL</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="item_eicr_overall_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_overall"/>
+            <field name="question">Overall condition of installation</field>
+            <field name="code">EICR_OVR_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">select_one</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="opt_overall_sat" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_overall_1"/>
+            <field name="label">Satisfactory</field>
+            <field name="value">SAT</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="opt_overall_unsat" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_eicr_overall_1"/>
+            <field name="label">Unsatisfactory</field>
+            <field name="value">UNSAT</field>
+            <field name="sequence">20</field>
+            <field name="is_failure">True</field>
+        </record>
+
+        <record id="item_eicr_overall_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_eicr_overall"/>
+            <field name="question">Recommended interval until next inspection (months)</field>
+            <field name="code">EICR_OVR_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">numeric</field>
+            <field name="default_value">60</field>
+            <field name="min_value">12</field>
+            <field name="max_value">120</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- TEMPLATE 4: Fire Risk Assessment (FRA) -->
+        <!-- ============================================== -->
+        <record id="template_fire_risk" model="property_fielder.inspection.template">
+            <field name="name">Fire Risk Assessment</field>
+            <field name="code">FRA</field>
+            <field name="description">Fire Risk Assessment as required by the Regulatory Reform (Fire Safety) Order 2005. Required for common areas of HMOs and blocks of flats.</field>
+            <field name="version">1</field>
+            <field name="state">active</field>
+            <field name="estimated_duration">90</field>
+            <field name="requires_signature">True</field>
+            <field name="requires_photos">True</field>
+            <field name="min_photos">5</field>
+        </record>
+
+        <!-- FRA - Section 1: Building Information -->
+        <record id="section_fra_building" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_fire_risk"/>
+            <field name="name">Building Information</field>
+            <field name="code">FRA_BUILD</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="item_fra_build_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_building"/>
+            <field name="question">Number of floors</field>
+            <field name="code">FRA_BLD_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">numeric</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="item_fra_build_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_building"/>
+            <field name="question">Number of units/dwellings</field>
+            <field name="code">FRA_BLD_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">numeric</field>
+        </record>
+
+        <record id="item_fra_build_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_building"/>
+            <field name="question">Construction type</field>
+            <field name="code">FRA_BLD_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">select_one</field>
+        </record>
+
+        <record id="opt_const_trad" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_build_3"/>
+            <field name="label">Traditional brick/masonry</field>
+            <field name="value">TRAD</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="opt_const_timber" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_build_3"/>
+            <field name="label">Timber frame</field>
+            <field name="value">TIMBER</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="opt_const_steel" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_build_3"/>
+            <field name="label">Steel frame</field>
+            <field name="value">STEEL</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="opt_const_conc" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_build_3"/>
+            <field name="label">Concrete</field>
+            <field name="value">CONC</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- FRA - Section 2: Means of Escape -->
+        <record id="section_fra_escape" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_fire_risk"/>
+            <field name="name">Means of Escape</field>
+            <field name="code">FRA_ESC</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="item_fra_esc_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_escape"/>
+            <field name="question">Escape routes clearly signed and unobstructed?</field>
+            <field name="code">FRA_ESC_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_fra_esc_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_escape"/>
+            <field name="question">Emergency lighting adequate and working?</field>
+            <field name="code">FRA_ESC_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">pass_fail</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_fra_esc_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_escape"/>
+            <field name="question">Fire doors in good condition with self-closers?</field>
+            <field name="code">FRA_ESC_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <!-- FRA - Section 3: Fire Detection -->
+        <record id="section_fra_detection" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_fire_risk"/>
+            <field name="name">Fire Detection &amp; Warning</field>
+            <field name="code">FRA_DET</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="item_fra_det_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_detection"/>
+            <field name="question">Fire detection system type</field>
+            <field name="code">FRA_DET_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">select_one</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="opt_det_none" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_det_1"/>
+            <field name="label">None</field>
+            <field name="value">NONE</field>
+            <field name="sequence">10</field>
+            <field name="is_failure">True</field>
+        </record>
+        <record id="opt_det_smoke" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_det_1"/>
+            <field name="label">Smoke alarms only</field>
+            <field name="value">SMOKE</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="opt_det_ld3" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_det_1"/>
+            <field name="label">LD3 Grade system</field>
+            <field name="value">LD3</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="opt_det_ld2" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_det_1"/>
+            <field name="label">LD2 Grade system</field>
+            <field name="value">LD2</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="opt_det_ld1" model="property_fielder.inspection.template.item.option">
+            <field name="item_id" ref="item_fra_det_1"/>
+            <field name="label">LD1 Full coverage</field>
+            <field name="value">LD1</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="item_fra_det_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_detection"/>
+            <field name="question">All detectors tested and working?</field>
+            <field name="code">FRA_DET_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">pass_fail</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <!-- FRA - Section 4: Overall Risk Rating -->
+        <record id="section_fra_risk" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_fire_risk"/>
+            <field name="name">Overall Risk Rating</field>
+            <field name="code">FRA_RISK</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="item_fra_risk_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_risk"/>
+            <field name="question">Overall fire risk rating</field>
+            <field name="code">FRA_RISK_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+        </record>
+
+        <record id="item_fra_risk_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_fra_risk"/>
+            <field name="question">Action plan / recommendations</field>
+            <field name="code">FRA_RISK_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">text</field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- TEMPLATE 5: Full HHSRS Assessment -->
+        <!-- ============================================== -->
+        <record id="template_hhsrs_full" model="property_fielder.inspection.template">
+            <field name="name">Full HHSRS Assessment</field>
+            <field name="code">HHSRS</field>
+            <field name="description">Comprehensive Housing Health and Safety Rating System inspection covering all 29 hazard categories. Used for formal housing condition assessments.</field>
+            <field name="version">1</field>
+            <field name="state">active</field>
+            <field name="estimated_duration">180</field>
+            <field name="requires_signature">True</field>
+            <field name="requires_photos">True</field>
+            <field name="min_photos">10</field>
+        </record>
+
+        <!-- HHSRS - Section 1: Physiological Requirements (Hygrothermal) -->
+        <record id="section_hhsrs_hygro" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_hhsrs_full"/>
+            <field name="name">Hygrothermal Conditions</field>
+            <field name="code">HHSRS_HYGRO</field>
+            <field name="sequence">10</field>
+            <field name="description">Assess damp, mould, excess cold/heat hazards</field>
+        </record>
+
+        <record id="item_hhsrs_hygro_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_hygro"/>
+            <field name="question">1. Damp and Mould Growth - Hazard present?</field>
+            <field name="code">HHSRS_H01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+            <field name="help_text">Threats from dust mites and mould growth resulting from dampness and/or high humidity</field>
+        </record>
+
+        <record id="item_hhsrs_hygro_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_hygro"/>
+            <field name="question">2. Excess Cold - Hazard present?</field>
+            <field name="code">HHSRS_H02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+            <field name="help_text">Threats from sub-optimal indoor temperatures</field>
+        </record>
+
+        <record id="item_hhsrs_hygro_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_hygro"/>
+            <field name="question">3. Excess Heat - Hazard present?</field>
+            <field name="code">HHSRS_H03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+            <field name="help_text">Threats from excessively high indoor temperatures</field>
+        </record>
+
+        <!-- HHSRS - Section 2: Pollutants -->
+        <record id="section_hhsrs_pollutants" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_hhsrs_full"/>
+            <field name="name">Pollutants (Non-Microbial)</field>
+            <field name="code">HHSRS_POLL</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="item_hhsrs_poll_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_pollutants"/>
+            <field name="question">4. Asbestos and MMF - Hazard present?</field>
+            <field name="code">HHSRS_H04</field>
+            <field name="sequence">10</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_poll_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_pollutants"/>
+            <field name="question">5. Biocides - Hazard present?</field>
+            <field name="code">HHSRS_H05</field>
+            <field name="sequence">20</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_poll_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_pollutants"/>
+            <field name="question">6. Carbon Monoxide and Fuel Combustion Products - Hazard present?</field>
+            <field name="code">HHSRS_H06</field>
+            <field name="sequence">30</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_poll_4" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_pollutants"/>
+            <field name="question">7. Lead - Hazard present?</field>
+            <field name="code">HHSRS_H07</field>
+            <field name="sequence">40</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_poll_5" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_pollutants"/>
+            <field name="question">8. Radiation - Hazard present?</field>
+            <field name="code">HHSRS_H08</field>
+            <field name="sequence">50</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_poll_6" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_pollutants"/>
+            <field name="question">9. Uncombusted Fuel Gas - Hazard present?</field>
+            <field name="code">HHSRS_H09</field>
+            <field name="sequence">60</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_poll_7" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_pollutants"/>
+            <field name="question">10. Volatile Organic Compounds - Hazard present?</field>
+            <field name="code">HHSRS_H10</field>
+            <field name="sequence">70</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <!-- HHSRS - Section 3: Space, Security, Light, Noise -->
+        <record id="section_hhsrs_space" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_hhsrs_full"/>
+            <field name="name">Space, Security, Light &amp; Noise</field>
+            <field name="code">HHSRS_SPACE</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="item_hhsrs_space_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_space"/>
+            <field name="question">11. Crowding and Space - Hazard present?</field>
+            <field name="code">HHSRS_H11</field>
+            <field name="sequence">10</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_space_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_space"/>
+            <field name="question">12. Entry by Intruders - Hazard present?</field>
+            <field name="code">HHSRS_H12</field>
+            <field name="sequence">20</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_space_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_space"/>
+            <field name="question">13. Lighting - Hazard present?</field>
+            <field name="code">HHSRS_H13</field>
+            <field name="sequence">30</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_space_4" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_space"/>
+            <field name="question">14. Noise - Hazard present?</field>
+            <field name="code">HHSRS_H14</field>
+            <field name="sequence">40</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <!-- HHSRS - Section 4: Hygiene, Sanitation, Water Supply -->
+        <record id="section_hhsrs_hygiene" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_hhsrs_full"/>
+            <field name="name">Hygiene, Sanitation &amp; Water Supply</field>
+            <field name="code">HHSRS_HYG</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="item_hhsrs_hyg_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_hygiene"/>
+            <field name="question">15. Domestic Hygiene, Pests, Refuse - Hazard present?</field>
+            <field name="code">HHSRS_H15</field>
+            <field name="sequence">10</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_hyg_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_hygiene"/>
+            <field name="question">16. Food Safety - Hazard present?</field>
+            <field name="code">HHSRS_H16</field>
+            <field name="sequence">20</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_hyg_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_hygiene"/>
+            <field name="question">17. Personal Hygiene, Sanitation, Drainage - Hazard present?</field>
+            <field name="code">HHSRS_H17</field>
+            <field name="sequence">30</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_hyg_4" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_hygiene"/>
+            <field name="question">18. Water Supply - Hazard present?</field>
+            <field name="code">HHSRS_H18</field>
+            <field name="sequence">40</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <!-- HHSRS - Section 5: Falls -->
+        <record id="section_hhsrs_falls" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_hhsrs_full"/>
+            <field name="name">Protection Against Falls</field>
+            <field name="code">HHSRS_FALLS</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="item_hhsrs_falls_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_falls"/>
+            <field name="question">19. Falls Associated with Baths etc - Hazard present?</field>
+            <field name="code">HHSRS_H19</field>
+            <field name="sequence">10</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_falls_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_falls"/>
+            <field name="question">20. Falling on Level Surfaces - Hazard present?</field>
+            <field name="code">HHSRS_H20</field>
+            <field name="sequence">20</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_falls_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_falls"/>
+            <field name="question">21. Falling on Stairs etc - Hazard present?</field>
+            <field name="code">HHSRS_H21</field>
+            <field name="sequence">30</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_falls_4" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_falls"/>
+            <field name="question">22. Falling Between Levels - Hazard present?</field>
+            <field name="code">HHSRS_H22</field>
+            <field name="sequence">40</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <!-- HHSRS - Section 6: Electric, Fire, Burns, Collisions -->
+        <record id="section_hhsrs_safety" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_hhsrs_full"/>
+            <field name="name">Electrical, Fire, Burns &amp; Collisions</field>
+            <field name="code">HHSRS_SAFE</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="item_hhsrs_safe_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_safety"/>
+            <field name="question">23. Electrical Hazards - Hazard present?</field>
+            <field name="code">HHSRS_H23</field>
+            <field name="sequence">10</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_safe_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_safety"/>
+            <field name="question">24. Fire - Hazard present?</field>
+            <field name="code">HHSRS_H24</field>
+            <field name="sequence">20</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_safe_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_safety"/>
+            <field name="question">25. Flames, Hot Surfaces etc - Hazard present?</field>
+            <field name="code">HHSRS_H25</field>
+            <field name="sequence">30</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_safe_4" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_safety"/>
+            <field name="question">26. Collision and Entrapment - Hazard present?</field>
+            <field name="code">HHSRS_H26</field>
+            <field name="sequence">40</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_safe_5" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_safety"/>
+            <field name="question">27. Explosions - Hazard present?</field>
+            <field name="code">HHSRS_H27</field>
+            <field name="sequence">50</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_safe_6" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_safety"/>
+            <field name="question">28. Ergonomics - Hazard present?</field>
+            <field name="code">HHSRS_H28</field>
+            <field name="sequence">60</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <record id="item_hhsrs_safe_7" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_safety"/>
+            <field name="question">29. Structural Collapse and Falling Elements - Hazard present?</field>
+            <field name="code">HHSRS_H29</field>
+            <field name="sequence">70</field>
+            <field name="response_type">hhsrs_severity</field>
+            <field name="is_required">True</field>
+            <field name="creates_defect">True</field>
+        </record>
+
+        <!-- HHSRS - Section 7: Overall Assessment -->
+        <record id="section_hhsrs_overall" model="property_fielder.inspection.template.section">
+            <field name="template_id" ref="template_hhsrs_full"/>
+            <field name="name">Overall HHSRS Assessment</field>
+            <field name="code">HHSRS_OVERALL</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <record id="item_hhsrs_ovr_1" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_overall"/>
+            <field name="question">Category 1 hazards identified?</field>
+            <field name="code">HHSRS_OVR_01</field>
+            <field name="sequence">10</field>
+            <field name="response_type">yes_no</field>
+            <field name="is_required">True</field>
+            <field name="help_text">Category 1 = Band A-C, HHSRS score 1000+</field>
+        </record>
+
+        <record id="item_hhsrs_ovr_2" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_overall"/>
+            <field name="question">Category 2 hazards identified?</field>
+            <field name="code">HHSRS_OVR_02</field>
+            <field name="sequence">20</field>
+            <field name="response_type">yes_no</field>
+            <field name="is_required">True</field>
+            <field name="help_text">Category 2 = Band D-J, HHSRS score under 1000</field>
+        </record>
+
+        <record id="item_hhsrs_ovr_3" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_overall"/>
+            <field name="question">Total number of hazards identified</field>
+            <field name="code">HHSRS_OVR_03</field>
+            <field name="sequence">30</field>
+            <field name="response_type">numeric</field>
+            <field name="min_value">0</field>
+            <field name="max_value">29</field>
+        </record>
+
+        <record id="item_hhsrs_ovr_4" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_overall"/>
+            <field name="question">Priority actions required</field>
+            <field name="code">HHSRS_OVR_04</field>
+            <field name="sequence">40</field>
+            <field name="response_type">text</field>
+        </record>
+
+        <record id="item_hhsrs_ovr_5" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_overall"/>
+            <field name="question">Property photograph - Front exterior</field>
+            <field name="code">HHSRS_OVR_05</field>
+            <field name="sequence">50</field>
+            <field name="response_type">photo</field>
+            <field name="photo_required">True</field>
+        </record>
+
+        <record id="item_hhsrs_ovr_6" model="property_fielder.inspection.template.item">
+            <field name="section_id" ref="section_hhsrs_overall"/>
+            <field name="question">Assessor signature</field>
+            <field name="code">HHSRS_OVR_06</field>
+            <field name="sequence">60</field>
+            <field name="response_type">signature</field>
+            <field name="is_required">True</field>
+        </record>
+
+    </data>
+</odoo>
+

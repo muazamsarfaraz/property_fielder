@@ -37,6 +37,7 @@ Legal Compliance:
         'mail',
         'web',
         'property_fielder_property_management',
+        'property_fielder_field_service',  # For Job model extension
     ],
     'data': [
         # Security

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Defect Photo Kanban View -->
+    <record id="view_defect_photo_kanban" model="ir.ui.view">
+        <field name="name">property_fielder.defect.photo.kanban</field>
+        <field name="model">property_fielder.defect.photo</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <field name="image_thumbnail"/>
+                <field name="name"/>
+                <field name="photo_type"/>
+                <templates>
+                    <t t-name="card">
+                        <field name="image_thumbnail" widget="image" options="{'size': [200, 200]}"/>
+                        <div class="mt-2">
+                            <field name="name" class="fw-bold"/>
+                            <field name="photo_type" widget="badge"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Defect Photo List View -->
+    <record id="view_defect_photo_list" model="ir.ui.view">
+        <field name="name">property_fielder.defect.photo.list</field>
+        <field name="model">property_fielder.defect.photo</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="image_thumbnail" widget="image" options="{'size': [50, 50]}"/>
+                <field name="name"/>
+                <field name="photo_type" widget="badge"/>
+                <field name="category"/>
+                <field name="location"/>
+                <field name="taken_date"/>
+                <field name="taken_by"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Defect Photo Form View -->
+    <record id="view_defect_photo_form" model="ir.ui.view">
+        <field name="name">property_fielder.defect.photo.form</field>
+        <field name="model">property_fielder.defect.photo</field>
+        <field name="arch" type="xml">
+            <form string="Defect Photo">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="defect_id"/>
+                            <field name="name"/>
+                            <field name="photo_type"/>
+                            <field name="category"/>
+                            <field name="location"/>
+                        </group>
+                        <group>
+                            <field name="taken_date"/>
+                            <field name="taken_by"/>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="image" widget="image"/>
+                    </group>
+                    <group>
+                        <field name="annotation" placeholder="Notes or annotations..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Defect Photo Action -->
+    <record id="action_defect_photo" model="ir.actions.act_window">
+        <field name="name">Defect Photos</field>
+        <field name="res_model">property_fielder.defect.photo</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+    
+</odoo>
+

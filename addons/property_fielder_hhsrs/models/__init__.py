@@ -8,4 +8,5 @@ from . import access_refusal
 from . import damp_mould
 from . import dhs_assessment
 from . import building_component
+from . import job
 

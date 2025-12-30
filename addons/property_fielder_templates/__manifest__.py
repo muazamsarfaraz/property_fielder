@@ -52,6 +52,7 @@ Technical:
         
         # Data (reference data first)
         'data/sequence_data.xml',
+        'data/template_data.xml',
         
         # Views
         'views/inspection_template_views.xml',

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Defects Menu (under Property Fielder) -->
+    <menuitem id="menu_defects_root"
+        name="Defects"
+        parent="property_fielder_property_management.menu_property_fielder_root"
+        sequence="30"/>
+    
+    <!-- All Defects -->
+    <menuitem id="menu_defects_all"
+        name="All Defects"
+        parent="menu_defects_root"
+        action="action_defect"
+        sequence="10"/>
+    
+    <!-- SLA Breached -->
+    <menuitem id="menu_defects_breached"
+        name="SLA Breached"
+        parent="menu_defects_root"
+        action="action_defect_breached"
+        sequence="20"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_defects_config"
+        name="Configuration"
+        parent="menu_defects_root"
+        sequence="100"/>
+    
+    <!-- Fault Codes -->
+    <menuitem id="menu_fault_codes"
+        name="Fault Codes"
+        parent="menu_defects_config"
+        action="action_fault_code"
+        sequence="10"/>
+    
+    <!-- Access Attempts (for reporting) -->
+    <menuitem id="menu_access_attempts"
+        name="Access Attempts"
+        parent="menu_defects_config"
+        action="action_access_attempt"
+        sequence="20"/>
+    
+</odoo>
+

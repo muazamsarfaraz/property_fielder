@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Template Item Tree View -->
-    <record id="view_template_item_tree" model="ir.ui.view">
-        <field name="name">property_fielder.inspection.template.item.tree</field>
+    <!-- Template Item List View -->
+    <record id="view_template_item_list" model="ir.ui.view">
+        <field name="name">property_fielder.inspection.template.item.list</field>
         <field name="model">property_fielder.inspection.template.item</field>
         <field name="arch" type="xml">
             <list>

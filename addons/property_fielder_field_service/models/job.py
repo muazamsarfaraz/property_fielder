@@ -247,22 +247,14 @@ class FieldServiceJob(models.Model):
         readonly=True
     )
 
-    # HHSRS Integration
+    # HHSRS Integration - NOTE: These fields are now defined in property_fielder_hhsrs
+    # which extends this model to add HHSRS-specific functionality
     is_hhsrs_remediation = fields.Boolean(
         string='HHSRS Remediation',
         default=False,
         help='Is this job for HHSRS hazard remediation'
     )
-    hhsrs_assessment_id = fields.Many2one(
-        'property_fielder.hhsrs.assessment',
-        string='HHSRS Assessment',
-        help='Source HHSRS assessment for remediation jobs'
-    )
-    awaab_deadline_id = fields.Many2one(
-        'property_fielder.awaab.deadline',
-        string='Awaab Deadline',
-        help='Linked Awaab\'s Law deadline'
-    )
+    # hhsrs_assessment_id and awaab_deadline_id are defined in property_fielder_hhsrs module
     
     @api.model_create_multi
     def create(self, vals_list):
