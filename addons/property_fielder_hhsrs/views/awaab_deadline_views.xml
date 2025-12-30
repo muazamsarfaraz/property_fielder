@@ -6,7 +6,7 @@
         <field name="name">property_fielder.awaab.deadline.tree</field>
         <field name="model">property_fielder.awaab.deadline</field>
         <field name="arch" type="xml">
-            <tree decoration-danger="state == 'overdue'" decoration-warning="breach_count > 0">
+            <list decoration-danger="state == 'overdue'" decoration-warning="breach_count > 0">
                 <field name="name"/>
                 <field name="property_id"/>
                 <field name="hazard_type"/>
@@ -14,13 +14,13 @@
                 <field name="investigation_deadline"/>
                 <field name="repairs_start_deadline"/>
                 <field name="completion_deadline"/>
-                <field name="breach_count" widget="badge" decoration-danger="breach_count > 0"/>
+                <field name="breach_count"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'pending'"
                        decoration-warning="state == 'in_progress'"
                        decoration-danger="state == 'overdue'"
                        decoration-success="state == 'completed'"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -86,12 +86,12 @@
                         
                         <page string="Access Refusals" name="refusals">
                             <field name="access_refusal_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="refusal_date"/>
                                     <field name="reason"/>
                                     <field name="days_stopped"/>
                                     <field name="user_id"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         
@@ -117,11 +117,10 @@
                 <filter name="filter_pending" string="Pending" domain="[('state', '=', 'pending')]"/>
                 <filter name="filter_emergency" string="Emergency" domain="[('hazard_type', '=', 'emergency')]"/>
                 <filter name="filter_damp_mould" string="Damp &amp; Mould" domain="[('hazard_type', '=', 'damp_mould')]"/>
-                <group expand="0" string="Group By">
-                    <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
-                    <filter name="group_hazard" string="Hazard Type" context="{'group_by': 'hazard_type'}"/>
-                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
-                </group>
+                <separator/>
+                <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
+                <filter name="group_hazard" string="Hazard Type" context="{'group_by': 'hazard_type'}"/>
+                <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
             </search>
         </field>
     </record>
@@ -130,7 +129,7 @@
     <record id="action_awaab_deadline" model="ir.actions.act_window">
         <field name="name">Awaab's Law Deadlines</field>
         <field name="res_model">property_fielder.awaab.deadline</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'search_default_filter_overdue': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -143,4 +142,6 @@
     </record>
     
 </odoo>
+
+
 

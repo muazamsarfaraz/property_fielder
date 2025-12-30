@@ -51,6 +51,12 @@ class Property(models.Model):
     state = fields.Char(string='County')
     zip = fields.Char(string='Postcode', tracking=True)
     country_id = fields.Many2one('res.country', string='Country', default=lambda self: self.env.ref('base.uk'))
+    full_address = fields.Char(
+        string='Full Address',
+        compute='_compute_full_address',
+        store=True,
+        help='Complete formatted address'
+    )
     
     # GPS Coordinates
     latitude = fields.Float(string='Latitude', digits=(10, 7))
@@ -542,6 +548,23 @@ class Property(models.Model):
         for prop in self:
             prop.unit_count = len(prop.child_ids)
             prop.is_block = prop.unit_count > 0
+
+    @api.depends('street', 'street2', 'city', 'state', 'zip')
+    def _compute_full_address(self):
+        """Compute full formatted address."""
+        for prop in self:
+            parts = []
+            if prop.street:
+                parts.append(prop.street)
+            if prop.street2:
+                parts.append(prop.street2)
+            if prop.city:
+                parts.append(prop.city)
+            if prop.state:
+                parts.append(prop.state)
+            if prop.zip:
+                parts.append(prop.zip)
+            prop.full_address = ', '.join(parts) if parts else prop.name
 
     @api.depends('certification_ids', 'inspection_ids')
     def _compute_counts(self):

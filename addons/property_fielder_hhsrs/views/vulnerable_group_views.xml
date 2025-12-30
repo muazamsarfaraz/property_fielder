@@ -6,13 +6,13 @@
         <field name="name">property_fielder.hhsrs.vulnerable.group.tree</field>
         <field name="model">property_fielder.hhsrs.vulnerable.group</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="description"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -42,4 +42,6 @@
     </record>
     
 </odoo>
+
+
 

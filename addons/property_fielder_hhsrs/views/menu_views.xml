@@ -60,7 +60,7 @@
     <record id="action_hazard_type" model="ir.actions.act_window">
         <field name="name">Hazard Types</field>
         <field name="res_model">property_fielder.hhsrs.hazard.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     
     <menuitem id="menu_hazard_types"
@@ -73,7 +73,7 @@
     <record id="action_likelihood_band" model="ir.actions.act_window">
         <field name="name">Likelihood Bands</field>
         <field name="res_model">property_fielder.hhsrs.likelihood.band</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     
     <menuitem id="menu_likelihood_bands"
@@ -86,7 +86,7 @@
     <record id="action_vulnerable_group" model="ir.actions.act_window">
         <field name="name">Vulnerable Groups</field>
         <field name="res_model">property_fielder.hhsrs.vulnerable.group</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     
     <menuitem id="menu_vulnerable_groups"
@@ -96,4 +96,6 @@
               sequence="30"/>
     
 </odoo>
+
+
 

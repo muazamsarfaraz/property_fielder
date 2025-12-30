@@ -134,7 +134,7 @@
                                         <span class="badge text-bg-secondary"><field name="checklist_completed"/>/<field name="checklist_count"/> Complete</span>
                                     </div>
                                 </div>
-                                <field name="checklist_item_ids" context="{'default_inspection_id': active_id}">
+                                <field name="checklist_item_ids" context="{'default_inspection_id': id}">
                                     <list editable="bottom">
                                         <field name="sequence" widget="handle"/>
                                         <field name="category"/>
@@ -161,7 +161,7 @@
                                 <div class="alert alert-info mb-3" role="alert">
                                     <strong>📷 Inspection Photos</strong> - Capture structured photos with categories, before/after pairs, and annotations.
                                 </div>
-                                <field name="inspection_photo_ids" mode="kanban" context="{'default_inspection_id': active_id}">
+                                <field name="inspection_photo_ids" mode="kanban" context="{'default_inspection_id': id}">
                                     <kanban class="o_kanban_small_column">
                                         <field name="id"/>
                                         <field name="name"/>

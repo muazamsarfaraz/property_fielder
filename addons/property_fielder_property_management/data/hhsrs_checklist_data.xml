@@ -177,20 +177,20 @@
             <field name="name">Room temperature reading (°C) - living room</field>
             <field name="category">Readings</field>
             <field name="item_type">reading</field>
-            <field name="unit_of_measure">°C</field>
-            <field name="expected_min">18</field>
-            <field name="expected_max">24</field>
+            <field name="reading_unit">°C</field>
+            <field name="reading_min">18</field>
+            <field name="reading_max">24</field>
             <field name="sequence">190</field>
         </record>
-        
+
         <record id="hhsrs_item_humidity" model="property_fielder.checklist.template.item">
             <field name="template_id" ref="checklist_template_hhsrs"/>
             <field name="name">Relative humidity reading (%)</field>
             <field name="category">Readings</field>
             <field name="item_type">reading</field>
-            <field name="unit_of_measure">%</field>
-            <field name="expected_min">40</field>
-            <field name="expected_max">60</field>
+            <field name="reading_unit">%</field>
+            <field name="reading_min">40</field>
+            <field name="reading_max">60</field>
             <field name="sequence">200</field>
         </record>
         

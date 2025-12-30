@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Property Fielder HHSRS',
-    'version': '17.0.1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Property Management/Compliance',
     'summary': 'HHSRS, Decent Homes Standard & Awaab\'s Law Compliance',
     'description': """

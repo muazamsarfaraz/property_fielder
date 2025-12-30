@@ -6,14 +6,14 @@
         <field name="name">property_fielder.hhsrs.likelihood.band.tree</field>
         <field name="model">property_fielder.hhsrs.likelihood.band</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="ratio"/>
                 <field name="rsp"/>
                 <field name="description"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -44,4 +44,6 @@
     </record>
     
 </odoo>
+
+
 

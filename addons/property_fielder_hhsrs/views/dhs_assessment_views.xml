@@ -6,7 +6,7 @@
         <field name="name">property_fielder.dhs.assessment.tree</field>
         <field name="model">property_fielder.dhs.assessment</field>
         <field name="arch" type="xml">
-            <tree decoration-success="is_decent" decoration-danger="not is_decent">
+            <list decoration-success="is_decent" decoration-danger="not is_decent">
                 <field name="name"/>
                 <field name="property_id"/>
                 <field name="assessment_date"/>
@@ -16,7 +16,7 @@
                 <field name="criterion_d_met" string="D"/>
                 <field name="is_decent" widget="boolean"/>
                 <field name="target_date"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -98,10 +98,9 @@
                 <field name="property_id"/>
                 <filter name="filter_decent" string="Decent" domain="[('is_decent', '=', True)]"/>
                 <filter name="filter_non_decent" string="Non-Decent" domain="[('is_decent', '=', False)]"/>
-                <group expand="0" string="Group By">
-                    <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
-                    <filter name="group_decent" string="Decent Status" context="{'group_by': 'is_decent'}"/>
-                </group>
+                <separator/>
+                <filter name="group_property" string="Property" context="{'group_by': 'property_id'}"/>
+                <filter name="group_decent" string="Decent Status" context="{'group_by': 'is_decent'}"/>
             </search>
         </field>
     </record>
@@ -110,7 +109,7 @@
     <record id="action_dhs_assessment" model="ir.actions.act_window">
         <field name="name">Decent Homes Assessments</field>
         <field name="res_model">property_fielder.dhs.assessment</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a Decent Homes Standard assessment
@@ -122,4 +121,6 @@
     </record>
     
 </odoo>
+
+
 

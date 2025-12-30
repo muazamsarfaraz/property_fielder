@@ -216,7 +216,7 @@
             <field name="name">Compliance Dashboard</field>
             <field name="res_model">property_fielder.compliance.dashboard</field>
             <field name="view_mode">form</field>
-            <field name="target">inline</field>
+            <field name="target">current</field>
             <field name="context">{'form_view_initial_mode': 'readonly'}</field>
         </record>
 

@@ -6,14 +6,14 @@
         <field name="name">property_fielder.hhsrs.hazard.type.tree</field>
         <field name="model">property_fielder.hhsrs.hazard.type</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="group"/>
                 <field name="is_awaab_covered" widget="boolean"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -64,12 +64,13 @@
                 <field name="name"/>
                 <field name="code"/>
                 <filter name="filter_awaab" string="Awaab Covered" domain="[('is_awaab_covered', '=', True)]"/>
-                <group expand="0" string="Group By">
-                    <filter name="group_group" string="Hazard Group" context="{'group_by': 'group'}"/>
-                </group>
+                <separator/>
+                <filter name="group_group" string="Hazard Group" context="{'group_by': 'group'}"/>
             </search>
         </field>
     </record>
     
 </odoo>
+
+
 
