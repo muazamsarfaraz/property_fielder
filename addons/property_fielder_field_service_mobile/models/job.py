@@ -104,13 +104,19 @@ class Job(models.Model):
         return True
 
     def action_view_location_map(self):
-        """Open location in map"""
+        """Open Google Maps for navigation to job location"""
         self.ensure_one()
-        # This would typically open a map view or external map application
-        # For now, return a simple action
+        # Use job coordinates if available, fallback to property coordinates
+        lat = self.latitude or (self.property_id and self.property_id.latitude)
+        lng = self.longitude or (self.property_id and self.property_id.longitude)
+
+        if not lat or not lng:
+            raise UserError(_('Location coordinates are not set for this job.'))
+
+        # Use directions API for navigation (opens in Google Maps app on mobile)
         return {
             'type': 'ir.actions.act_url',
-            'url': f'https://www.google.com/maps/search/?api=1&query={self.property_id.latitude},{self.property_id.longitude}',
+            'url': f'https://www.google.com/maps/dir/?api=1&destination={lat},{lng}',
             'target': 'new',
         }
 

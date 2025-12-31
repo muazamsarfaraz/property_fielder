@@ -63,6 +63,13 @@
                             <field name="city"/>
                             <field name="latitude"/>
                             <field name="longitude"/>
+                            <!-- Navigation buttons -->
+                            <div colspan="2" class="d-flex gap-2 mt-2" invisible="not latitude or not longitude">
+                                <button name="action_navigate_google_maps" string="Navigate (Google Maps)"
+                                        type="object" class="btn-primary" icon="fa-map-marker"/>
+                                <button name="action_navigate_waze" string="Navigate (Waze)"
+                                        type="object" class="btn-secondary" icon="fa-road"/>
+                            </div>
                         </group>
                     </group>
                     <notebook>

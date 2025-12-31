@@ -283,5 +283,168 @@
         </t>
     </template>
 
+    <!-- Add Inspections to Portal Home -->
+    <template id="portal_my_home_inspections" name="Show Inspections"
+              inherit_id="portal.portal_my_home" priority="31">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'fa fa-calendar-check-o'"/>
+                <t t-set="title">Inspections</t>
+                <t t-set="url" t-value="'/my/inspections'"/>
+                <t t-set="text">View upcoming inspections</t>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Inspections List Page -->
+    <template id="portal_my_inspections" name="My Inspections">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Upcoming Inspections</t>
+            </t>
+
+            <!-- Success message for reschedule request -->
+            <t t-if="request.params.get('reschedule_requested')">
+                <div class="alert alert-success" role="alert">
+                    <i class="fa fa-check-circle"/> Your reschedule request has been submitted. We will contact you shortly.
+                </div>
+            </t>
+
+            <t t-if="not inspections">
+                <div class="alert alert-info" role="alert">
+                    <i class="fa fa-info-circle"/> No upcoming inspections scheduled.
+                </div>
+            </t>
+
+            <t t-if="inspections">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Property</th>
+                                <th>Type</th>
+                                <th>Scheduled Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="inspections" t-as="insp">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="'/my/properties/%s' % insp.property_id.id">
+                                            <t t-esc="insp.property_id.name"/>
+                                        </a>
+                                        <br/>
+                                        <small class="text-muted">
+                                            <t t-esc="insp.property_id.city"/>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            <t t-esc="insp.certification_type_id.name"/>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <i class="fa fa-calendar"/>
+                                        <t t-esc="insp.scheduled_date" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                    <td>
+                                        <t t-if="insp.state == 'draft'">
+                                            <span class="badge bg-secondary">Pending</span>
+                                        </t>
+                                        <t t-elif="insp.state == 'scheduled'">
+                                            <span class="badge bg-info">Scheduled</span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <a t-att-href="'/my/inspections/%s/reschedule' % insp.id"
+                                           class="btn btn-sm btn-outline-warning">
+                                            <i class="fa fa-clock-o"/> Request Reschedule
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pager -->
+                <div class="d-flex justify-content-center">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Reschedule Request Form -->
+    <template id="portal_reschedule_form" name="Reschedule Inspection">
+        <t t-call="portal.portal_layout">
+            <div class="row mb-4">
+                <div class="col">
+                    <h2>
+                        <a href="/my/inspections" class="text-muted">
+                            <i class="fa fa-arrow-left"/>
+                        </a>
+                        Request Reschedule
+                    </h2>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <t t-esc="inspection.certification_type_id.name"/> Inspection
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>Property:</strong> <t t-esc="inspection.property_id.name"/></p>
+                            <p><strong>Current Date:</strong>
+                                <t t-esc="inspection.scheduled_date" t-options="{'widget': 'date'}"/>
+                            </p>
+                        </div>
+                    </div>
+
+                    <form method="post" class="o_portal_reschedule_form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <div class="mb-3">
+                            <label for="preferred_date" class="form-label">Preferred New Date *</label>
+                            <input type="date" class="form-control" id="preferred_date"
+                                   name="preferred_date" required="required"
+                                   t-att-min="datetime.date.today().isoformat()"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="preferred_time" class="form-label">Preferred Time</label>
+                            <select class="form-select" id="preferred_time" name="preferred_time">
+                                <option value="morning">Morning (8am - 12pm)</option>
+                                <option value="afternoon">Afternoon (12pm - 5pm)</option>
+                                <option value="any">Any Time</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason for Reschedule</label>
+                            <textarea class="form-control" id="reason" name="reason"
+                                      rows="3" placeholder="Please let us know why you need to reschedule..."></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-paper-plane"/> Submit Request
+                            </button>
+                            <a href="/my/inspections" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
 </odoo>
 

@@ -687,6 +687,11 @@ export class DispatchMapWidget extends Component {
         const buttonIcon = isSelected ? 'fa-times' : 'fa-check-square-o';
         const buttonClass = isSelected ? 'btn-outline-danger' : 'btn-primary';
 
+        // Build navigation URL (Google Maps for click-to-navigate)
+        const navUrl = job.latitude && job.longitude
+            ? `https://www.google.com/maps/dir/?api=1&destination=${job.latitude},${job.longitude}`
+            : null;
+
         return `
             <div class="job-popup-content" data-job-id="${job.id}">
                 <div class="job-popup-header">
@@ -701,9 +706,14 @@ export class DispatchMapWidget extends Component {
                     <div class="job-popup-row"><i class="fa fa-hourglass-half"></i> ${durationStr}</div>
                     ${job.inspector_id ? `<div class="job-popup-row"><i class="fa fa-id-badge"></i> ${job.inspector_id[1]}</div>` : ''}
                 </div>
-                <button class="btn btn-sm ${buttonClass} w-100 mt-2 job-popup-select-btn" data-job-id="${job.id}">
-                    <i class="fa ${buttonIcon}"></i> ${buttonText}
-                </button>
+                <div class="d-flex gap-1 mt-2">
+                    <button class="btn btn-sm ${buttonClass} flex-grow-1 job-popup-select-btn" data-job-id="${job.id}">
+                        <i class="fa ${buttonIcon}"></i> ${buttonText}
+                    </button>
+                    ${navUrl ? `<a href="${navUrl}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Navigate (Google Maps)">
+                        <i class="fa fa-external-link"></i>
+                    </a>` : ''}
+                </div>
             </div>
         `;
     }

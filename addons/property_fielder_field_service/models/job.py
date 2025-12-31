@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class FieldServiceJob(models.Model):
@@ -354,6 +354,36 @@ class FieldServiceJob(models.Model):
             body=_('Appointment declined by owner. Reason: %s') % (reason or 'Not specified'),
             message_type='notification'
         )
+
+    def action_navigate_google_maps(self):
+        """Open Google Maps for navigation to job location."""
+        self.ensure_one()
+        if not self.latitude or not self.longitude:
+            raise UserError(_('Location coordinates are not set for this job.'))
+
+        # Build Google Maps directions URL
+        url = f'https://www.google.com/maps/dir/?api=1&destination={self.latitude},{self.longitude}'
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+
+    def action_navigate_waze(self):
+        """Open Waze for navigation to job location."""
+        self.ensure_one()
+        if not self.latitude or not self.longitude:
+            raise UserError(_('Location coordinates are not set for this job.'))
+
+        # Build Waze URL
+        url = f'https://waze.com/ul?ll={self.latitude},{self.longitude}&navigate=yes'
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
 
     def action_request_reschedule(self, proposed_date, proposed_time='', reason=''):
         """Request a reschedule."""
