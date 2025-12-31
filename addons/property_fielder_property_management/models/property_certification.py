@@ -244,39 +244,110 @@ class PropertyCertification(models.Model):
 
     @api.model
     def _cron_send_expiry_reminders(self):
-        """Weekly cron job to send expiry reminder emails.
+        """Daily cron job to send expiry reminder emails.
 
-        Sends reminders for certificates expiring in:
-        - 14 days (urgent reminder)
-        - 30 days (advance notice)
-        - 60 days (early warning)
+        Sends reminders for certificates expiring based on configurable thresholds
+        per certification type (alert_days_urgent, alert_days_warning, alert_days_notice).
+        Falls back to defaults of 7, 14, 30 days if not configured.
         """
         _logger = __import__('logging').getLogger(__name__)
         _logger.info("Sending certification expiry reminders...")
 
         today = fields.Date.today()
-        reminder_periods = [14, 30, 60]  # days before expiry
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
 
-        for days in reminder_periods:
-            target_date = today + __import__('datetime').timedelta(days=days)
+        # Get email template
+        template = self.env.ref(
+            'property_fielder_property_management.email_template_cert_expiring',
+            raise_if_not_found=False
+        )
 
-            certs_expiring = self.search([
-                ('status', 'in', ['valid', 'expiring_soon']),
-                ('expiry_date', '=', target_date)
-            ])
+        emails_sent = 0
 
-            for cert in certs_expiring:
-                if cert.property_id.partner_id and cert.property_id.partner_id.email:
-                    # Create activity for property manager
-                    cert.activity_schedule(
-                        'mail.mail_activity_data_warning',
-                        date_deadline=today,
-                        summary=f'{days} day reminder: {cert.certification_type_id.name}',
-                        note=f'Certificate {cert.name} for {cert.property_id.name} '
-                             f'expires in {days} days ({cert.expiry_date}).'
+        # Get all certification types with their configured alert thresholds
+        cert_types = self.env['property_fielder.certification.type'].search([])
+
+        for cert_type in cert_types:
+            # Get configurable thresholds from certification type (with defaults)
+            reminder_periods = [
+                cert_type.alert_days_urgent or 7,
+                cert_type.alert_days_warning or 14,
+                cert_type.alert_days_notice or 30,
+            ]
+            # Remove duplicates and sort
+            reminder_periods = sorted(set(reminder_periods))
+
+            for days in reminder_periods:
+                target_date = today + __import__('datetime').timedelta(days=days)
+
+                certs_expiring = self.search([
+                    ('certification_type_id', '=', cert_type.id),
+                    ('status', 'in', ['valid', 'expiring_soon']),
+                    ('expiry_date', '=', target_date)
+                ])
+
+                for cert in certs_expiring:
+                    partner = cert.property_id.partner_id
+                    if partner and partner.email:
+                        # Send email notification
+                        if template:
+                            try:
+                                template.with_context(base_url=base_url).send_mail(
+                                    cert.id, force_send=True
+                                )
+                                emails_sent += 1
+                            except Exception as e:
+                                _logger.error(f"Failed to send email for cert {cert.name}: {e}")
+
+                        # Create activity for property manager
+                        cert.activity_schedule(
+                            'mail.mail_activity_data_warning',
+                            date_deadline=today,
+                            summary=f'{days} day reminder: {cert.certification_type_id.name}',
+                            note=f'Certificate {cert.name} for {cert.property_id.name} '
+                                 f'expires in {days} days ({cert.expiry_date}).'
+                        )
+
+                if certs_expiring:
+                    _logger.info(f"  {len(certs_expiring)} {cert_type.name} certificates expiring in {days} days")
+
+        _logger.info(f"Sent {emails_sent} expiry reminder emails")
+        return True
+
+    @api.model
+    def _cron_send_expired_alerts(self):
+        """Daily cron job to send alerts for newly expired certificates."""
+        _logger = __import__('logging').getLogger(__name__)
+        _logger.info("Checking for newly expired certificates...")
+
+        today = fields.Date.today()
+        yesterday = today - __import__('datetime').timedelta(days=1)
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+
+        # Get email template
+        template = self.env.ref(
+            'property_fielder_property_management.email_template_cert_expired',
+            raise_if_not_found=False
+        )
+
+        # Find certificates that expired yesterday (newly expired)
+        newly_expired = self.search([
+            ('expiry_date', '=', yesterday),
+            ('status', '=', 'expired')
+        ])
+
+        emails_sent = 0
+        for cert in newly_expired:
+            partner = cert.property_id.partner_id
+            if partner and partner.email and template:
+                try:
+                    template.with_context(base_url=base_url).send_mail(
+                        cert.id, force_send=True
                     )
+                    emails_sent += 1
+                except Exception as e:
+                    _logger.error(f"Failed to send expired alert for cert {cert.name}: {e}")
 
-            _logger.info(f"  {len(certs_expiring)} certificates expiring in {days} days")
-
+        _logger.info(f"Sent {emails_sent} expired certificate alerts")
         return True
 

@@ -213,7 +213,7 @@
                         </group>
                         
                         <!-- NFR-UX-QW7: FLAGE+ Compliance with Traffic Light Indicators -->
-                        <group name="compliance" string="FLAGE+ Compliance Status">
+                        <group name="compliance" string="FLAGE+ Compliance Status" help="UK regulatory compliance for rental properties: Fire safety, Legionella risk, Asbestos survey, Gas safety (CP12), and Electrical safety (EICR). Green = Valid, Amber = Expiring within 30 days, Red = Expired or Missing.">
                             <group>
                                 <label for="flage_fire_status" string="Fire Safety"/>
                                 <div class="d-flex align-items-center gap-2">

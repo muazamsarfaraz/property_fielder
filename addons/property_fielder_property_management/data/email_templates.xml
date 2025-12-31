@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- CERTIFICATION EXPIRY EMAIL TEMPLATES -->
+    <!-- ============================================================ -->
+
+    <!-- Email Template: Certification Expiring Warning (30/14/7 days) -->
+    <record id="email_template_cert_expiring" model="mail.template">
+        <field name="name">Certification Expiring Warning</field>
+        <field name="model_id" ref="model_property_fielder_property_certification"/>
+        <field name="email_from">{{ user.email_formatted }}</field>
+        <field name="email_to">{{ object.property_id.partner_id.email }}</field>
+        <field name="subject">⚠️ Certification Expiring: {{ object.certification_type_id.name }} at {{ object.property_id.name }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 14px;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family: 'Lato', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h1 style="color: #F59E0B;">⚠️ Certification Expiring Soon</h1>
+                            <p>Dear {{ object.property_id.partner_id.name or 'Property Manager' }},</p>
+                            <p>This is a reminder that a certification is expiring soon and requires renewal:</p>
+
+                            <table style="margin: 20px 0; width: 100%; background-color: #FEF3C7; border-radius: 8px; border-left: 4px solid #F59E0B;">
+                                <tr>
+                                    <td style="padding: 15px;">
+                                        <p style="margin: 5px 0;"><strong>📋 Certificate:</strong> {{ object.certification_type_id.name }}</p>
+                                        <p style="margin: 5px 0;"><strong>🏠 Property:</strong> {{ object.property_id.name }}</p>
+                                        <p style="margin: 5px 0;"><strong>📍 Address:</strong> {{ object.property_id.street }}, {{ object.property_id.city }} {{ object.property_id.postcode }}</p>
+                                        <p style="margin: 5px 0;"><strong>📅 Expiry Date:</strong> {{ object.expiry_date }}</p>
+                                        <p style="margin: 5px 0; color: #B45309;"><strong>⏱️ Days Remaining:</strong> {{ object.days_until_expiry }} days</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p>Please arrange for renewal of this certification before the expiry date to maintain compliance.</p>
+
+                            <div style="margin-top: 24px; text-align: center;">
+                                <a t-attf-href="{{ ctx.get('base_url', '') }}/odoo/action-property_fielder_property_management.action_property_certification/{{ object.id }}"
+                                   style="display: inline-block; padding: 12px 24px; background-color: #7C3AED; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                    View Certificate Details
+                                </a>
+                            </div>
+
+                            <p style="margin-top: 24px;">Best regards,<br/>Property Fielder Compliance Team</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Email Template: Certification Expired Alert -->
+    <record id="email_template_cert_expired" model="mail.template">
+        <field name="name">Certification Expired Alert</field>
+        <field name="model_id" ref="model_property_fielder_property_certification"/>
+        <field name="email_from">{{ user.email_formatted }}</field>
+        <field name="email_to">{{ object.property_id.partner_id.email }}</field>
+        <field name="subject">🚨 URGENT: Certification EXPIRED - {{ object.certification_type_id.name }} at {{ object.property_id.name }}</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 14px;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family: 'Lato', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h1 style="color: #EF4444;">🚨 Certification Has EXPIRED</h1>
+                            <p>Dear {{ object.property_id.partner_id.name or 'Property Manager' }},</p>
+                            <p><strong>URGENT:</strong> A mandatory certification has expired and the property is now non-compliant:</p>
+
+                            <table style="margin: 20px 0; width: 100%; background-color: #FEE2E2; border-radius: 8px; border-left: 4px solid #EF4444;">
+                                <tr>
+                                    <td style="padding: 15px;">
+                                        <p style="margin: 5px 0;"><strong>📋 Certificate:</strong> {{ object.certification_type_id.name }}</p>
+                                        <p style="margin: 5px 0;"><strong>🏠 Property:</strong> {{ object.property_id.name }}</p>
+                                        <p style="margin: 5px 0;"><strong>📍 Address:</strong> {{ object.property_id.street }}, {{ object.property_id.city }} {{ object.property_id.postcode }}</p>
+                                        <p style="margin: 5px 0; color: #B91C1C;"><strong>❌ Expired On:</strong> {{ object.expiry_date }}</p>
+                                        <p style="margin: 5px 0; color: #B91C1C;"><strong>⚠️ Days Overdue:</strong> {{ -object.days_until_expiry }} days</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="color: #B91C1C; font-weight: bold;">Immediate action required to restore compliance and avoid potential legal liability.</p>
+
+                            <div style="margin-top: 24px; text-align: center;">
+                                <a t-attf-href="{{ ctx.get('base_url', '') }}/odoo/action-property_fielder_property_management.action_property_certification/{{ object.id }}"
+                                   style="display: inline-block; padding: 12px 24px; background-color: #EF4444; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                    View Certificate &amp; Schedule Renewal
+                                </a>
+                            </div>
+
+                            <p style="margin-top: 24px;">Best regards,<br/>Property Fielder Compliance Team</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- Email Template: Bulk Compliance Summary -->
+    <record id="email_template_compliance_summary" model="mail.template">
+        <field name="name">Weekly Compliance Summary</field>
+        <field name="model_id" ref="model_res_partner"/>
+        <field name="email_from">{{ user.email_formatted }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="subject">📊 Weekly Compliance Summary - Property Fielder</field>
+        <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px; font-size: 14px;">
+    <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #F1F1F1; font-family: 'Lato', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #454748; width: 100%; border-collapse:separate;">
+        <tr>
+            <td align="center">
+                <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: white; color: #454748; border-collapse:separate;">
+                    <tr>
+                        <td style="padding: 20px;">
+                            <h1 style="color: #7C3AED;">📊 Weekly Compliance Summary</h1>
+                            <p>Dear {{ object.name }},</p>
+                            <p>Here is your weekly compliance status summary:</p>
+
+                            <t t-if="ctx.get('summary_data')">
+                                <table style="margin: 20px 0; width: 100%; border-collapse: collapse;">
+                                    <tr style="background-color: #F3F4F6;">
+                                        <th style="padding: 10px; text-align: left; border-bottom: 2px solid #E5E7EB;">Status</th>
+                                        <th style="padding: 10px; text-align: right; border-bottom: 2px solid #E5E7EB;">Count</th>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px; border-bottom: 1px solid #E5E7EB;">✅ Compliant Properties</td>
+                                        <td style="padding: 10px; text-align: right; border-bottom: 1px solid #E5E7EB; color: #10B981;">{{ ctx.get('summary_data', {}).get('compliant', 0) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px; border-bottom: 1px solid #E5E7EB;">⚠️ Expiring in 30 days</td>
+                                        <td style="padding: 10px; text-align: right; border-bottom: 1px solid #E5E7EB; color: #F59E0B;">{{ ctx.get('summary_data', {}).get('expiring_30', 0) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px; border-bottom: 1px solid #E5E7EB;">🚨 Expired/Non-Compliant</td>
+                                        <td style="padding: 10px; text-align: right; border-bottom: 1px solid #E5E7EB; color: #EF4444;">{{ ctx.get('summary_data', {}).get('expired', 0) }}</td>
+                                    </tr>
+                                </table>
+                            </t>
+
+                            <div style="margin-top: 24px; text-align: center;">
+                                <a t-attf-href="{{ ctx.get('base_url', '') }}/odoo/property-management"
+                                   style="display: inline-block; padding: 12px 24px; background-color: #7C3AED; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                                    View Full Dashboard
+                                </a>
+                            </div>
+
+                            <p style="margin-top: 24px;">Best regards,<br/>Property Fielder</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</odoo>
+

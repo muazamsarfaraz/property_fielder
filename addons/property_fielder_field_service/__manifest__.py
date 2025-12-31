@@ -72,6 +72,7 @@ Technical:
 
         # Wizards
         'wizard/share_schedule_wizard_views.xml',
+        'wizard/bulk_job_wizard_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

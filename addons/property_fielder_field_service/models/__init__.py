@@ -7,3 +7,4 @@ from . import inspector
 from . import route
 from . import optimization
 from . import change_request
+from . import field_service_dashboard

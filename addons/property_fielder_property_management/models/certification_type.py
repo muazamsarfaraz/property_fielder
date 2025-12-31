@@ -35,6 +35,23 @@ class CertificationType(models.Model):
         help='Number of days before expiry to show warning'
     )
 
+    # Configurable Alert Thresholds
+    alert_days_urgent = fields.Integer(
+        string='Urgent Alert (Days)',
+        default=7,
+        help='Days before expiry for urgent alert'
+    )
+    alert_days_warning = fields.Integer(
+        string='Warning Alert (Days)',
+        default=14,
+        help='Days before expiry for warning alert'
+    )
+    alert_days_notice = fields.Integer(
+        string='Advance Notice (Days)',
+        default=30,
+        help='Days before expiry for advance notice'
+    )
+
     # Inspection Duration
     default_duration_minutes = fields.Integer(
         string='Default Inspection Duration (minutes)',

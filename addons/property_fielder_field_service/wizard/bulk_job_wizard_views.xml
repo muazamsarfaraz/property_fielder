@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bulk Job Operations Wizard Form -->
+    <record id="view_bulk_job_wizard_form" model="ir.ui.view">
+        <field name="name">property_fielder.bulk.job.wizard.form</field>
+        <field name="model">property_fielder.bulk.job.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Bulk Job Operations">
+                <group>
+                    <group string="Operation">
+                        <field name="operation" widget="radio"/>
+                        <field name="job_count" readonly="1"/>
+                    </group>
+                    <group string="Selected Jobs">
+                        <field name="job_ids" widget="many2many_tags" readonly="1"/>
+                    </group>
+                </group>
+
+                <!-- Status Update Options -->
+                <group string="Status Options" invisible="operation != 'update_status'">
+                    <field name="new_state" required="operation == 'update_status'"/>
+                </group>
+
+                <!-- Inspector Assignment Options -->
+                <group string="Inspector Assignment" invisible="operation != 'assign_inspector'">
+                    <field name="inspector_id" required="operation == 'assign_inspector'"/>
+                </group>
+
+                <!-- Reschedule Options -->
+                <group string="Reschedule Options" invisible="operation != 'reschedule'">
+                    <field name="new_date" required="operation == 'reschedule'"/>
+                    <field name="time_slot"/>
+                </group>
+
+                <!-- Notification Options -->
+                <group string="Notification Options" invisible="operation != 'send_notifications'">
+                    <field name="notify_inspectors"/>
+                    <field name="notify_owners"/>
+                    <field name="custom_message"/>
+                </group>
+
+                <!-- Cancel Options -->
+                <group string="Cancellation" invisible="operation != 'cancel'">
+                    <field name="cancel_reason"/>
+                </group>
+
+                <footer>
+                    <button name="action_execute" string="Execute" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open wizard from job list -->
+    <record id="action_bulk_job_wizard" model="ir.actions.act_window">
+        <field name="name">Bulk Job Operations</field>
+        <field name="res_model">property_fielder.bulk.job.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_property_fielder_job"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>
+

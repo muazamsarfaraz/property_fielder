@@ -1,30 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Dashboard Action (Placeholder - will be enhanced with custom widget) -->
+    <!-- Field Service Dashboard Form View with KPIs -->
+    <record id="view_field_service_dashboard_form" model="ir.ui.view">
+        <field name="name">property_fielder.field.service.dashboard.form</field>
+        <field name="model">property_fielder.field.service.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Field Service Dashboard" create="0" edit="0" delete="0">
+                <sheet>
+                    <!-- Today's Stats Header -->
+                    <div class="row" style="background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%); padding: 20px; margin: -20px -20px 20px -20px; border-radius: 4px 4px 0 0;">
+                        <div class="col-12 text-white text-center">
+                            <h2 style="margin: 0; font-weight: bold;">📊 Today's Overview</h2>
+                        </div>
+                    </div>
+
+                    <!-- KPI Cards Row 1: Today's Jobs -->
+                    <div class="row mb-4">
+                        <div class="col-3">
+                            <div class="card text-center" style="border-left: 4px solid #3B82F6;">
+                                <div class="card-body">
+                                    <h5 class="text-muted">Total Jobs</h5>
+                                    <h2 class="text-primary"><field name="today_jobs_total"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card text-center" style="border-left: 4px solid #F59E0B;">
+                                <div class="card-body">
+                                    <h5 class="text-muted">Pending</h5>
+                                    <h2 style="color: #F59E0B;"><field name="today_jobs_pending"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card text-center" style="border-left: 4px solid #3B82F6;">
+                                <div class="card-body">
+                                    <h5 class="text-muted">In Progress</h5>
+                                    <h2 style="color: #3B82F6;"><field name="today_jobs_in_progress"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card text-center" style="border-left: 4px solid #10B981;">
+                                <div class="card-body">
+                                    <h5 class="text-muted">Completed</h5>
+                                    <h2 style="color: #10B981;"><field name="today_jobs_completed"/></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Cards Row 2: Inspectors & Routes -->
+                    <div class="row mb-4">
+                        <div class="col-4">
+                            <div class="card" style="background: #F3F4F6;">
+                                <div class="card-body">
+                                    <h5 class="text-muted mb-3">👷 Inspector Availability</h5>
+                                    <div class="row mb-2">
+                                        <div class="col-4 text-center">
+                                            <div style="font-size: 24px; font-weight: bold; color: #10B981;"><field name="inspectors_available"/></div>
+                                            <small class="text-muted">Available</small>
+                                        </div>
+                                        <div class="col-4 text-center">
+                                            <div style="font-size: 24px; font-weight: bold; color: #3B82F6;"><field name="inspectors_on_job"/></div>
+                                            <small class="text-muted">On Job</small>
+                                        </div>
+                                        <div class="col-4 text-center">
+                                            <div style="font-size: 24px; font-weight: bold;"><field name="active_inspectors"/></div>
+                                            <small class="text-muted">Total</small>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <small class="text-muted">Utilization: </small>
+                                        <strong><field name="inspector_utilization" widget="progressbar"/></strong>
+                                    </div>
+                                    <div class="mt-1">
+                                        <small class="text-muted">Capacity: <field name="jobs_assigned_today"/>/<field name="total_capacity"/> jobs</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card" style="background: #F3F4F6;">
+                                <div class="card-body">
+                                    <h5 class="text-muted mb-3">🚗 Routes Today</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Total: <strong><field name="today_routes"/></strong></span>
+                                        <span>Acknowledged: <strong><field name="routes_acknowledged"/></strong></span>
+                                        <span>Pending: <strong><field name="routes_pending"/></strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card" style="background: #F3F4F6;">
+                                <div class="card-body">
+                                    <h5 class="text-muted mb-3">📅 Confirmations</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Pending: <strong><field name="pending_confirmations"/></strong></span>
+                                        <span>Confirmed: <strong><field name="confirmed_today"/></strong></span>
+                                        <span>Declined: <strong><field name="declined_today"/></strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Week Stats & Quick Actions -->
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="text-muted mb-3">📈 This Week</h5>
+                                    <p>Jobs Scheduled: <strong><field name="week_jobs_total"/></strong></p>
+                                    <p>Jobs Completed: <strong><field name="week_jobs_completed"/></strong></p>
+                                    <p>Pending Changes: <strong><field name="pending_change_requests"/></strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="text-muted mb-3">⚡ Quick Actions</h5>
+                                    <button name="%(property_fielder_field_service.action_field_service_job)d"
+                                            type="action" class="btn btn-primary me-2">
+                                        <i class="fa fa-list"/> View Jobs
+                                    </button>
+                                    <button name="%(property_fielder_field_service.action_field_service_dispatch_new)d"
+                                            type="action" class="btn btn-secondary me-2">
+                                        <i class="fa fa-map"/> Dispatch
+                                    </button>
+                                    <button name="%(property_fielder_field_service.action_field_service_optimization_wizard)d"
+                                            type="action" class="btn btn-secondary">
+                                        <i class="fa fa-magic"/> Optimize
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Dashboard Action -->
     <record id="action_field_service_dashboard" model="ir.actions.act_window">
         <field name="name">Field Service Dashboard</field>
-        <field name="res_model">property_fielder.job</field>
-        <field name="view_mode">kanban</field>
-        <field name="context">{'search_default_today': 1}</field>
-        <field name="help" type="html">
-            <div class="o_view_nocontent_empty_folder" style="text-align: center; padding: 40px;">
-                <p style="font-size: 64px; margin-bottom: 20px;">📋</p>
-                <h3 style="margin-bottom: 16px; color: #714B67;">No Jobs Scheduled for Today</h3>
-                <p style="color: #6c757d; max-width: 500px; margin: 0 auto 24px;">
-                    Your Field Service dashboard shows scheduled inspection jobs. Create jobs from properties
-                    with upcoming certifications to populate your schedule.
-                </p>
-                <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; max-width: 400px; margin: 0 auto; text-align: left;">
-                    <h5 style="margin-bottom: 12px;"><i class="fa fa-lightbulb-o me-2"/>Quick Start</h5>
-                    <ol style="margin: 0; padding-left: 20px; color: #6c757d;">
-                        <li>Go to <strong>Property Management → Properties</strong></li>
-                        <li>Select properties with expiring certifications</li>
-                        <li>Click <strong>Create Inspection Jobs</strong></li>
-                        <li>Use <strong>Dispatch</strong> to optimize routes</li>
-                    </ol>
-                </div>
-            </div>
-        </field>
+        <field name="res_model">property_fielder.field.service.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'form_view_initial_mode': 'readonly'}</field>
     </record>
 
     <!-- Settings Action (Placeholder) -->

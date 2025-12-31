@@ -47,6 +47,7 @@ Features:
         'data/certification_type_data.xml',
         'data/compliance_requirement_data.xml',
         'data/sequence_data.xml',
+        'data/email_templates.xml',
         'data/cron_data.xml',
         'data/hhsrs_checklist_data.xml',
 

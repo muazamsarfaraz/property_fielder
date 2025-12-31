@@ -166,3 +166,30 @@
     }
 }
 
+/* ===========================================
+   Hide Technical Chatter Fields
+   =========================================== */
+/* Hide "Related Document Model Name" and other technical fields */
+.oe_chatter .o_field_widget[name="res_model_name"],
+.oe_chatter .o_field_widget[name="res_model"],
+.oe_chatter .o_field_widget[name="res_id"],
+.oe_chatter .o_field_widget[name="model"],
+.oe_chatter .o_field_widget[name="record_name"],
+.oe_chatter .o_mail_thread_view .o_Message_technical,
+.oe_chatter label[for="res_model_name"],
+.oe_chatter label[for="res_model"],
+.oe_chatter label[for="res_id"] {
+    display: none !important;
+}
+
+/* Hide technical info in message headers */
+.o_Message .o_Message_header .o_Message_technical_info {
+    display: none !important;
+}
+
+/* Hide model name display in activity views */
+.o_Activity .o_Activity_model_name,
+.o_mail_activity .o_activity_model_name {
+    display: none !important;
+}
+

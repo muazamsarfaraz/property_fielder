@@ -378,35 +378,45 @@ class Property(models.Model):
         ('expiring', 'Expiring Soon'),
         ('expired', 'Expired'),
         ('missing', 'Missing')
-    ], string='Fire Safety', compute='_compute_flage_status', store=True)
-    
+    ], string='Fire Safety', compute='_compute_flage_status', store=True,
+       help='Fire Safety Certificate status. Required for HMOs and buildings with common areas. '
+            'Covers fire risk assessment, fire alarms, extinguishers, and escape routes.')
+
     flage_legionella_status = fields.Selection([
         ('valid', 'Valid'),
         ('expiring', 'Expiring Soon'),
         ('expired', 'Expired'),
         ('missing', 'Missing')
-    ], string='Legionella', compute='_compute_flage_status', store=True)
-    
+    ], string='Legionella', compute='_compute_flage_status', store=True,
+       help='Legionella Risk Assessment status. Required for all rental properties. '
+            'Assesses risk of Legionella bacteria in water systems (tanks, pipes, showers).')
+
     flage_asbestos_status = fields.Selection([
         ('valid', 'Valid'),
         ('expiring', 'Expiring Soon'),
         ('expired', 'Expired'),
         ('missing', 'Missing')
-    ], string='Asbestos', compute='_compute_flage_status', store=True)
-    
+    ], string='Asbestos', compute='_compute_flage_status', store=True,
+       help='Asbestos Survey status. Required for properties built before 2000. '
+            'Identifies presence and condition of asbestos-containing materials.')
+
     flage_gas_status = fields.Selection([
         ('valid', 'Valid'),
         ('expiring', 'Expiring Soon'),
         ('expired', 'Expired'),
         ('missing', 'Missing')
-    ], string='Gas Safety', compute='_compute_flage_status', store=True)
-    
+    ], string='Gas Safety', compute='_compute_flage_status', store=True,
+       help='Gas Safety Certificate (CP12) status. Legally required annually for all rental properties with gas. '
+            'Must be issued by a Gas Safe registered engineer.')
+
     flage_electrical_status = fields.Selection([
         ('valid', 'Valid'),
         ('expiring', 'Expiring Soon'),
         ('expired', 'Expired'),
         ('missing', 'Missing')
-    ], string='Electrical Safety', compute='_compute_flage_status', store=True)
+    ], string='Electrical Safety', compute='_compute_flage_status', store=True,
+       help='EICR (Electrical Installation Condition Report) status. Required every 5 years for rental properties. '
+            'Must be issued by a qualified electrician (Part P registered).')
 
     # FLAGE+ Expiry Dates (computed from latest certificate of each type)
     flage_fire_expiry = fields.Date(
@@ -892,6 +902,49 @@ class Property(models.Model):
                 raise ValidationError(
                     _('EPC Score must be between 1 and 100. Got: %s') % prop.epc_score
                 )
+
+    @api.constrains('year_built')
+    def _check_year_built(self):
+        """Validate Year Built is reasonable (1600 to current year)"""
+        import datetime
+        current_year = datetime.date.today().year
+        for prop in self:
+            if prop.year_built:
+                if prop.year_built < 1600:
+                    raise ValidationError(
+                        _('Year Built cannot be before 1600. Got: %s') % prop.year_built
+                    )
+                if prop.year_built > current_year:
+                    raise ValidationError(
+                        _('Year Built cannot be in the future. Got: %s') % prop.year_built
+                    )
+
+    @api.constrains('floor_area')
+    def _check_floor_area(self):
+        """Validate Floor Area is positive and reasonable"""
+        for prop in self:
+            if prop.floor_area:
+                if prop.floor_area <= 0:
+                    raise ValidationError(
+                        _('Floor Area must be greater than zero. Got: %s') % prop.floor_area
+                    )
+                if prop.floor_area > 100000:  # 100,000 sqm is very large
+                    raise ValidationError(
+                        _('Floor Area seems unreasonably large (>100,000 sqm). Got: %s') % prop.floor_area
+                    )
+
+    @api.constrains('bedrooms', 'bathrooms', 'reception_rooms', 'number_of_floors')
+    def _check_room_counts(self):
+        """Validate room counts are non-negative"""
+        for prop in self:
+            if prop.bedrooms and prop.bedrooms < 0:
+                raise ValidationError(_('Bedrooms cannot be negative.'))
+            if prop.bathrooms and prop.bathrooms < 0:
+                raise ValidationError(_('Bathrooms cannot be negative.'))
+            if prop.reception_rooms and prop.reception_rooms < 0:
+                raise ValidationError(_('Reception Rooms cannot be negative.'))
+            if prop.number_of_floors and prop.number_of_floors < 1:
+                raise ValidationError(_('Number of Floors must be at least 1.'))
 
     @api.onchange('epc_score')
     def _onchange_epc_score(self):

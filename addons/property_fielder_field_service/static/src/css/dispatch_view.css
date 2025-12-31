@@ -221,3 +221,162 @@
     color: #495057;
 }
 
+/* ===========================================
+   Loading States & Skeleton Screens
+   =========================================== */
+
+/* Generic loading overlay */
+.o_loading_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+}
+
+.o_loading_overlay .o_loading_content {
+    text-align: center;
+    padding: 24px;
+}
+
+.o_loading_overlay .fa-spinner {
+    font-size: 32px;
+    color: #714B67;
+    margin-bottom: 12px;
+}
+
+.o_loading_overlay .o_loading_text {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 8px;
+}
+
+/* Skeleton loading animation */
+@keyframes skeleton-loading {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 14px;
+    margin-bottom: 8px;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+.skeleton-text.medium {
+    width: 80%;
+}
+
+.skeleton-card {
+    height: 80px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+}
+
+/* Button loading state */
+.btn.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Map loading state */
+.o_map_loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.o_map_loading .fa-map-marker-alt {
+    font-size: 24px;
+    color: #714B67;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* List loading state */
+.o_list_loading {
+    padding: 24px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.o_list_loading .fa-circle-notch {
+    font-size: 24px;
+    color: #714B67;
+    margin-bottom: 8px;
+}
+
+/* Progress bar with percentage */
+.progress-with-label {
+    position: relative;
+}
+
+.progress-with-label .progress-label {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #495057;
+    line-height: 20px;
+}
+
+/* Fade in animation for loaded content */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

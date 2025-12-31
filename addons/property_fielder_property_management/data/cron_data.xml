@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- Daily Certification Status Update -->
+        <!-- Daily Certification Status Update (runs at 6 AM) -->
         <record id="ir_cron_certification_status_update" model="ir.cron">
             <field name="name">Property Fielder: Update Certification Status</field>
             <field name="model_id" ref="model_property_fielder_property_certification"/>
@@ -11,17 +11,31 @@
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="active" eval="True"/>
+            <field name="nextcall" eval="(datetime.now() + relativedelta(days=1)).replace(hour=6, minute=0, second=0)"/>
         </record>
 
-        <!-- Weekly Expiry Reminder Emails -->
+        <!-- Daily Expiry Reminder Emails (runs at 7 AM) -->
         <record id="ir_cron_certification_expiry_reminders" model="ir.cron">
             <field name="name">Property Fielder: Send Certification Expiry Reminders</field>
             <field name="model_id" ref="model_property_fielder_property_certification"/>
             <field name="state">code</field>
             <field name="code">model._cron_send_expiry_reminders()</field>
             <field name="interval_number">1</field>
-            <field name="interval_type">weeks</field>
+            <field name="interval_type">days</field>
             <field name="active" eval="True"/>
+            <field name="nextcall" eval="(datetime.now() + relativedelta(days=1)).replace(hour=7, minute=0, second=0)"/>
+        </record>
+
+        <!-- Daily Expired Certificate Alerts (runs at 7:30 AM) -->
+        <record id="ir_cron_certification_expired_alerts" model="ir.cron">
+            <field name="name">Property Fielder: Send Expired Certificate Alerts</field>
+            <field name="model_id" ref="model_property_fielder_property_certification"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_expired_alerts()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+            <field name="nextcall" eval="(datetime.now() + relativedelta(days=1)).replace(hour=7, minute=30, second=0)"/>
         </record>
 
     </data>
