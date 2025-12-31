@@ -23,8 +23,20 @@
     "test:dispatch-data": "npx playwright test tests/stress/dispatch-test-data.spec.ts --timeout=180000",
     "test:ux-analysis": "npx playwright test tests/ux-analysis/dispatch-ux-analysis.spec.ts --timeout=300000 --headed",
     "test:ux-analysis:headless": "npx playwright test tests/ux-analysis/dispatch-ux-analysis.spec.ts --timeout=300000",
+    "test:link-spider": "npx playwright test tests/ux-analysis/link-spider.spec.ts --timeout=600000 --headed",
+    "test:flutter": "npx playwright test tests/flutter-mobile/ --timeout=300000",
+    "test:flutter:headed": "npx playwright test tests/flutter-mobile/ --timeout=300000 --headed",
+    "test:flutter:stories": "npx playwright test tests/flutter-mobile/stories/ --timeout=300000",
+    "test:flutter:spider": "npx playwright test tests/flutter-mobile/quality/flutter-spider.spec.ts --timeout=300000",
+    "test:flutter:quality": "npx playwright test tests/flutter-mobile/quality/ui-quality-assessment.spec.ts --timeout=300000",
+    "test:flutter:iterate": "npx playwright test tests/flutter-mobile/quality/iterative-assessment.spec.ts --timeout=60000",
+    "test:flutter:auth": "npx playwright test tests/flutter-mobile/stories/inspector-login.spec.ts --timeout=120000",
+    "test:flutter:jobs": "npx playwright test tests/flutter-mobile/stories/job-workflow.spec.ts --timeout=180000",
+    "test:flutter:safety": "npx playwright test tests/flutter-mobile/stories/safety-timer.spec.ts --timeout=180000",
+    "test:flutter:inspection": "npx playwright test tests/flutter-mobile/stories/inspection-template.spec.ts --timeout=180000",
     "report": "npx playwright show-report",
-    "codegen": "npx playwright codegen http://localhost:8069"
+    "codegen": "npx playwright codegen http://localhost:8069",
+    "codegen:flutter": "npx playwright codegen http://localhost:8080"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
