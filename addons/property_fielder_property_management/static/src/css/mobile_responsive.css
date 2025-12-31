@@ -1,0 +1,409 @@
+/* Mobile Responsive Styles for Property Management */
+
+/* ============================================
+   MOBILE BREAKPOINTS
+   - Mobile: max-width 767px
+   - Tablet: 768px - 1024px
+   - Desktop: 1025px+
+   ============================================ */
+
+/* ============================================
+   MOBILE FORM OPTIMIZATIONS
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+    /* Form groups stack vertically on mobile */
+    .o_form_view .o_group {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .o_form_view .o_group .o_group {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Larger touch targets for form fields */
+    .o_form_view .o_field_widget input,
+    .o_form_view .o_field_widget select,
+    .o_form_view .o_field_widget textarea {
+        min-height: 44px !important;
+        font-size: 16px !important; /* Prevents iOS zoom on focus */
+        padding: 10px 12px !important;
+    }
+
+    /* Larger buttons for touch */
+    .o_form_view .o_form_statusbar button,
+    .o_form_view .btn {
+        min-height: 44px !important;
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+    }
+
+    /* Stack statusbar buttons */
+    .o_form_view .o_form_statusbar {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    .o_form_view .o_form_statusbar .o_statusbar_buttons {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    /* Full-width notebook tabs */
+    .o_form_view .o_notebook .nav-tabs {
+        flex-wrap: wrap !important;
+    }
+
+    .o_form_view .o_notebook .nav-tabs .nav-item {
+        flex: 1 1 auto !important;
+        text-align: center !important;
+    }
+
+    /* Larger stat buttons */
+    .o_form_view .oe_button_box .oe_stat_button {
+        min-height: 60px !important;
+        padding: 12px !important;
+    }
+
+    /* Property form specific */
+    .o_property_form .o_group_col_6 {
+        width: 100% !important;
+    }
+
+    /* FLAGE+ status badges - larger on mobile */
+    .flage-status-badge {
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+    }
+
+    /* Property kanban cards - full width */
+    .o_kanban_view .o_kanban_record {
+        width: 100% !important;
+        margin: 8px 0 !important;
+    }
+
+    /* Chatter - full width on mobile */
+    .o_form_view .o_chatter {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Hide chatter by default on mobile */
+    .o_form_view .o_chatter:not(.o_chatter_expanded) {
+        display: none !important;
+    }
+
+    /* Show chatter toggle button prominently */
+    .property-chatter-toggle {
+        position: fixed !important;
+        bottom: 70px !important;
+        right: 16px !important;
+        z-index: 1000 !important;
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 50% !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+}
+
+/* ============================================
+   TABLET OPTIMIZATIONS
+   ============================================ */
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    /* Two-column layout on tablet */
+    .o_form_view .o_group .o_group {
+        width: 50% !important;
+    }
+
+    /* Slightly larger touch targets */
+    .o_form_view .o_field_widget input,
+    .o_form_view .o_field_widget select {
+        min-height: 40px !important;
+    }
+
+    .o_form_view .btn {
+        min-height: 40px !important;
+    }
+}
+
+/* ============================================
+   MOBILE LIST VIEW OPTIMIZATIONS
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+    /* Horizontal scroll for tables */
+    .o_list_view {
+        overflow-x: auto !important;
+    }
+
+    /* Larger row height for touch */
+    .o_list_view tbody tr {
+        min-height: 48px !important;
+    }
+
+    .o_list_view tbody td {
+        padding: 12px 8px !important;
+    }
+
+    /* Hide less important columns on mobile */
+    .o_list_view .o_optional_columns_dropdown {
+        display: block !important;
+    }
+}
+
+/* ============================================
+   MOBILE CALENDAR VIEW
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+    /* Calendar in day/week mode on mobile */
+    .o_calendar_view .fc-toolbar {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    .o_calendar_view .fc-toolbar .fc-button {
+        min-height: 44px !important;
+        padding: 8px 12px !important;
+    }
+}
+
+/* ============================================
+   MOBILE INSPECTION FORM
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+    /* Checklist items - larger touch targets */
+    .inspection-checklist-item {
+        padding: 16px !important;
+        margin-bottom: 12px !important;
+        border-radius: 8px !important;
+    }
+
+    .inspection-checklist-item .o_field_radio {
+        display: flex !important;
+        gap: 12px !important;
+    }
+
+    .inspection-checklist-item .o_field_radio label {
+        min-width: 80px !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border: 2px solid #dee2e6 !important;
+        border-radius: 6px !important;
+        padding: 8px 16px !important;
+    }
+
+    /* Photo capture button - prominent */
+    .inspection-photo-capture {
+        width: 100% !important;
+        min-height: 60px !important;
+        font-size: 16px !important;
+    }
+
+    /* Signature pad - full width */
+    .inspection-signature-pad {
+        width: 100% !important;
+        height: 200px !important;
+    }
+}
+
+/* ============================================
+   MOBILE DISPATCH VIEW
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+    /* Stack dispatch panels vertically */
+    .dispatch-container {
+        flex-direction: column !important;
+    }
+
+    .dispatch-sidebar {
+        width: 100% !important;
+        max-height: 40vh !important;
+        overflow-y: auto !important;
+    }
+
+    .dispatch-map {
+        width: 100% !important;
+        height: 50vh !important;
+    }
+
+    /* Job cards - full width */
+    .dispatch-job-card {
+        width: 100% !important;
+        margin: 8px 0 !important;
+    }
+
+    /* Filter pills - scrollable */
+    .dispatch-filter-pills {
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding-bottom: 8px !important;
+    }
+
+    .dispatch-filter-pill {
+        min-height: 40px !important;
+        padding: 8px 16px !important;
+    }
+}
+
+/* ============================================
+   MOBILE CAMERA WIDGET
+   ============================================ */
+
+.mobile-camera-widget {
+    width: 100%;
+}
+
+.camera-preview-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+}
+
+.camera-video {
+    flex: 1;
+    width: 100%;
+    object-fit: cover;
+}
+
+.camera-canvas {
+    display: none;
+}
+
+.camera-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+
+.camera-btn-capture {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid white !important;
+}
+
+.camera-btn-cancel,
+.camera-btn-switch {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.camera-buttons .btn {
+    min-height: 48px;
+    padding: 12px 24px;
+}
+
+.captured-photos {
+    border-top: 1px solid #dee2e6;
+    padding-top: 12px;
+}
+
+.captured-photo-thumb {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.captured-photo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.captured-photo-thumb .gps-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #4CAF50;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* ============================================
+   TOUCH-FRIENDLY INTERACTIONS
+   ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .o_kanban_record:hover,
+    .o_list_view tbody tr:hover {
+        background-color: inherit !important;
+    }
+
+    /* Add active state instead */
+    .o_kanban_record:active,
+    .o_list_view tbody tr:active {
+        background-color: rgba(113, 75, 103, 0.1) !important;
+    }
+
+    /* Larger click areas */
+    .o_kanban_record {
+        cursor: pointer !important;
+    }
+}
+
+/* ============================================
+   MOBILE MODAL/WIZARD OPTIMIZATIONS
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+    /* Full-screen modals on mobile */
+    .modal-dialog {
+        margin: 0 !important;
+        max-width: 100% !important;
+        height: 100% !important;
+    }
+
+    .modal-content {
+        height: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .modal-body {
+        overflow-y: auto !important;
+        max-height: calc(100vh - 120px) !important;
+    }
+
+    /* Wizard footer - sticky at bottom */
+    .modal-footer {
+        position: sticky !important;
+        bottom: 0 !important;
+        background: white !important;
+        border-top: 1px solid #dee2e6 !important;
+        padding: 12px !important;
+    }
+
+    .modal-footer .btn {
+        flex: 1 !important;
+        min-height: 48px !important;
+    }
+}
+

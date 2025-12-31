@@ -1,0 +1,82 @@
+/* Property Fielder Owner Portal Styles */
+
+/* Property Cards */
+.o_portal_properties .card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.o_portal_properties .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* FLAGE+ Status Badges */
+.badge[title="Fire Safety"],
+.badge[title="Legionella"],
+.badge[title="Asbestos"],
+.badge[title="Gas Safety"],
+.badge[title="Electrical"] {
+    font-weight: bold;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Compliance Status Colors */
+.compliance-compliant {
+    color: #28a745;
+}
+
+.compliance-expiring {
+    color: #ffc107;
+}
+
+.compliance-non-compliant {
+    color: #dc3545;
+}
+
+/* Property Detail Page */
+.o_portal_property_detail .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.o_portal_property_detail .card-header h5 {
+    color: #495057;
+}
+
+/* Certificate Table */
+.o_portal_property_detail .table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Inspection List */
+.o_portal_property_detail .list-group-item {
+    border-left: 3px solid #007bff;
+}
+
+.o_portal_property_detail .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* EPC Rating Badge Colors */
+.badge.epc-a { background-color: #00a651 !important; }
+.badge.epc-b { background-color: #50b848 !important; }
+.badge.epc-c { background-color: #b5d334 !important; }
+.badge.epc-d { background-color: #fff200 !important; color: #333 !important; }
+.badge.epc-e { background-color: #f7941d !important; }
+.badge.epc-f { background-color: #ed1c24 !important; }
+.badge.epc-g { background-color: #be1e2d !important; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .o_portal_properties .card-body h5 {
+        font-size: 1rem;
+    }
+    
+    .o_portal_property_detail dl.row dt,
+    .o_portal_property_detail dl.row dd {
+        padding: 0.25rem 0;
+    }
+}
+

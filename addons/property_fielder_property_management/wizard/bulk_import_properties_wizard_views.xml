@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bulk Import Properties Wizard Form View -->
+    <record id="view_bulk_import_properties_wizard_form" model="ir.ui.view">
+        <field name="name">property_fielder.bulk.import.properties.wizard.form</field>
+        <field name="model">property_fielder.bulk.import.properties.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Bulk Import Properties">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <i class="fa fa-upload text-primary" title="Bulk Import"/>
+                            Bulk Import Properties
+                        </h1>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <h4><i class="fa fa-info-circle"/> CSV Format</h4>
+                        <p>Upload a CSV file with the following columns:</p>
+                        <code>name, street, city, postcode, property_type, bedrooms, bathrooms, floor_area_sqm, owner_name, owner_email, uprn, epc_rating, tenure_type</code>
+                        <p class="mt-2">
+                            <strong>property_type:</strong> house, flat, bungalow, maisonette, studio, hmo, commercial<br/>
+                            <strong>epc_rating:</strong> A, B, C, D, E, F, G<br/>
+                            <strong>tenure_type:</strong> freehold, leasehold, commonhold, shared_ownership
+                        </p>
+                    </div>
+
+                    <group>
+                        <group string="Upload File">
+                            <field name="file" filename="filename"/>
+                            <field name="filename" invisible="1"/>
+                            <button name="action_download_template"
+                                    string="Download Template"
+                                    type="object"
+                                    class="btn-link"
+                                    icon="fa-download"/>
+                        </group>
+                        <group string="Options">
+                            <field name="update_existing"/>
+                            <field name="skip_errors"/>
+                            <field name="create_owners"/>
+                        </group>
+                    </group>
+
+                    <group string="Preview" invisible="not preview_lines">
+                        <field name="preview_lines" nolabel="1" readonly="1"
+                               widget="text" style="font-family: monospace; white-space: pre;"/>
+                    </group>
+
+                    <group string="Result" invisible="not result_message">
+                        <field name="result_message" nolabel="1" readonly="1"
+                               widget="text" style="white-space: pre-wrap;"/>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="action_import"
+                            string="Import Properties"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-upload"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open wizard -->
+    <record id="action_bulk_import_properties_wizard" model="ir.actions.act_window">
+        <field name="name">Bulk Import Properties</field>
+        <field name="res_model">property_fielder.bulk.import.properties.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
+

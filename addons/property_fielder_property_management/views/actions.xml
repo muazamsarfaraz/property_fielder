@@ -39,7 +39,14 @@
         <record id="action_property_certification" model="ir.actions.act_window">
             <field name="name">Certifications</field>
             <field name="res_model">property_fielder.property.certification</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">list,calendar,form</field>
+        </record>
+
+        <record id="action_certification_expiry_calendar" model="ir.actions.act_window">
+            <field name="name">Expiry Calendar</field>
+            <field name="res_model">property_fielder.property.certification</field>
+            <field name="view_mode">calendar,list,form</field>
+            <field name="view_id" ref="property_fielder_property_management.view_property_certification_calendar"/>
         </record>
 
         <record id="action_compliance_requirement" model="ir.actions.act_window">
@@ -52,7 +59,7 @@
         <record id="action_property_inspection" model="ir.actions.act_window">
             <field name="name">Inspections</field>
             <field name="res_model">property_fielder.property.inspection</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">list,calendar,form</field>
             <field name="help" type="html">
                 <div class="o_view_nocontent_empty_folder" style="text-align: center; padding: 40px;">
                     <p style="font-size: 64px; margin-bottom: 20px;">🔍</p>

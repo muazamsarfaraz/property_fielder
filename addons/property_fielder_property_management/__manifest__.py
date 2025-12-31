@@ -54,6 +54,9 @@ Features:
         # Wizards
         'wizard/certification_type_wizard_views.xml',
         'wizard/create_jobs_wizard_views.xml',
+        'wizard/bulk_schedule_wizard_views.xml',
+        'wizard/bulk_upload_certificates_wizard_views.xml',
+        'wizard/bulk_import_properties_wizard_views.xml',
 
         # Actions (must be loaded first)
         'views/actions.xml',
@@ -81,9 +84,12 @@ Features:
             'property_fielder_property_management/static/src/css/photo_gallery.css',
             'property_fielder_property_management/static/src/css/property_map.css',
             'property_fielder_property_management/static/src/css/property_ux_polish.css',
+            'property_fielder_property_management/static/src/css/mobile_responsive.css',
             'property_fielder_property_management/static/src/js/property_chatter.js',
             'property_fielder_property_management/static/src/js/property_map_widget.js',
+            'property_fielder_property_management/static/src/js/mobile_camera.js',
             'property_fielder_property_management/static/src/xml/property_map_widget.xml',
+            'property_fielder_property_management/static/src/xml/mobile_camera.xml',
         ],
     },
     'demo': [],

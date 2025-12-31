@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_property_portal,property_fielder.property.portal,property_fielder_property_management.model_property_fielder_property,base.group_portal,1,0,0,0
+access_certification_portal,property_fielder.property.certification.portal,property_fielder_property_management.model_property_fielder_property_certification,base.group_portal,1,0,0,0
+access_inspection_portal,property_fielder.property.inspection.portal,property_fielder_property_management.model_property_fielder_property_inspection,base.group_portal,1,0,0,0
+

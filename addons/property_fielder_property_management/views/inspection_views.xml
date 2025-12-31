@@ -258,5 +258,25 @@
             </field>
         </record>
 
+        <!-- Inspection Calendar View -->
+        <record id="view_property_inspection_calendar" model="ir.ui.view">
+            <field name="name">property_fielder.property.inspection.calendar</field>
+            <field name="model">property_fielder.property.inspection</field>
+            <field name="arch" type="xml">
+                <calendar string="Inspections Calendar"
+                          date_start="scheduled_date"
+                          color="inspector_id"
+                          mode="month"
+                          quick_create="0"
+                          event_open_popup="1">
+                    <field name="name"/>
+                    <field name="property_id"/>
+                    <field name="certification_type_id"/>
+                    <field name="inspector_id"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+
     </data>
 </odoo>

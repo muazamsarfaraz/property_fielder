@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Portal users can only see their own properties -->
+    <record id="property_portal_rule" model="ir.rule">
+        <field name="name">Property: Portal User Own</field>
+        <field name="model_id" ref="property_fielder_property_management.model_property_fielder_property"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Portal users can only see certifications for their properties -->
+    <record id="certification_portal_rule" model="ir.rule">
+        <field name="name">Certification: Portal User Own Properties</field>
+        <field name="model_id" ref="property_fielder_property_management.model_property_fielder_property_certification"/>
+        <field name="domain_force">[('property_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Portal users can only see inspections for their properties -->
+    <record id="inspection_portal_rule" model="ir.rule">
+        <field name="name">Inspection: Portal User Own Properties</field>
+        <field name="model_id" ref="property_fielder_property_management.model_property_fielder_inspection"/>
+        <field name="domain_force">[('property_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    
+</odoo>
+

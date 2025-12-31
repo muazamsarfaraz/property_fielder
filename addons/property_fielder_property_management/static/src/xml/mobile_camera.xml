@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="property_fielder_property_management.MobileCameraWidget">
+        <div class="mobile-camera-widget">
+            <!-- Camera Preview (when capturing) -->
+            <div t-if="state.isCapturing" class="camera-preview-container">
+                <video t-ref="video" autoplay="true" playsinline="true" class="camera-video"/>
+                <canvas t-ref="canvas" class="camera-canvas d-none"/>
+                
+                <div class="camera-controls">
+                    <button type="button" class="btn btn-lg btn-light camera-btn-cancel" 
+                            t-on-click="stopCamera">
+                        <i class="fa fa-times"/> Cancel
+                    </button>
+                    <button type="button" class="btn btn-lg btn-primary camera-btn-capture" 
+                            t-on-click="capturePhoto">
+                        <i class="fa fa-camera fa-2x"/>
+                    </button>
+                    <button type="button" class="btn btn-lg btn-light camera-btn-switch" 
+                            t-on-click="switchCamera" t-if="state.hasMultipleCameras">
+                        <i class="fa fa-refresh"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Camera Buttons (when not capturing) -->
+            <div t-else="" class="camera-buttons">
+                <t t-if="state.error">
+                    <div class="alert alert-warning mb-2">
+                        <i class="fa fa-exclamation-triangle"/> <t t-esc="state.error"/>
+                    </div>
+                </t>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <!-- Direct Camera Button -->
+                    <button t-if="state.hasCamera" type="button" 
+                            class="btn btn-primary camera-btn-start"
+                            t-on-click="startCamera">
+                        <i class="fa fa-camera"/> Take Photo
+                    </button>
+
+                    <!-- File Upload Button (fallback) -->
+                    <button type="button" class="btn btn-secondary camera-btn-upload"
+                            t-on-click="openFileInput">
+                        <i class="fa fa-upload"/> Upload Photo
+                    </button>
+
+                    <input t-ref="fileInput" type="file" 
+                           accept="image/*" 
+                           capture="environment"
+                           t-att-multiple="props.multiple"
+                           class="d-none"
+                           t-on-change="onFileSelect"/>
+                </div>
+
+                <!-- Captured Photos Preview -->
+                <div t-if="state.capturedPhotos.length" class="captured-photos mt-3">
+                    <h6>Captured Photos (<t t-esc="state.capturedPhotos.length"/>)</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <t t-foreach="state.capturedPhotos" t-as="photo" t-key="photo.timestamp">
+                            <div class="captured-photo-thumb">
+                                <img t-att-src="photo.dataUrl" alt="Captured photo"/>
+                                <span t-if="photo.latitude" class="gps-badge" title="GPS captured">
+                                    <i class="fa fa-map-marker"/>
+                                </span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
+

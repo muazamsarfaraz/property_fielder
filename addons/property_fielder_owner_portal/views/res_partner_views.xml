@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extend Partner Form with Owner Portal Fields -->
+    <record id="view_partner_form_owner_portal" model="ir.ui.view">
+        <field name="name">res.partner.form.owner.portal</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='internal_notes']" position="after">
+                <page string="Owner Portal" name="owner_portal"
+                      invisible="not is_property_owner">
+                    <group>
+                        <group string="Portal Access">
+                            <field name="is_property_owner"/>
+                            <field name="owner_portal_access"/>
+                            <button name="action_grant_portal_access" 
+                                    string="Grant Portal Access"
+                                    type="object"
+                                    class="btn-primary"
+                                    invisible="owner_portal_access"/>
+                        </group>
+                        <group string="Notification Preferences">
+                            <field name="owner_notify_compliance"/>
+                            <field name="owner_notify_inspection"/>
+                            <field name="owner_notify_certificate"/>
+                        </group>
+                    </group>
+                    <group string="Owned Properties">
+                        <field name="owned_property_count" readonly="1"/>
+                        <field name="owned_property_ids" nolabel="1" colspan="2">
+                            <list>
+                                <field name="name"/>
+                                <field name="city"/>
+                                <field name="compliance_status" widget="badge"
+                                       decoration-success="compliance_status == 'compliant'"
+                                       decoration-warning="compliance_status == 'expiring_soon'"
+                                       decoration-danger="compliance_status in ('expired', 'non_compliant')"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Add is_property_owner to partner search -->
+    <record id="view_partner_search_owner" model="ir.ui.view">
+        <field name="name">res.partner.search.owner</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='type_company']" position="after">
+                <separator/>
+                <filter string="Property Owners" name="property_owners"
+                        domain="[('is_property_owner', '=', True)]"/>
+                <filter string="Portal Access" name="portal_access"
+                        domain="[('owner_portal_access', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>
+

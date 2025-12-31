@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bulk Schedule Inspections Wizard Form View -->
+    <record id="view_bulk_schedule_wizard_form" model="ir.ui.view">
+        <field name="name">property_fielder.bulk.schedule.wizard.form</field>
+        <field name="model">property_fielder.bulk.schedule.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Bulk Schedule Inspections">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <i class="fa fa-calendar-plus text-primary" title="Bulk Schedule"/>
+                            Bulk Schedule Inspections
+                        </h1>
+                    </div>
+
+                    <group string="Find Properties with Expiring Certifications">
+                        <group>
+                            <label for="days_ahead_min"/>
+                            <div class="o_row">
+                                <field name="days_ahead_min" class="oe_inline"/>
+                                <span class="oe_inline">to</span>
+                                <field name="days_ahead_max" class="oe_inline"/>
+                                <span class="oe_inline">days from now</span>
+                            </div>
+                            <field name="certification_type_ids" widget="many2many_tags"
+                                   placeholder="All certification types"/>
+                        </group>
+                        <group>
+                            <button name="action_find_properties"
+                                    string="Find Properties"
+                                    type="object"
+                                    class="btn-secondary"
+                                    icon="fa-search"/>
+                        </group>
+                    </group>
+
+                    <group string="Scheduling Options">
+                        <group>
+                            <field name="scheduled_date" required="1"/>
+                            <field name="time_slot"/>
+                        </group>
+                        <group>
+                            <field name="property_count" readonly="1"/>
+                            <field name="certification_count" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Selected Properties" name="properties">
+                            <field name="property_ids" nolabel="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                    <field name="postcode"/>
+                                    <field name="compliance_status" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <footer>
+                    <button name="action_schedule_inspections"
+                            string="Schedule Inspections"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-calendar-check-o"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open wizard from Property list -->
+    <record id="action_bulk_schedule_wizard" model="ir.actions.act_window">
+        <field name="name">Bulk Schedule Inspections</field>
+        <field name="res_model">property_fielder.bulk.schedule.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_property_fielder_property"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+    <!-- Standalone menu action -->
+    <record id="action_bulk_schedule_wizard_menu" model="ir.actions.act_window">
+        <field name="name">Bulk Schedule Inspections</field>
+        <field name="res_model">property_fielder.bulk.schedule.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
+

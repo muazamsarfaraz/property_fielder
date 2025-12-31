@@ -123,6 +123,23 @@
                                 </div>
                                 <field name="color" widget="color_picker"/>
                             </group>
+                            <group string="Alert Thresholds">
+                                <label for="alert_days_notice"/>
+                                <div class="o_row">
+                                    <field name="alert_days_notice" class="oe_inline"/>
+                                    <span class="oe_inline">days (advance notice)</span>
+                                </div>
+                                <label for="alert_days_warning"/>
+                                <div class="o_row">
+                                    <field name="alert_days_warning" class="oe_inline"/>
+                                    <span class="oe_inline">days (warning)</span>
+                                </div>
+                                <label for="alert_days_urgent"/>
+                                <div class="o_row">
+                                    <field name="alert_days_urgent" class="oe_inline"/>
+                                    <span class="oe_inline">days (urgent)</span>
+                                </div>
+                            </group>
                         </group>
                         <group string="Description">
                             <field name="description" nolabel="1" placeholder="Describe what this certification covers, legal requirements, etc."/>
@@ -351,6 +368,26 @@
                     <field name="flage_category" type="row"/>
                     <field name="status" type="col"/>
                 </pivot>
+            </field>
+        </record>
+
+        <!-- Certification Calendar View - Expiry Dates -->
+        <record id="view_property_certification_calendar" model="ir.ui.view">
+            <field name="name">property_fielder.property.certification.calendar</field>
+            <field name="model">property_fielder.property.certification</field>
+            <field name="arch" type="xml">
+                <calendar string="Certificate Expiry Calendar"
+                          date_start="expiry_date"
+                          color="flage_category"
+                          mode="month"
+                          quick_create="0"
+                          event_open_popup="1">
+                    <field name="name"/>
+                    <field name="property_id"/>
+                    <field name="certification_type_id"/>
+                    <field name="status"/>
+                    <field name="days_until_expiry"/>
+                </calendar>
             </field>
         </record>
 

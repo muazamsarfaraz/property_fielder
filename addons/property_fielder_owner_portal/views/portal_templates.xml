@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Add Properties to Portal Home -->
+    <template id="portal_my_home_properties" name="Show Properties" 
+              inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'fa fa-building'"/>
+                <t t-set="title">Properties</t>
+                <t t-set="url" t-value="'/my/properties'"/>
+                <t t-set="text">View your property portfolio</t>
+                <t t-set="placeholder_count" t-value="'property_count'"/>
+            </t>
+        </xpath>
+    </template>
+    
+    <!-- Properties List Page -->
+    <template id="portal_my_properties" name="My Properties">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">My Properties</t>
+            </t>
+            
+            <t t-if="not properties">
+                <div class="alert alert-info" role="alert">
+                    <i class="fa fa-info-circle"/> You don't have any properties yet.
+                </div>
+            </t>
+            
+            <t t-if="properties">
+                <div class="row">
+                    <t t-foreach="properties" t-as="prop">
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <!-- Property Image -->
+                                <t t-if="prop.main_image">
+                                    <img t-att-src="'/web/image/property_fielder.property/%s/main_image/300x200' % prop.id"
+                                         class="card-img-top" alt="Property Image" style="height: 150px; object-fit: cover;"/>
+                                </t>
+                                <t t-else="">
+                                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
+                                         style="height: 150px;">
+                                        <i class="fa fa-building fa-3x text-white"/>
+                                    </div>
+                                </t>
+                                
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a t-att-href="'/my/properties/%s' % prop.id">
+                                            <t t-esc="prop.name"/>
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-muted small">
+                                        <i class="fa fa-map-marker"/> 
+                                        <t t-esc="prop.city"/>
+                                        <t t-if="prop.zip">, <t t-esc="prop.zip"/></t>
+                                    </p>
+                                    
+                                    <!-- Compliance Status Badge -->
+                                    <div class="mb-2">
+                                        <t t-if="prop.compliance_status == 'compliant'">
+                                            <span class="badge bg-success">
+                                                <i class="fa fa-check"/> Compliant
+                                            </span>
+                                        </t>
+                                        <t t-elif="prop.compliance_status == 'expiring_soon'">
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fa fa-clock-o"/> Expiring Soon
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-danger">
+                                                <i class="fa fa-exclamation-triangle"/> Non-Compliant
+                                            </span>
+                                        </t>
+                                    </div>
+                                    
+                                    <!-- FLAGE+ Status Icons -->
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <span t-att-class="'badge ' + ('bg-success' if prop.flage_fire_status == 'valid' else 'bg-warning' if prop.flage_fire_status == 'expiring' else 'bg-danger')"
+                                              title="Fire Safety">F</span>
+                                        <span t-att-class="'badge ' + ('bg-success' if prop.flage_legionella_status == 'valid' else 'bg-warning' if prop.flage_legionella_status == 'expiring' else 'bg-danger')"
+                                              title="Legionella">L</span>
+                                        <span t-att-class="'badge ' + ('bg-success' if prop.flage_asbestos_status == 'valid' else 'bg-warning' if prop.flage_asbestos_status == 'expiring' else 'bg-danger')"
+                                              title="Asbestos">A</span>
+                                        <span t-att-class="'badge ' + ('bg-success' if prop.flage_gas_status == 'valid' else 'bg-warning' if prop.flage_gas_status == 'expiring' else 'bg-danger')"
+                                              title="Gas Safety">G</span>
+                                        <span t-att-class="'badge ' + ('bg-success' if prop.flage_electrical_status == 'valid' else 'bg-warning' if prop.flage_electrical_status == 'expiring' else 'bg-danger')"
+                                              title="Electrical">E</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer bg-transparent">
+                                    <a t-att-href="'/my/properties/%s' % prop.id" class="btn btn-primary btn-sm w-100">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                
+                <!-- Pager -->
+                <div class="d-flex justify-content-center">
+                    <t t-call="portal.pager"/>
+                </div>
+            </t>
+        </t>
+    </template>
+    
+    <!-- Property Detail Page -->
+    <template id="portal_property_detail" name="Property Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_fullwidth_alert" t-value="True"/>
+            
+            <div class="row mb-4">
+                <div class="col">
+                    <h2>
+                        <a href="/my/properties" class="text-muted">
+                            <i class="fa fa-arrow-left"/>
+                        </a>
+                        <t t-esc="property.name"/>
+                    </h2>
+                    <p class="text-muted">
+                        <i class="fa fa-map-marker"/> 
+                        <t t-esc="property.street"/>, 
+                        <t t-esc="property.city"/>
+                        <t t-if="property.zip">, <t t-esc="property.zip"/></t>
+                    </p>
+                </div>
+                <div class="col-auto">
+                    <!-- Overall Compliance Badge -->
+                    <t t-if="property.compliance_status == 'compliant'">
+                        <span class="badge bg-success fs-5 p-2">
+                            <i class="fa fa-check-circle"/> Fully Compliant
+                        </span>
+                    </t>
+                    <t t-elif="property.compliance_status == 'expiring_soon'">
+                        <span class="badge bg-warning text-dark fs-5 p-2">
+                            <i class="fa fa-clock-o"/> Certificates Expiring
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <span class="badge bg-danger fs-5 p-2">
+                            <i class="fa fa-exclamation-triangle"/> Action Required
+                        </span>
+                    </t>
+                </div>
+            </div>
+            
+            <!-- Certifications Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fa fa-certificate"/> Certifications (FLAGE+)</h5>
+                </div>
+                <div class="card-body">
+                    <t t-if="not certifications">
+                        <p class="text-muted">No certifications on file.</p>
+                    </t>
+                    <t t-else="">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Issue Date</th>
+                                        <th>Expiry Date</th>
+                                        <th>Certificate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="certifications" t-as="cert">
+                                        <tr>
+                                            <td><t t-esc="cert.certification_type_id.name"/></td>
+                                            <td>
+                                                <t t-if="cert.status == 'valid'">
+                                                    <span class="badge bg-success">Valid</span>
+                                                </t>
+                                                <t t-elif="cert.status == 'expiring'">
+                                                    <span class="badge bg-warning text-dark">Expiring</span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="badge bg-danger">Expired</span>
+                                                </t>
+                                            </td>
+                                            <td><t t-esc="cert.issue_date" t-options="{'widget': 'date'}"/></td>
+                                            <td><t t-esc="cert.expiry_date" t-options="{'widget': 'date'}"/></td>
+                                            <td>
+                                                <t t-if="cert.certificate_file">
+                                                    <a t-att-href="'/my/properties/%s/certificate/%s/download' % (property.id, cert.id)"
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="fa fa-download"/> Download
+                                                    </a>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="text-muted">Not available</span>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Upcoming Inspections Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fa fa-calendar"/> Upcoming Inspections</h5>
+                </div>
+                <div class="card-body">
+                    <t t-if="not inspections">
+                        <p class="text-muted">No upcoming inspections scheduled.</p>
+                    </t>
+                    <t t-else="">
+                        <div class="list-group">
+                            <t t-foreach="inspections" t-as="insp">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1"><t t-esc="insp.certification_type_id.name"/> Inspection</h6>
+                                        <small class="text-muted">
+                                            <i class="fa fa-calendar"/>
+                                            <t t-esc="insp.scheduled_date" t-options="{'widget': 'date'}"/>
+                                        </small>
+                                    </div>
+                                    <span t-att-class="'badge ' + ('bg-info' if insp.state == 'scheduled' else 'bg-secondary')">
+                                        <t t-esc="insp.state"/>
+                                    </span>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Property Details Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fa fa-info-circle"/> Property Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">Property Type</dt>
+                                <dd class="col-sm-7"><t t-esc="property.property_type" t-if="property.property_type"/></dd>
+
+                                <dt class="col-sm-5">Bedrooms</dt>
+                                <dd class="col-sm-7"><t t-esc="property.bedrooms"/></dd>
+
+                                <dt class="col-sm-5">Bathrooms</dt>
+                                <dd class="col-sm-7"><t t-esc="property.bathrooms"/></dd>
+
+                                <dt class="col-sm-5">Floor Area</dt>
+                                <dd class="col-sm-7"><t t-esc="property.floor_area"/> sqm</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">EPC Rating</dt>
+                                <dd class="col-sm-7">
+                                    <span t-att-class="'badge ' + ('bg-success' if property.epc_rating in ['A', 'B', 'C'] else 'bg-warning' if property.epc_rating in ['D', 'E'] else 'bg-danger')">
+                                        <t t-esc="property.epc_rating" t-if="property.epc_rating"/>
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-5">UPRN</dt>
+                                <dd class="col-sm-7"><t t-esc="property.uprn" t-if="property.uprn"/></dd>
+
+                                <dt class="col-sm-5">Council Tax Band</dt>
+                                <dd class="col-sm-7"><t t-esc="property.council_tax_band" t-if="property.council_tax_band"/></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
+

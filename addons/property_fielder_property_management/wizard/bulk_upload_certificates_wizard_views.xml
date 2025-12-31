@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bulk Upload Certificates Wizard Form View -->
+    <record id="view_bulk_upload_certificates_wizard_form" model="ir.ui.view">
+        <field name="name">property_fielder.bulk.upload.certificates.wizard.form</field>
+        <field name="model">property_fielder.bulk.upload.certificates.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Bulk Upload Certificates">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <i class="fa fa-upload text-primary" title="Bulk Upload"/>
+                            Bulk Upload Certificates
+                        </h1>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <h4><i class="fa fa-info-circle"/> CSV Format</h4>
+                        <p>Upload a CSV file with the following columns:</p>
+                        <code>property_ref, certification_type_code, certificate_number, issue_date, expiry_date, issuer, notes</code>
+                        <p class="mt-2">
+                            <strong>property_ref:</strong> Property name or UPRN<br/>
+                            <strong>certification_type_code:</strong> GSC, EICR, EPC, FRA, etc.<br/>
+                            <strong>Dates:</strong> YYYY-MM-DD format
+                        </p>
+                    </div>
+
+                    <group>
+                        <group string="Upload File">
+                            <field name="file" filename="filename"/>
+                            <field name="filename" invisible="1"/>
+                            <button name="action_download_template"
+                                    string="Download Template"
+                                    type="object"
+                                    class="btn-link"
+                                    icon="fa-download"/>
+                        </group>
+                        <group string="Options">
+                            <field name="update_existing"/>
+                            <field name="skip_errors"/>
+                        </group>
+                    </group>
+
+                    <group string="Preview" invisible="not preview_lines">
+                        <field name="preview_lines" nolabel="1" readonly="1"
+                               widget="text" style="font-family: monospace; white-space: pre;"/>
+                    </group>
+
+                    <group string="Result" invisible="not result_message">
+                        <field name="result_message" nolabel="1" readonly="1"
+                               widget="text" style="white-space: pre-wrap;"/>
+                    </group>
+                </sheet>
+
+                <footer>
+                    <button name="action_upload"
+                            string="Upload Certificates"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-upload"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open wizard -->
+    <record id="action_bulk_upload_certificates_wizard" model="ir.actions.act_window">
+        <field name="name">Bulk Upload Certificates</field>
+        <field name="res_model">property_fielder.bulk.upload.certificates.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
+
