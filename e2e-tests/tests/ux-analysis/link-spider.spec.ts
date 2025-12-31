@@ -55,32 +55,58 @@ async function waitForOdooLoad(page: Page): Promise<void> {
 }
 
 async function login(page: Page): Promise<void> {
-  await page.goto(`${BASE_URL}/web/login`);
-  await page.waitForLoadState('domcontentloaded');
-  await page.waitForTimeout(500);
+  // Navigate to the property_fielder database directly
+  await page.goto(`${BASE_URL}/odoo?db=property_fielder`, { waitUntil: 'load' });
+  await page.waitForTimeout(2000);
 
-  // Odoo 19 shows a user selection screen first
-  const userButton = page.locator('button:has-text("admin")');
-  if (await userButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await userButton.click();
-    await page.waitForTimeout(300);
+  // Check if we're on a database selector page
+  const dbLink = page.locator('a[href*="db=property_fielder"]');
+  if (await dbLink.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await dbLink.click();
+    await page.waitForTimeout(1000);
   }
 
-  const loginInput = page.locator('input[name="login"], input[placeholder*="email" i]').first();
-  if (await loginInput.isVisible({ timeout: 1000 }).catch(() => false)) {
-    await loginInput.fill(USERNAME);
+  // Check if we need to login
+  const url = page.url();
+  if (url.includes('/web/login')) {
+    await page.waitForTimeout(1500); // Wait for login form JS to load
+
+    // Wait for login input to be in DOM
+    const loginInput = page.locator('input[name="login"]');
+    try {
+      await loginInput.waitFor({ state: 'attached', timeout: 10000 });
+    } catch {
+      console.log('Login input not found, may already be logged in');
+      return;
+    }
+
+    // Odoo 19 form may not be visible due to CSS - use evaluate to fill
+    await page.evaluate((credentials) => {
+      const loginEl = document.querySelector('input[name="login"]') as HTMLInputElement;
+      const passEl = document.querySelector('input[name="password"]') as HTMLInputElement;
+      if (loginEl) loginEl.value = credentials.login;
+      if (passEl) passEl.value = credentials.password;
+      // Trigger input events
+      loginEl?.dispatchEvent(new Event('input', { bubbles: true }));
+      passEl?.dispatchEvent(new Event('input', { bubbles: true }));
+    }, { login: USERNAME, password: PASSWORD });
+
+    // Click login button via evaluate
+    await page.evaluate(() => {
+      const btn = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+      if (btn) btn.click();
+    });
+
+    await waitForOdooLoad(page);
   }
 
-  const passwordInput = page.locator('input[name="password"], input[type="password"]').first();
-  await passwordInput.fill(PASSWORD);
-
-  await page.getByRole('button', { name: 'Log in' }).click();
-  await waitForOdooLoad(page);
-  await page.waitForURL(/\/odoo\/|\/web(?!\/login)/, { timeout: 15000 });
+  // Wait for main Odoo interface
+  await page.waitForURL(/\/odoo\//, { timeout: 15000 });
 }
 
 async function openAppsMenu(page: Page): Promise<void> {
-  const homeBtn = page.locator('nav button').first();
+  // Odoo 19 uses a Home Menu button with title="Home Menu"
+  const homeBtn = page.getByTitle('Home Menu');
   await homeBtn.click();
   await page.waitForTimeout(500);
 }

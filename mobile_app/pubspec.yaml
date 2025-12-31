@@ -21,8 +21,6 @@ dependencies:
   
   # HTTP & API
   dio: ^5.4.0
-  retrofit: ^4.0.3
-  json_annotation: ^4.8.1
   
   # Local Storage
   hive: ^2.2.3
@@ -65,24 +63,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
-  
-  # Code Generation
-  build_runner: ^2.4.7
-  retrofit_generator: ^8.0.4
-  json_serializable: ^6.7.1
-  hive_generator: ^2.0.1
 
 flutter:
   uses-material-design: true
-  
-  assets:
-    - assets/images/
-    - assets/icons/
-  
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: fonts/Roboto-Regular.ttf
-        - asset: fonts/Roboto-Bold.ttf
-          weight: 700
+
+  # Assets will be added as needed
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
 
