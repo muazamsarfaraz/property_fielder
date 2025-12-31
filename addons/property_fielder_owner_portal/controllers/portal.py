@@ -97,7 +97,7 @@ class OwnerPortal(CustomerPortal):
         ])
         
         # Get upcoming inspections
-        inspections = request.env['property_fielder.inspection'].search([
+        inspections = request.env['property_fielder.property.inspection'].search([
             ('property_id', '=', property_id),
             ('state', 'in', ['draft', 'scheduled'])
         ], order='scheduled_date asc', limit=5)
