@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Appointment Confirmation Template -->
+        <record id="sms_template_confirmation" model="property_fielder.sms.template">
+            <field name="name">Appointment Confirmation</field>
+            <field name="code">appointment_confirmation</field>
+            <field name="template_type">confirmation</field>
+            <field name="message_body">Hi {owner_name}, your {job_type} is scheduled for {scheduled_date} between {scheduled_time} at {property_address}. Reply YES to confirm or call {company_phone} to reschedule. - {company_name}</field>
+        </record>
+        
+        <!-- Appointment Reminder Template -->
+        <record id="sms_template_reminder" model="property_fielder.sms.template">
+            <field name="name">Appointment Reminder</field>
+            <field name="code">appointment_reminder</field>
+            <field name="template_type">reminder</field>
+            <field name="message_body">Reminder: Your {job_type} is tomorrow ({scheduled_date}) between {scheduled_time} at {property_address}. {inspector_name} will be attending. - {company_name}</field>
+        </record>
+        
+        <!-- Reschedule Notification Template -->
+        <record id="sms_template_reschedule" model="property_fielder.sms.template">
+            <field name="name">Reschedule Notification</field>
+            <field name="code">appointment_reschedule</field>
+            <field name="template_type">reschedule</field>
+            <field name="message_body">Hi {owner_name}, your {job_type} has been rescheduled to {scheduled_date} between {scheduled_time}. Reply YES to confirm or call {company_phone}. - {company_name}</field>
+        </record>
+        
+        <!-- Inspection Complete Template -->
+        <record id="sms_template_completion" model="property_fielder.sms.template">
+            <field name="name">Inspection Complete</field>
+            <field name="code">inspection_complete</field>
+            <field name="template_type">completion</field>
+            <field name="message_body">Hi {owner_name}, your {job_type} at {property_address} has been completed. Your certificate will be sent shortly. Thank you! - {company_name}</field>
+        </record>
+        
+        <!-- Cancelled Template -->
+        <record id="sms_template_cancelled" model="property_fielder.sms.template">
+            <field name="name">Appointment Cancelled</field>
+            <field name="code">appointment_cancelled</field>
+            <field name="template_type">cancelled</field>
+            <field name="message_body">Hi {owner_name}, your {job_type} scheduled for {scheduled_date} at {property_address} has been cancelled. Please call {company_phone} to reschedule. - {company_name}</field>
+        </record>
+        
+    </data>
+</odoo>
+

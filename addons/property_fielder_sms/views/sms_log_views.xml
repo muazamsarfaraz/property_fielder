@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- SMS Log Form View -->
+    <record id="view_sms_log_form" model="ir.ui.view">
+        <field name="name">property_fielder.sms.log.form</field>
+        <field name="model">property_fielder.sms.log</field>
+        <field name="arch" type="xml">
+            <form string="SMS Log" create="0" edit="0">
+                <header>
+                    <field name="status" widget="statusbar" statusbar_visible="pending,sent,delivered"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Message Details">
+                            <field name="direction"/>
+                            <field name="message_type" widget="badge"/>
+                            <field name="to_number"/>
+                            <field name="from_number"/>
+                        </group>
+                        <group string="Status">
+                            <field name="sent_time"/>
+                            <field name="delivered_time"/>
+                            <field name="twilio_sid"/>
+                            <field name="segment_count"/>
+                        </group>
+                    </group>
+                    <group string="Message Body">
+                        <field name="message_body" nolabel="1" readonly="1"/>
+                    </group>
+                    <group string="Related Records">
+                        <field name="job_id"/>
+                        <field name="partner_id"/>
+                        <field name="template_id"/>
+                    </group>
+                    <group string="Error" invisible="not error_message">
+                        <field name="error_message" nolabel="1" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- SMS Log List View -->
+    <record id="view_sms_log_list" model="ir.ui.view">
+        <field name="name">property_fielder.sms.log.list</field>
+        <field name="model">property_fielder.sms.log</field>
+        <field name="arch" type="xml">
+            <list string="SMS Log" create="0" edit="0" decoration-success="status == 'delivered'" decoration-info="status == 'sent'" decoration-danger="status == 'failed'" decoration-muted="status == 'pending'">
+                <field name="create_date" string="Date"/>
+                <field name="direction" widget="badge"/>
+                <field name="to_number"/>
+                <field name="message_type" widget="badge"/>
+                <field name="message_body" optional="hide"/>
+                <field name="job_id"/>
+                <field name="partner_id"/>
+                <field name="status" widget="badge"/>
+                <field name="segment_count"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- SMS Log Search View -->
+    <record id="view_sms_log_search" model="ir.ui.view">
+        <field name="name">property_fielder.sms.log.search</field>
+        <field name="model">property_fielder.sms.log</field>
+        <field name="arch" type="xml">
+            <search string="Search SMS Log">
+                <field name="to_number"/>
+                <field name="message_body"/>
+                <field name="job_id"/>
+                <field name="partner_id"/>
+                <filter string="Sent" name="sent" domain="[('status', '=', 'sent')]"/>
+                <filter string="Delivered" name="delivered" domain="[('status', '=', 'delivered')]"/>
+                <filter string="Failed" name="failed" domain="[('status', '=', 'failed')]"/>
+                <separator/>
+                <filter string="Outbound" name="outbound" domain="[('direction', '=', 'outbound')]"/>
+                <filter string="Inbound" name="inbound" domain="[('direction', '=', 'inbound')]"/>
+                <separator/>
+                <filter string="Today" name="today" domain="[('create_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
+                    <filter string="Type" name="group_type" context="{'group_by': 'message_type'}"/>
+                    <filter string="Job" name="group_job" context="{'group_by': 'job_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_sms_log" model="ir.actions.act_window">
+        <field name="name">SMS Log</field>
+        <field name="res_model">property_fielder.sms.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_today': 1}</field>
+    </record>
+    
+</odoo>
+

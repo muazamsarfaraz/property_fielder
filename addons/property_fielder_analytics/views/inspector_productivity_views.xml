@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inspector Productivity Summary Form -->
+    <record id="view_inspector_productivity_summary_form" model="ir.ui.view">
+        <field name="name">property_fielder.inspector.productivity.summary.form</field>
+        <field name="model">property_fielder.inspector.productivity.summary</field>
+        <field name="arch" type="xml">
+            <form string="Inspector Productivity Report">
+                <sheet>
+                    <group>
+                        <group string="Date Range">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="Filters">
+                            <field name="inspector_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <div class="oe_button_box">
+                        <button name="action_generate_report" string="Generate Report" type="object" class="btn-primary"/>
+                    </div>
+                    <notebook>
+                        <page string="Results" name="results">
+                            <field name="line_ids">
+                                <list string="Productivity by Inspector" editable="bottom">
+                                    <field name="inspector_id"/>
+                                    <field name="jobs_assigned"/>
+                                    <field name="jobs_completed"/>
+                                    <field name="jobs_cancelled"/>
+                                    <field name="completion_rate" widget="progressbar"/>
+                                    <field name="total_duration"/>
+                                    <field name="avg_duration"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Pivot View for Inspector Productivity -->
+    <record id="view_inspector_productivity_pivot" model="ir.ui.view">
+        <field name="name">property_fielder.inspector.productivity.pivot</field>
+        <field name="model">property_fielder.inspector.productivity</field>
+        <field name="arch" type="xml">
+            <pivot string="Inspector Productivity">
+                <field name="inspector_id" type="row"/>
+                <field name="date" type="col" interval="month"/>
+                <field name="jobs_completed" type="measure"/>
+                <field name="completion_rate" type="measure"/>
+                <field name="avg_duration_minutes" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    <!-- Graph View for Inspector Productivity -->
+    <record id="view_inspector_productivity_graph" model="ir.ui.view">
+        <field name="name">property_fielder.inspector.productivity.graph</field>
+        <field name="model">property_fielder.inspector.productivity</field>
+        <field name="arch" type="xml">
+            <graph string="Inspector Productivity" type="bar">
+                <field name="inspector_name"/>
+                <field name="jobs_completed" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    
+    <!-- List View -->
+    <record id="view_inspector_productivity_list" model="ir.ui.view">
+        <field name="name">property_fielder.inspector.productivity.list</field>
+        <field name="model">property_fielder.inspector.productivity</field>
+        <field name="arch" type="xml">
+            <list string="Inspector Productivity">
+                <field name="inspector_name"/>
+                <field name="date"/>
+                <field name="jobs_assigned"/>
+                <field name="jobs_completed"/>
+                <field name="completion_rate" widget="progressbar"/>
+                <field name="on_time_rate" widget="progressbar"/>
+                <field name="avg_duration_minutes"/>
+                <field name="route_count"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Actions -->
+    <record id="action_inspector_productivity" model="ir.actions.act_window">
+        <field name="name">Inspector Productivity</field>
+        <field name="res_model">property_fielder.inspector.productivity</field>
+        <field name="view_mode">pivot,graph,list</field>
+    </record>
+    
+    <record id="action_productivity_report" model="ir.actions.act_window">
+        <field name="name">Productivity Report</field>
+        <field name="res_model">property_fielder.inspector.productivity.summary</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+    
+</odoo>
+

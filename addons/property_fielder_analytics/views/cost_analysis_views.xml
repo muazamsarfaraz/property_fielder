@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Cost Analysis Form -->
+    <record id="view_cost_analysis_form" model="ir.ui.view">
+        <field name="name">property_fielder.cost.analysis.form</field>
+        <field name="model">property_fielder.cost.analysis</field>
+        <field name="arch" type="xml">
+            <form string="Cost Analysis">
+                <sheet>
+                    <group>
+                        <group string="Date Range">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="Filters">
+                            <field name="inspector_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Cost Parameters">
+                            <field name="hourly_rate"/>
+                            <field name="mileage_rate"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Summary Stats -->
+                    <group string="Summary">
+                        <group>
+                            <field name="total_jobs"/>
+                            <field name="total_routes"/>
+                            <field name="total_hours"/>
+                            <field name="total_miles"/>
+                        </group>
+                        <group>
+                            <field name="labor_cost"/>
+                            <field name="mileage_cost"/>
+                            <field name="total_cost"/>
+                            <field name="cost_per_job"/>
+                        </group>
+                    </group>
+                    
+                    <div class="oe_button_box">
+                        <button name="action_generate_breakdown" string="Generate Breakdown" type="object" class="btn-primary"/>
+                    </div>
+                    
+                    <notebook>
+                        <page string="Cost by Inspector" name="inspector_costs">
+                            <field name="inspector_cost_ids">
+                                <list string="Cost by Inspector">
+                                    <field name="inspector_id"/>
+                                    <field name="jobs_count"/>
+                                    <field name="routes_count"/>
+                                    <field name="hours"/>
+                                    <field name="miles"/>
+                                    <field name="labor_cost"/>
+                                    <field name="mileage_cost"/>
+                                    <field name="total_cost" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_cost_analysis" model="ir.actions.act_window">
+        <field name="name">Cost Analysis</field>
+        <field name="res_model">property_fielder.cost.analysis</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+    
+</odoo>
+

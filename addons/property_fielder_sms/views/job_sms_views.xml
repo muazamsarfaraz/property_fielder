@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Extend Job Form with SMS buttons -->
+    <record id="view_job_form_sms" model="ir.ui.view">
+        <field name="name">property_fielder.job.form.sms</field>
+        <field name="model">property_fielder.job</field>
+        <field name="inherit_id" ref="property_fielder_field_service.view_field_service_job_form"/>
+        <field name="arch" type="xml">
+            <!-- Add SMS stat button -->
+            <xpath expr="//sheet" position="inside">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_sms_log" type="object" class="oe_stat_button" icon="fa-comments">
+                        <field name="sms_count" widget="statinfo" string="SMS"/>
+                    </button>
+                </div>
+            </xpath>
+            
+            <!-- Add SMS action buttons in header -->
+            <xpath expr="//header/button[@name='action_request_change']" position="after">
+                <button name="action_send_confirmation_sms" string="Send Confirmation SMS" type="object"
+                        class="btn-secondary" icon="fa-paper-plane"
+                        invisible="state in ('completed', 'cancelled')"/>
+                <button name="action_send_reminder_sms" string="Send Reminder SMS" type="object"
+                        class="btn-secondary" icon="fa-bell"
+                        invisible="state in ('completed', 'cancelled')"/>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>
+

@@ -57,6 +57,7 @@ Features:
         'wizard/bulk_schedule_wizard_views.xml',
         'wizard/bulk_upload_certificates_wizard_views.xml',
         'wizard/bulk_import_properties_wizard_views.xml',
+        'wizard/email_report_wizard_views.xml',
 
         # Actions (must be loaded first)
         'views/actions.xml',

@@ -41,6 +41,9 @@ Fault Code Categories:
         # Data
         'data/ir_sequence_data.xml',
         'data/fault_code_data.xml',
+        'data/contractor_email_template.xml',
+        # Wizards
+        'wizards/assign_contractor_wizard_views.xml',
         # Views
         'views/fault_code_views.xml',
         'views/defect_views.xml',

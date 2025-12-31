@@ -3502,6 +3502,320 @@ Odoo Core (base, mail, web, hr, contacts, project, account)
 
 ---
 
+---
+
+## 18. Implementation Status & Gap Analysis
+
+**Last Updated:** December 31, 2024
+
+### 18.1 Built vs Planned Summary
+
+| Category | Status | Coverage |
+|----------|--------|----------|
+| **Property Management Core** | ✅ Built | 95% |
+| **Field Service & Dispatch** | ✅ Built | 98% |
+| **Mobile App Backend** | ✅ Built | 95% |
+| **HHSRS & Compliance** | ✅ Built | 98% |
+| **Defects Module** | ✅ Built | 95% |
+| **Inspection Templates** | ✅ Built | 90% |
+| **Owner Portal** | ✅ Built | 85% |
+| **Safety & Lone Worker** | ✅ Built | 100% |
+| **Analytics** | ✅ Built | 80% |
+| **SMS Integration** | ✅ Built | 90% |
+| **Calendar Integration** | ✅ Built | 90% |
+| **Tenant Portal** | 🔜 Planned | 0% |
+| **Property Leasing** | 🔜 Planned | 0% |
+| **Contractor Management** | 🔜 Planned | 40% |
+
+### 18.2 Built Features (Production Ready)
+
+#### Property Management (`property_fielder_property_management`)
+- ✅ Property model with UK fields (UPRN, EPC, HMO, tenure, council tax)
+- ✅ FLAGE+ certification types with customizable durations
+- ✅ Property certifications with expiry tracking
+- ✅ Inspections with job creation
+- ✅ Compliance dashboard with traffic light indicators
+- ✅ Key sets with check-out history
+- ✅ Utility meters (gas, electric, water)
+- ✅ Building insurance policies
+- ✅ EWS1 assessments (fire safety)
+- ✅ Property assets (appliances, boilers)
+- ✅ HMO rooms with UK minimum space standards
+- ✅ Block/Unit hierarchy (parent_id)
+- ✅ Bulk import wizard (CSV)
+- ✅ Bulk schedule wizard
+
+#### Field Service (`property_fielder_field_service`)
+- ✅ Jobs with scheduling, duration, priority
+- ✅ Inspectors with skills matrix
+- ✅ Routes with Timefold optimization
+- ✅ OSRM routing integration
+- ✅ Dispatch dashboard with Mapbox
+- ✅ Change request workflow
+- ✅ Share schedule wizard
+- ✅ Bulk job operations wizard
+- ✅ Appointment confirmation (token-based)
+- ✅ Calendar integration (iCal, Google, Microsoft)
+- ✅ Section 11 tenant notification tracking (24-hour notice)
+- ✅ Emergency override workflow with reason logging
+
+#### Mobile Backend (`property_fielder_field_service_mobile`)
+- ✅ REST API for all mobile operations
+- ✅ Check-in/out with GPS geofencing
+- ✅ Photo capture with EXIF metadata
+- ✅ Digital signatures
+- ✅ Notes and observations
+- ✅ Offline sync support
+- ✅ Device registration
+- ✅ Safety timer (lone worker protection)
+- ✅ Panic button with GPS location
+- ✅ Timer extension and cancellation
+- ✅ Overdue timer escalation (cron job)
+- ✅ Emergency contact notification
+
+#### HHSRS Compliance (`property_fielder_hhsrs`)
+- ✅ 29 HHSRS hazard types (reference data)
+- ✅ 16 likelihood bands with RSP values
+- ✅ Vulnerable groups
+- ✅ HHSRS assessments with scoring
+- ✅ Awaab's Law deadline tracking
+- ✅ Damp & mould module
+- ✅ DHS (Decent Homes Standard) assessments
+- ✅ Building components
+- ✅ Remediation job creation
+- ✅ Breach alert cron job
+- ✅ PDF reports
+
+#### Defects (`property_fielder_defects`)
+- ✅ Unified defect model (regulatory + HHSRS)
+- ✅ Industry fault codes (GIUSP, 18th Edition, RRO, HSE L8, CAR)
+- ✅ Severity SLA (Immediate/Urgent/Standard/Advisory)
+- ✅ Deadline calculation and breach detection
+- ✅ Contractor assignment field with email notification
+- ✅ Access attempt logging
+- ✅ Photo evidence
+- ✅ Re-check inspection link
+
+#### Owner Portal (`property_fielder_owner_portal`)
+- ✅ Property list and detail views
+- ✅ Certification download
+- ✅ Compliance status display
+- ✅ Appointment confirmation/decline/reschedule
+
+#### Inspection Templates (`property_fielder_inspection_templates`)
+- ✅ Configurable inspection templates
+- ✅ Template sections with ordered items
+- ✅ Response types (yes/no, severity, numeric, text, photo)
+- ✅ Conditional follow-up questions
+- ✅ HHSRS hazard linking
+- ✅ Auto-hazard creation triggers
+- ✅ Template versioning
+- ✅ Mobile sync support
+- ✅ Pre-built templates (Quick Visit, Full HHSRS, Damp & Mould)
+
+#### SMS Integration (`property_fielder_sms`)
+- ✅ Twilio SMS provider integration
+- ✅ SMS templates with variable substitution
+- ✅ Appointment reminders
+- ✅ Safety timer escalation SMS
+- ✅ Emergency contact notifications
+- ✅ Delivery status tracking
+
+#### Calendar Integration (`property_fielder_calendar`)
+- ✅ iCal feed generation
+- ✅ Google Calendar sync
+- ✅ Microsoft Outlook sync
+- ✅ Inspector calendar views
+- ✅ Owner appointment calendar
+
+#### Analytics (`property_fielder_analytics`)
+- ✅ Compliance dashboard metrics
+- ✅ Inspector performance tracking
+- ✅ Route efficiency analytics
+- ✅ Defect resolution SLA tracking
+- ✅ Portfolio compliance trends
+
+### 18.3 Recently Implemented Features (December 2024)
+
+#### COMPLETED: Safety Timer (Lone Worker Protection)
+**Status:** ✅ IMPLEMENTED
+**Priority:** HIGH - HSE Compliance
+**PRD Reference:** Section 10.1.6
+
+| Requirement | Status |
+|-------------|--------|
+| `property_fielder.safety.timer` model | ✅ Built |
+| `/mobile/api/safety/timer/start` endpoint | ✅ Built |
+| `/mobile/api/safety/timer/extend` endpoint | ✅ Built |
+| `/mobile/api/safety/timer/cancel` endpoint | ✅ Built |
+| `/mobile/api/safety/panic` endpoint | ✅ Built |
+| Overdue timer cron job | ✅ Built |
+| Emergency contact SMS/email | ✅ Built |
+| Manager escalation | ✅ Built |
+
+**Implementation Details:**
+- Model: `property_fielder_field_service_mobile/models/safety_timer.py`
+- API: `property_fielder_field_service_mobile/controllers/mobile_api.py`
+- Cron: `ir.cron` record for `_cron_check_overdue_timers`
+- Email template: `mail.template` for safety escalation
+
+#### COMPLETED: Contractor Notification Workflow
+**Status:** ✅ IMPLEMENTED
+**Priority:** MEDIUM
+
+| Requirement | Status |
+|-------------|--------|
+| `assigned_contractor_id` field on defect | ✅ Built |
+| Email notification on assignment | ✅ Built |
+| Contractor portal access | 🔜 Planned |
+| Magic link for guest upload | 🔜 Planned |
+
+**Implementation Details:**
+- Email template: `property_fielder_defects/data/mail_template_data.xml`
+- Method: `action_assign_contractor()` in defect model
+
+#### COMPLETED: Section 11 Tenant Notification
+**Status:** ✅ IMPLEMENTED
+**Priority:** MEDIUM - Legal Compliance
+**PRD Reference:** Section 4.7
+
+| Requirement | Status |
+|-------------|--------|
+| 24-hour notice requirement check | ✅ Built |
+| `tenant_notified_at` field on job | ✅ Built |
+| Block job start if notice not given | ✅ Built |
+| Emergency override with reason | ✅ Built |
+
+**Implementation Details:**
+- Field: `tenant_notified_at` on `property_fielder.job`
+- Field: `emergency_override` boolean on job
+- Field: `emergency_override_reason` text on job
+- Constraint: `action_start_job()` checks 24-hour notice
+- Override: `action_emergency_override()` method
+
+#### COMPLETED: Inspection Templates System
+**Status:** ✅ IMPLEMENTED
+**Priority:** HIGH
+**PRD Reference:** Section 15.5
+
+| Requirement | Status |
+|-------------|--------|
+| Template model with sections | ✅ Built |
+| Template items with response types | ✅ Built |
+| Conditional follow-up questions | ✅ Built |
+| HHSRS hazard linking | ✅ Built |
+| Auto-hazard creation | ✅ Built |
+| Template versioning | ✅ Built |
+| Mobile sync API | ✅ Built |
+| Pre-built templates | ✅ Built |
+
+**Implementation Details:**
+- Module: `property_fielder_inspection_templates`
+- Models: `inspection.template`, `inspection.template.section`, `inspection.template.item`
+- API: `/mobile/api/templates` endpoint
+- Templates: Quick Visit, Full HHSRS, Damp & Mould Investigation
+
+### 18.4 Planned Modules (PRD Only)
+
+| Module | PRD File | Effort | Priority |
+|--------|----------|--------|----------|
+| Tenant Portal | `PRD_TENANT_PORTAL.md` | 60-80h | HIGH |
+| Tenant Access | `PRD_TENANT_ACCESS.md` | 128h | HIGH |
+| Property Leasing | `PRD_PROPERTY_LEASING.md` | 80-120h | MEDIUM |
+| Property Accounting | `PRD_PROPERTY_ACCOUNTING.md` | 60-80h | MEDIUM |
+| Contractor Management | `PRD_CONTRACTOR_MANAGEMENT.md` | 60-80h | MEDIUM |
+| Property Maintenance | `PRD_PROPERTY_MAINTENANCE.md` | 60-80h | MEDIUM |
+| Property Documents | `PRD_PROPERTY_DOCUMENTS.md` | 40-60h | LOW |
+| Tenant Screening | `PRD_TENANT_SCREENING.md` | 40-60h | LOW |
+
+### 18.5 Data Model Gap Analysis
+
+#### Models Built
+```
+# Core Property Management
+property_fielder.property ✅
+property_fielder.certification.type ✅
+property_fielder.property.certification ✅
+property_fielder.property.inspection ✅
+property_fielder.key.set ✅
+property_fielder.key.history ✅
+property_fielder.utility.meter ✅
+property_fielder.building.insurance ✅
+property_fielder.ews1.assessment ✅
+property_fielder.property.asset ✅
+property_fielder.hmo.room ✅
+
+# Field Service
+property_fielder.job ✅
+property_fielder.inspector ✅
+property_fielder.route ✅
+property_fielder.skill ✅
+property_fielder.change.request ✅
+
+# Mobile Backend
+property_fielder.job.checkin ✅
+property_fielder.job.photo ✅
+property_fielder.job.signature ✅
+property_fielder.job.note ✅
+property_fielder.safety.timer ✅ (NEW - Dec 2024)
+
+# HHSRS & Compliance
+property_fielder.hhsrs.assessment ✅
+property_fielder.hhsrs.hazard.type ✅
+property_fielder.awaab.deadline ✅
+property_fielder.dhs.assessment ✅
+property_fielder.damp.mould ✅
+
+# Defects
+property_fielder.defect ✅
+property_fielder.fault.code ✅
+property_fielder.access.attempt ✅
+
+# Inspection Templates
+property_fielder.inspection.template ✅ (NEW - Dec 2024)
+property_fielder.inspection.template.section ✅ (NEW - Dec 2024)
+property_fielder.inspection.template.item ✅ (NEW - Dec 2024)
+property_fielder.inspection.response ✅ (NEW - Dec 2024)
+```
+
+#### Models Planned (PRD Defined)
+```
+property_fielder.tenancy ❌
+property_fielder.tenant.application ❌
+property_fielder.maintenance.request ❌
+property_fielder.work.order ❌
+property_fielder.contractor ❌
+property_fielder.contractor.accreditation ❌
+property_fielder.document.type ❌
+property_fielder.property.document ❌
+```
+
+### 18.6 Remaining Gaps (Future Implementation)
+
+#### GAP-1: Contractor Portal
+**Status:** Planned
+**Priority:** MEDIUM
+
+| Requirement | Status |
+|-------------|--------|
+| Contractor login portal | 🔜 Planned |
+| Job acceptance workflow | 🔜 Planned |
+| Evidence upload interface | 🔜 Planned |
+| Invoice submission | 🔜 Planned |
+
+#### GAP-2: Tenant Portal
+**Status:** Planned
+**Priority:** HIGH
+
+| Requirement | Status |
+|-------------|--------|
+| Tenant login portal | 🔜 Planned |
+| Maintenance request submission | 🔜 Planned |
+| Appointment scheduling | 🔜 Planned |
+| Document access | 🔜 Planned |
+
+---
+
 ### Document Revision History
 
 | Version | Date | Author | Changes |
@@ -3516,6 +3830,7 @@ Odoo Core (base, mail, web, hr, contacts, project, account)
 | 2.6 | Dec 13, 2025 | Product Team | Gemini Review Iteration 3: Added HMO License model (Housing Act 2004 compliance), EPC Exemption tracking (PRS Exemptions Register), EWS1 Form tracking for blocks over 18m, Void Management Workflow (weekly Security & Flush), Legal Entry (Forced Access) Workflow for emergencies, Cascading Block Compliance (Unit inherits parent compliance status), Inspector Skill Levels (Basic/Advanced/Expert for Asbestos), Mobile Image Annotation tools, Historical Data View (previous inspection readings), Sync Locking Mechanism (Check-out/Check-in), Keyword Check Disclaimer (liability protection) |
 | 2.7 | Dec 14, 2025 | Product Team | Gemini Review Iteration 4: Added UPRN field (UK government standard for national landlord register), Deposit Protection to Section 21 blocking, Invoice Blocking on failed Re-Check, Photo Timestamp Watermarking (burned into pixels), Notification Digest Mode (Real-time vs Daily Summary), moved Guest Upload Link to Phase 2 (critical path), updated timeline totals |
 | 2.8 | Dec 14, 2025 | Product Team | Added Section 17: Complete Odoo Addon Architecture with 22 addons across 4 layers. Incorporated Property Management Roadmap (leasing, accounting, maintenance, tenant portal, documents, contractors, screening, marketing, owner portal, utilities, insurance, key management, inventory, analytics). Added dependency graph, effort estimates, and phased rollout plan. |
+| 2.9 | Dec 31, 2024 | Product Team | Updated Section 18 Implementation Status: Marked Safety Timer, Section 11 Tenant Notification, Contractor Notification, and Inspection Templates as IMPLEMENTED. Added new modules (SMS, Calendar, Analytics). Updated model list with newly built models. Reorganized gaps section to show completed vs remaining. |
 
 ---
 

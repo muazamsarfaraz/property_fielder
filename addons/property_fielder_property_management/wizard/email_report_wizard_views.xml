@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Email Report Wizard Form -->
+    <record id="view_email_report_wizard_form" model="ir.ui.view">
+        <field name="name">property_fielder.email.report.wizard.form</field>
+        <field name="model">property_fielder.email.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Email Report">
+                <group>
+                    <group string="Report Selection">
+                        <field name="report_type"/>
+                        <field name="certification_id" 
+                               invisible="report_type != 'certificate'"
+                               required="report_type == 'certificate'"/>
+                        <field name="inspection_id" 
+                               invisible="report_type != 'inspection'"
+                               required="report_type == 'inspection'"/>
+                        <field name="property_id" 
+                               invisible="report_type != 'compliance'"
+                               required="report_type == 'compliance'"/>
+                        <field name="hhsrs_assessment_id" 
+                               invisible="report_type != 'hhsrs'"
+                               required="report_type == 'hhsrs'"/>
+                        <field name="dhs_assessment_id" 
+                               invisible="report_type != 'dhs'"
+                               required="report_type == 'dhs'"/>
+                    </group>
+                    <group string="Recipients">
+                        <field name="recipient_ids" widget="many2many_tags"/>
+                        <field name="additional_emails" placeholder="email1@example.com, email2@example.com"/>
+                    </group>
+                </group>
+                <group string="Email Content">
+                    <field name="email_subject"/>
+                    <field name="email_body" widget="html"/>
+                </group>
+                <group>
+                    <group string="Options">
+                        <field name="send_copy_to_self"/>
+                        <field name="include_related_docs"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_send_report" string="Send Email" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Action to open wizard -->
+    <record id="action_email_report_wizard" model="ir.actions.act_window">
+        <field name="name">Email Report</field>
+        <field name="res_model">property_fielder.email.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+    <!-- Server action for certificate email -->
+    <record id="action_email_certificate" model="ir.actions.server">
+        <field name="name">Email Certificate</field>
+        <field name="model_id" ref="model_property_fielder_property_certification"/>
+        <field name="binding_model_id" ref="model_property_fielder_property_certification"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Email Certificate',
+    'res_model': 'property_fielder.email.report.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'context': {
+        'default_report_type': 'certificate',
+        'default_certification_id': records[0].id if records else False,
+        'default_recipient_ids': [(6, 0, [records[0].property_id.owner_id.id])] if records and records[0].property_id.owner_id else [],
+    }
+}
+        </field>
+    </record>
+    
+    <!-- Server action for inspection email -->
+    <record id="action_email_inspection" model="ir.actions.server">
+        <field name="name">Email Inspection Report</field>
+        <field name="model_id" ref="model_property_fielder_property_inspection"/>
+        <field name="binding_model_id" ref="model_property_fielder_property_inspection"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Email Inspection Report',
+    'res_model': 'property_fielder.email.report.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'context': {
+        'default_report_type': 'inspection',
+        'default_inspection_id': records[0].id if records else False,
+        'default_recipient_ids': [(6, 0, [records[0].property_id.owner_id.id])] if records and records[0].property_id.owner_id else [],
+    }
+}
+        </field>
+    </record>
+    
+    <!-- Server action for property compliance email -->
+    <record id="action_email_compliance" model="ir.actions.server">
+        <field name="name">Email Compliance Summary</field>
+        <field name="model_id" ref="model_property_fielder_property"/>
+        <field name="binding_model_id" ref="model_property_fielder_property"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Email Compliance Summary',
+    'res_model': 'property_fielder.email.report.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'context': {
+        'default_report_type': 'compliance',
+        'default_property_id': records[0].id if records else False,
+        'default_recipient_ids': [(6, 0, [records[0].owner_id.id])] if records and records[0].owner_id else [],
+    }
+}
+        </field>
+    </record>
+    
+</odoo>
+

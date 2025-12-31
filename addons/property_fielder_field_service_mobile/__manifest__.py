@@ -48,6 +48,9 @@ This addon provides a mobile-optimized interface and REST API for native mobile 
 
         # Templates
         'views/mobile_templates.xml',
+
+        # Data - Cron jobs and templates
+        'data/safety_timer_cron.xml',
     ],
     
     # Assets - Commented out until static files are created

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inspector Calendar Form View -->
+    <record id="view_inspector_calendar_form" model="ir.ui.view">
+        <field name="name">property_fielder.inspector.calendar.form</field>
+        <field name="model">property_fielder.inspector.calendar</field>
+        <field name="arch" type="xml">
+            <form string="Inspector Calendar Connection">
+                <header>
+                    <button name="action_connect" string="Connect Calendar" type="object"
+                            class="btn-primary" icon="fa-plug"
+                            invisible="connection_status == 'connected'"/>
+                    <button name="action_disconnect" string="Disconnect" type="object"
+                            class="btn-secondary" icon="fa-unlink"
+                            invisible="connection_status != 'connected'"
+                            confirm="Are you sure you want to disconnect this calendar?"/>
+                    <field name="connection_status" widget="statusbar" statusbar_visible="disconnected,connected"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Connection">
+                            <field name="inspector_id"/>
+                            <field name="provider"/>
+                            <field name="calendar_name" readonly="1" invisible="not calendar_name"/>
+                            <field name="sync_enabled"/>
+                        </group>
+                        <group string="Status">
+                            <field name="last_sync"/>
+                            <field name="events_synced"/>
+                        </group>
+                    </group>
+                    <group string="iCal Subscription Feed" invisible="not ical_token">
+                        <div class="alert alert-info" role="alert">
+                            <p><strong>Subscribe to this URL in any calendar app:</strong></p>
+                            <code id="ical_url">/calendar/ical/<field name="ical_token" readonly="1"/>.ics</code>
+                            <br/><br/>
+                            <button name="action_regenerate_ical_token" string="Regenerate Token" type="object"
+                                    class="btn-warning btn-sm" icon="fa-refresh"
+                                    confirm="This will invalidate all existing feed subscriptions. Continue?"/>
+                        </div>
+                    </group>
+                    <group string="Error Details" invisible="not last_error">
+                        <field name="last_error" nolabel="1" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Inspector Calendar List View -->
+    <record id="view_inspector_calendar_list" model="ir.ui.view">
+        <field name="name">property_fielder.inspector.calendar.list</field>
+        <field name="model">property_fielder.inspector.calendar</field>
+        <field name="arch" type="xml">
+            <list string="Inspector Calendar Connections" 
+                  decoration-success="connection_status == 'connected'"
+                  decoration-danger="connection_status == 'error'"
+                  decoration-muted="connection_status == 'disconnected'">
+                <field name="inspector_id"/>
+                <field name="provider" widget="badge"/>
+                <field name="calendar_name"/>
+                <field name="connection_status" widget="badge"/>
+                <field name="sync_enabled"/>
+                <field name="events_synced"/>
+                <field name="last_sync"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_inspector_calendar" model="ir.actions.act_window">
+        <field name="name">Inspector Calendars</field>
+        <field name="res_model">property_fielder.inspector.calendar</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    
+    <!-- Job Calendar Events Action -->
+    <record id="action_job_calendar_events" model="ir.actions.act_window">
+        <field name="name">Synced Calendar Events</field>
+        <field name="res_model">property_fielder.job.calendar.event</field>
+        <field name="view_mode">list</field>
+    </record>
+    
+</odoo>
+

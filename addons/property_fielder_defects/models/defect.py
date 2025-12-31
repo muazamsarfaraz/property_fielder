@@ -383,3 +383,68 @@ class Defect(models.Model):
             },
         }
 
+    def action_assign_contractor(self):
+        """Open wizard to assign a contractor and send notification."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Assign Contractor'),
+            'res_model': 'property_fielder.assign.contractor.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_defect_id': self.id,
+                'default_contractor_id': self.assigned_contractor_id.id,
+            },
+        }
+
+    def _send_contractor_assignment_notification(self):
+        """Send email notification to assigned contractor."""
+        self.ensure_one()
+        if not self.assigned_contractor_id:
+            return False
+
+        if not self.assigned_contractor_id.email:
+            self.message_post(
+                body=_('Cannot send notification: Contractor %s has no email address.') % (
+                    self.assigned_contractor_id.name
+                ),
+                message_type='notification'
+            )
+            return False
+
+        template = self.env.ref(
+            'property_fielder_defects.email_template_contractor_assignment',
+            raise_if_not_found=False
+        )
+
+        if template:
+            template.send_mail(self.id, force_send=True)
+            self.message_post(
+                body=_('Notification sent to contractor: %s (%s)') % (
+                    self.assigned_contractor_id.name,
+                    self.assigned_contractor_id.email
+                ),
+                message_type='notification'
+            )
+            return True
+        else:
+            # Fallback: post to chatter
+            self.message_post(
+                body=_('Contractor assignment email template not found. '
+                       'Please create template: property_fielder_defects.email_template_contractor_assignment'),
+                message_type='notification'
+            )
+            return False
+
+    def write(self, vals):
+        """Override write to send contractor notification on assignment."""
+        result = super().write(vals)
+
+        # Check if contractor was just assigned
+        if 'assigned_contractor_id' in vals and vals['assigned_contractor_id']:
+            for record in self:
+                record._send_contractor_assignment_notification()
+
+        return result
+

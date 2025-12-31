@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Safety Timer Overdue Check Cron Job -->
+    <!-- Runs every 5 minutes to check for overdue lone worker safety timers -->
+    <!-- HSE Compliance: Ensures timely escalation for lone worker protection -->
+    
+    <record id="ir_cron_safety_timer_check" model="ir.cron">
+        <field name="name">Safety Timer: Check Overdue Timers</field>
+        <field name="model_id" ref="model_property_fielder_safety_timer"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_check_overdue_timers()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="active" eval="True"/>
+        <field name="priority">5</field>
+    </record>
+    
+    <!-- Email Templates for Safety Alerts -->
+    
+    <record id="email_template_safety_overdue" model="mail.template">
+        <field name="name">Safety Timer: Overdue Alert</field>
+        <field name="model_id" ref="model_property_fielder_safety_timer"/>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.inspector_id.user_id.partner_id.email }}</field>
+        <field name="subject">⚠️ OVERDUE Safety Check - {{ object.inspector_id.name }}</field>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #f59e0b; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0;">⚠️ SAFETY TIMER OVERDUE</h1>
+    </div>
+    <div style="padding: 20px; background-color: #fff;">
+        <p><strong>Inspector:</strong> {{ object.inspector_id.name }}</p>
+        <p><strong>Timer Started:</strong> {{ object.started_at }}</p>
+        <p><strong>Expected End:</strong> {{ object.expected_end }}</p>
+        <p><strong>Job:</strong> {{ object.job_id.name or 'N/A' }}</p>
+        <p><strong>Last Known Location:</strong> 
+            {% if object.last_known_lat and object.last_known_long %}
+            <a href="https://www.google.com/maps?q={{ object.last_known_lat }},{{ object.last_known_long }}">View on Map</a>
+            {% else %}
+            Unknown
+            {% endif %}
+        </p>
+        <hr/>
+        <p style="color: #666;">
+            The inspector's safety timer has expired. Please attempt to contact them immediately.
+            If no response within 10 minutes, this will be escalated to emergency contacts.
+        </p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+    
+    <record id="email_template_safety_escalation" model="mail.template">
+        <field name="name">Safety Timer: Escalation Alert</field>
+        <field name="model_id" ref="model_property_fielder_safety_timer"/>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.inspector_id.emergency_contact_email or object.inspector_id.user_id.partner_id.email }}</field>
+        <field name="subject">🚨 ESCALATED: Safety Timer - {{ object.inspector_id.name }} Unresponsive</field>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #dc2626; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0;">🚨 SAFETY ESCALATION</h1>
+    </div>
+    <div style="padding: 20px; background-color: #fff;">
+        <p style="font-size: 18px; color: #dc2626;"><strong>Inspector has been unresponsive for 15+ minutes after timer expiry!</strong></p>
+        <p><strong>Inspector:</strong> {{ object.inspector_id.name }}</p>
+        <p><strong>Phone:</strong> {{ object.inspector_id.mobile or object.inspector_id.phone or 'N/A' }}</p>
+        <p><strong>Timer Started:</strong> {{ object.started_at }}</p>
+        <p><strong>Overdue Since:</strong> {{ object.overdue_at }}</p>
+        <p><strong>Job:</strong> {{ object.job_id.name or 'N/A' }}</p>
+        <p><strong>Last Known Location:</strong> 
+            {% if object.last_known_lat and object.last_known_long %}
+            <a href="https://www.google.com/maps?q={{ object.last_known_lat }},{{ object.last_known_long }}" style="font-size: 16px;">VIEW LOCATION ON MAP</a>
+            {% else %}
+            Unknown - Last update: {{ object.last_location_update or 'Never' }}
+            {% endif %}
+        </p>
+        <hr/>
+        <p style="color: #dc2626; font-weight: bold;">
+            IMMEDIATE ACTION REQUIRED: Contact the inspector or dispatch help to their last known location.
+        </p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+    
+    <record id="email_template_safety_panic" model="mail.template">
+        <field name="name">Safety Timer: PANIC Alert</field>
+        <field name="model_id" ref="model_property_fielder_safety_timer"/>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.inspector_id.emergency_contact_email }}</field>
+        <field name="subject">🚨🚨 PANIC BUTTON - {{ object.inspector_id.name }} NEEDS HELP!</field>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #7f1d1d; color: white; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">🚨 PANIC BUTTON ACTIVATED 🚨</h1>
+    </div>
+    <div style="padding: 20px; background-color: #fef2f2; border: 2px solid #dc2626;">
+        <p style="font-size: 20px; color: #7f1d1d; text-align: center;"><strong>INSPECTOR NEEDS IMMEDIATE ASSISTANCE!</strong></p>
+        
+        <table style="width: 100%; font-size: 16px;">
+            <tr><td><strong>Inspector:</strong></td><td>{{ object.inspector_id.name }}</td></tr>
+            <tr><td><strong>Phone:</strong></td><td>{{ object.inspector_id.mobile or object.inspector_id.phone or 'N/A' }}</td></tr>
+            <tr><td><strong>Panic Triggered:</strong></td><td>{{ object.panic_triggered_at }}</td></tr>
+            <tr><td><strong>Reason:</strong></td><td>{{ object.panic_reason or 'Not specified' }}</td></tr>
+            <tr><td><strong>Job:</strong></td><td>{{ object.job_id.name or 'N/A' }}</td></tr>
+        </table>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            {% if object.last_known_lat and object.last_known_long %}
+            <a href="https://www.google.com/maps?q={{ object.last_known_lat }},{{ object.last_known_long }}" 
+               style="background-color: #dc2626; color: white; padding: 15px 30px; text-decoration: none; font-size: 18px; border-radius: 5px; display: inline-block;">
+                📍 VIEW LOCATION ON MAP
+            </a>
+            <p style="margin-top: 10px;">Coordinates: {{ object.last_known_lat }}, {{ object.last_known_long }}</p>
+            {% else %}
+            <p style="color: #dc2626; font-weight: bold;">⚠️ Location Unknown - Contact inspector immediately!</p>
+            {% endif %}
+        </div>
+        
+        <hr style="border-color: #dc2626;"/>
+        <p style="color: #7f1d1d; font-weight: bold; text-align: center;">
+            CALL EMERGENCY SERVICES IF NO RESPONSE!
+        </p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+</odoo>
+

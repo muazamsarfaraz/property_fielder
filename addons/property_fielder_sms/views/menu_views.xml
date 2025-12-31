@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- SMS Menu under Field Service Configuration -->
+    <menuitem id="menu_sms_root"
+              name="SMS"
+              parent="property_fielder_field_service.menu_field_service_config"
+              sequence="50"/>
+    
+    <menuitem id="menu_sms_config"
+              name="Configuration"
+              parent="menu_sms_root"
+              action="action_sms_config"
+              sequence="10"/>
+    
+    <menuitem id="menu_sms_templates"
+              name="Templates"
+              parent="menu_sms_root"
+              action="action_sms_templates"
+              sequence="20"/>
+    
+    <menuitem id="menu_sms_log"
+              name="SMS Log"
+              parent="menu_sms_root"
+              action="action_sms_log"
+              sequence="30"/>
+    
+</odoo>
+

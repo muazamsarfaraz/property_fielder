@@ -247,6 +247,83 @@ class FieldServiceJob(models.Model):
         readonly=True
     )
 
+    # ============================================================
+    # SECTION 11 TENANT NOTIFICATION (L&T Act 1985)
+    # ============================================================
+    # Under Section 11, landlords must give 24-hour notice before entry
+    # except in emergencies. This tracks tenant notification compliance.
+
+    tenant_notified = fields.Boolean(
+        string='Tenant Notified',
+        default=False,
+        help='24-hour notice given to tenant (Section 11 L&T Act 1985 compliance)'
+    )
+    tenant_notified_at = fields.Datetime(
+        string='Tenant Notified At',
+        readonly=True,
+        help='Timestamp when tenant was notified of the visit'
+    )
+    tenant_notification_method = fields.Selection([
+        ('letter', 'Letter'),
+        ('email', 'Email'),
+        ('sms', 'SMS'),
+        ('phone', 'Phone Call'),
+        ('portal', 'Tenant Portal'),
+        ('in_person', 'In Person'),
+    ], string='Notification Method', help='How the tenant was notified')
+
+    is_emergency_access = fields.Boolean(
+        string='Emergency Access',
+        default=False,
+        help='Emergency access - 24-hour notice requirement waived (must document reason)'
+    )
+    emergency_access_reason = fields.Text(
+        string='Emergency Reason',
+        help='Required justification for emergency access without 24-hour notice'
+    )
+
+    # Computed: Check if job can start based on notification
+    can_start_job = fields.Boolean(
+        string='Can Start',
+        compute='_compute_can_start_job',
+        help='Whether the job can start based on Section 11 notification requirements'
+    )
+    hours_since_notification = fields.Float(
+        string='Hours Since Notification',
+        compute='_compute_hours_since_notification',
+        help='Hours elapsed since tenant was notified'
+    )
+
+    @api.depends('tenant_notified', 'tenant_notified_at', 'is_emergency_access')
+    def _compute_can_start_job(self):
+        """Check if job can start based on Section 11 requirements."""
+        now = fields.Datetime.now()
+        for job in self:
+            # Emergency access - can always start if reason provided
+            if job.is_emergency_access and job.emergency_access_reason:
+                job.can_start_job = True
+            # Not notified - cannot start
+            elif not job.tenant_notified:
+                job.can_start_job = False
+            # Notified - check if 24 hours have passed
+            elif job.tenant_notified_at:
+                from datetime import timedelta
+                hours_24 = timedelta(hours=24)
+                job.can_start_job = (now - job.tenant_notified_at) >= hours_24
+            else:
+                job.can_start_job = False
+
+    @api.depends('tenant_notified_at')
+    def _compute_hours_since_notification(self):
+        """Calculate hours since tenant was notified."""
+        now = fields.Datetime.now()
+        for job in self:
+            if job.tenant_notified_at:
+                delta = now - job.tenant_notified_at
+                job.hours_since_notification = delta.total_seconds() / 3600
+            else:
+                job.hours_since_notification = 0.0
+
     # HHSRS Integration - NOTE: These fields are now defined in property_fielder_hhsrs
     # which extends this model to add HHSRS-specific functionality
     is_hhsrs_remediation = fields.Boolean(
@@ -354,6 +431,91 @@ class FieldServiceJob(models.Model):
             body=_('Appointment declined by owner. Reason: %s') % (reason or 'Not specified'),
             message_type='notification'
         )
+
+    # ============================================================
+    # SECTION 11 TENANT NOTIFICATION ACTIONS
+    # ============================================================
+
+    def action_notify_tenant(self, method='email'):
+        """Record that tenant has been notified of the visit."""
+        self.ensure_one()
+        self.write({
+            'tenant_notified': True,
+            'tenant_notified_at': fields.Datetime.now(),
+            'tenant_notification_method': method,
+        })
+        self.message_post(
+            body=_('Tenant notified via %s. 24-hour notice period started (Section 11 L&T Act 1985).') % method,
+            message_type='notification'
+        )
+        return True
+
+    def action_mark_emergency_access(self, reason):
+        """Mark as emergency access - waives 24-hour notice requirement."""
+        self.ensure_one()
+        if not reason:
+            raise UserError(_('Emergency access reason is required for legal compliance.'))
+
+        self.write({
+            'is_emergency_access': True,
+            'emergency_access_reason': reason,
+        })
+        self.message_post(
+            body=_('⚠️ EMERGENCY ACCESS declared. 24-hour notice waived. Reason: %s') % reason,
+            message_type='notification',
+            subtype_xmlid='mail.mt_comment'
+        )
+        return True
+
+    def check_section_11_compliance(self):
+        """Check if job can start based on Section 11 requirements.
+
+        Returns dict with:
+        - can_start: bool
+        - reason: str (if cannot start)
+        - hours_remaining: float (if waiting for 24h)
+        """
+        self.ensure_one()
+
+        # Emergency access - can always start
+        if self.is_emergency_access:
+            if not self.emergency_access_reason:
+                return {
+                    'can_start': False,
+                    'reason': _('Emergency access declared but no reason provided.'),
+                }
+            return {
+                'can_start': True,
+                'reason': _('Emergency access - 24h notice waived.'),
+            }
+
+        # Not notified
+        if not self.tenant_notified:
+            return {
+                'can_start': False,
+                'reason': _('Tenant has not been notified. 24-hour notice required under Section 11 L&T Act 1985.'),
+            }
+
+        # Check 24 hours elapsed
+        if not self.tenant_notified_at:
+            return {
+                'can_start': False,
+                'reason': _('Notification timestamp missing.'),
+            }
+
+        hours = self.hours_since_notification
+        if hours < 24:
+            hours_remaining = 24 - hours
+            return {
+                'can_start': False,
+                'reason': _('24-hour notice period not complete. %.1f hours remaining.') % hours_remaining,
+                'hours_remaining': hours_remaining,
+            }
+
+        return {
+            'can_start': True,
+            'reason': _('Section 11 compliant - 24-hour notice given.'),
+        }
 
     def action_navigate_google_maps(self):
         """Open Google Maps for navigation to job location."""

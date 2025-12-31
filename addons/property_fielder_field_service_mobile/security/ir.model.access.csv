@@ -15,4 +15,6 @@ access_photo_tag_user,property_fielder.photo.tag user,model_property_fielder_pho
 access_photo_tag_manager,property_fielder.photo.tag manager,model_property_fielder_photo_tag,property_fielder_field_service.group_field_service_manager,1,1,1,1
 access_note_tag_user,property_fielder.note.tag user,model_property_fielder_note_tag,group_mobile_user,1,0,0,0
 access_note_tag_manager,property_fielder.note.tag manager,model_property_fielder_note_tag,property_fielder_field_service.group_field_service_manager,1,1,1,1
+access_safety_timer_user,property_fielder.safety.timer user,model_property_fielder_safety_timer,group_mobile_user,1,1,1,0
+access_safety_timer_manager,property_fielder.safety.timer manager,model_property_fielder_safety_timer,property_fielder_field_service.group_field_service_manager,1,1,1,1
 

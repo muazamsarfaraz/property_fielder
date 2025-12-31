@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Calendar Sync Menu under Field Service Configuration -->
+    <menuitem id="menu_calendar_root"
+              name="Calendar Sync"
+              parent="property_fielder_field_service.menu_field_service_config"
+              sequence="60"/>
+    
+    <menuitem id="menu_calendar_config"
+              name="Configuration"
+              parent="menu_calendar_root"
+              action="action_calendar_config"
+              sequence="10"/>
+    
+    <menuitem id="menu_inspector_calendars"
+              name="Inspector Calendars"
+              parent="menu_calendar_root"
+              action="action_inspector_calendar"
+              sequence="20"/>
+    
+    <menuitem id="menu_synced_events"
+              name="Synced Events"
+              parent="menu_calendar_root"
+              action="action_job_calendar_events"
+              sequence="30"/>
+    
+</odoo>
+

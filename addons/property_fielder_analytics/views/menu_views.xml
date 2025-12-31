@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Analytics Menu under Field Service -->
+    <menuitem id="menu_analytics_root"
+              name="Analytics"
+              parent="property_fielder_field_service.menu_field_service_root"
+              sequence="80"/>
+    
+    <!-- Inspector Productivity -->
+    <menuitem id="menu_inspector_productivity"
+              name="Inspector Productivity"
+              parent="menu_analytics_root"
+              action="action_inspector_productivity"
+              sequence="10"/>
+    
+    <menuitem id="menu_productivity_report"
+              name="Productivity Report"
+              parent="menu_analytics_root"
+              action="action_productivity_report"
+              sequence="15"/>
+    
+    <!-- Compliance Analytics -->
+    <menuitem id="menu_compliance_analytics"
+              name="Compliance Analytics"
+              parent="menu_analytics_root"
+              action="action_compliance_analytics"
+              sequence="20"/>
+    
+    <!-- Cost Analysis -->
+    <menuitem id="menu_cost_analysis"
+              name="Cost Analysis"
+              parent="menu_analytics_root"
+              action="action_cost_analysis"
+              sequence="30"/>
+    
+</odoo>
+

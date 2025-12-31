@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Email Template for Contractor Assignment Notification -->
+    
+    <record id="email_template_contractor_assignment" model="mail.template">
+        <field name="name">Defect: Contractor Assignment Notification</field>
+        <field name="model_id" ref="model_property_fielder_defect"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.assigned_contractor_id.email }}</field>
+        <field name="subject">Work Order: {{ object.name }} - {{ object.severity_sla }} Priority</field>
+        <field name="body_html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: 
+        {% if object.severity_sla == 'immediate' %}#dc2626
+        {% elif object.severity_sla == 'urgent' %}#f59e0b
+        {% else %}#3b82f6{% endif %}; 
+        color: white; padding: 20px;">
+        <h1 style="margin: 0;">Work Order Assignment</h1>
+        <p style="margin: 5px 0 0 0;">Reference: {{ object.name }}</p>
+    </div>
+    
+    <div style="padding: 20px; background-color: #f9fafb;">
+        <h2>Defect Details</h2>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold; width: 140px;">Property:</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ object.property_id.name }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Address:</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">
+                    {{ object.property_id.street or '' }}<br/>
+                    {{ object.property_id.city or '' }} {{ object.property_id.zip or '' }}
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Severity:</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">
+                    <span style="background-color: 
+                        {% if object.severity_sla == 'immediate' %}#dc2626
+                        {% elif object.severity_sla == 'urgent' %}#f59e0b
+                        {% elif object.severity_sla == 'standard' %}#3b82f6
+                        {% else %}#6b7280{% endif %}; 
+                        color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">
+                        {{ dict(object._fields['severity_sla'].selection).get(object.severity_sla) }}
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Deadline:</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">
+                    {% if object.deadline_date %}
+                    {{ object.deadline_date }}
+                    {% else %}
+                    No deadline set
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Location:</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ object.location or 'Not specified' }}</td>
+            </tr>
+            {% if object.fault_code_id %}
+            <tr>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">Fault Code:</td>
+                <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">{{ object.fault_code_id.code }} - {{ object.fault_code_id.name }}</td>
+            </tr>
+            {% endif %}
+        </table>
+        
+        <h3 style="margin-top: 20px;">Description</h3>
+        <div style="background-color: white; padding: 15px; border: 1px solid #e5e7eb; border-radius: 4px;">
+            {{ object.description }}
+        </div>
+        
+        {% if object.recommended_action %}
+        <h3 style="margin-top: 20px;">Recommended Action</h3>
+        <div style="background-color: #fef3c7; padding: 15px; border: 1px solid #fcd34d; border-radius: 4px;">
+            {{ object.recommended_action }}
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 30px; padding: 15px; background-color: #dbeafe; border-radius: 4px;">
+            <p style="margin: 0;"><strong>Next Steps:</strong></p>
+            <ol style="margin: 10px 0 0 0; padding-left: 20px;">
+                <li>Review the defect details above</li>
+                <li>Contact us to confirm availability</li>
+                <li>Complete the work before the deadline</li>
+                <li>Submit completion evidence for verification</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div style="padding: 15px; background-color: #e5e7eb; text-align: center; font-size: 12px; color: #6b7280;">
+        <p style="margin: 0;">This is an automated message from Property Fielder.</p>
+        <p style="margin: 5px 0 0 0;">Please do not reply directly to this email.</p>
+    </div>
+</div>
+        ]]></field>
+    </record>
+</odoo>
+

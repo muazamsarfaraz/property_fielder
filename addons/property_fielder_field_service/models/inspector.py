@@ -42,6 +42,20 @@ class FieldServiceInspector(models.Model):
     phone = fields.Char(string='Phone')
     mobile = fields.Char(string='Mobile')
     email = fields.Char(string='Email')
+
+    # Emergency Contact (for Lone Worker Safety - HSE Compliance)
+    emergency_contact_name = fields.Char(
+        string='Emergency Contact Name',
+        help='Name of emergency contact for lone worker safety alerts'
+    )
+    emergency_contact_phone = fields.Char(
+        string='Emergency Contact Phone',
+        help='Phone number for emergency contact'
+    )
+    emergency_contact_email = fields.Char(
+        string='Emergency Contact Email',
+        help='Email for emergency contact (receives panic alerts)'
+    )
     
     # Home Location (for route start/end)
     home_street = fields.Char(string='Home Street')

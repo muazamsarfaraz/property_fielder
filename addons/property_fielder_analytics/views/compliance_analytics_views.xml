@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Compliance Analytics Form -->
+    <record id="view_compliance_analytics_form" model="ir.ui.view">
+        <field name="name">property_fielder.compliance.analytics.form</field>
+        <field name="model">property_fielder.compliance.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Compliance Analytics">
+                <sheet>
+                    <group>
+                        <group string="Date Range">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group string="Filters">
+                            <field name="property_ids" widget="many2many_tags"/>
+                            <field name="certification_type_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Summary Stats -->
+                    <group string="Summary">
+                        <group>
+                            <field name="total_properties"/>
+                            <field name="total_certifications"/>
+                            <field name="compliance_rate" widget="progressbar"/>
+                        </group>
+                        <group>
+                            <field name="compliant_count"/>
+                            <field name="expiring_soon_count"/>
+                            <field name="expired_count"/>
+                        </group>
+                    </group>
+                    
+                    <div class="oe_button_box">
+                        <button name="action_generate_trends" string="Generate Trends" type="object" class="btn-primary"/>
+                    </div>
+                    
+                    <notebook>
+                        <page string="Monthly Trends" name="trends">
+                            <field name="trend_line_ids">
+                                <list string="Monthly Compliance Trend">
+                                    <field name="month"/>
+                                    <field name="total_certs"/>
+                                    <field name="valid_certs"/>
+                                    <field name="compliance_rate" widget="progressbar"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="By Category" name="categories">
+                            <field name="category_line_ids">
+                                <list string="Compliance by Category">
+                                    <field name="category"/>
+                                    <field name="total_count"/>
+                                    <field name="valid_count"/>
+                                    <field name="expired_count"/>
+                                    <field name="compliance_rate" widget="progressbar"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_compliance_analytics" model="ir.actions.act_window">
+        <field name="name">Compliance Analytics</field>
+        <field name="res_model">property_fielder.compliance.analytics</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+    
+</odoo>
+

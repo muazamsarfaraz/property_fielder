@@ -170,8 +170,15 @@ class MobileAPIController(http.Controller):
     # ========== Check-In/Out ==========
 
     @http.route('/mobile/api/jobs/<int:job_id>/checkin', type='jsonrpc', auth='user', methods=['POST'])
-    def checkin_job(self, job_id, latitude=None, longitude=None, accuracy=None, notes=None, device_info=None):
-        """Check in to a job"""
+    def checkin_job(self, job_id, latitude=None, longitude=None, accuracy=None, notes=None,
+                    device_info=None, override_section_11=False, emergency_reason=''):
+        """Check in to a job.
+
+        Section 11 L&T Act 1985 Compliance:
+        - Checks if 24-hour tenant notice has been given
+        - Blocks check-in if notice not given (unless emergency override)
+        - Emergency override requires documented reason
+        """
         try:
             job = request.env['property_fielder.job'].browse(job_id)
 
@@ -185,6 +192,32 @@ class MobileAPIController(http.Controller):
 
             if not inspector:
                 return {'success': False, 'error': 'No inspector profile found'}
+
+            # ============================================================
+            # SECTION 11 COMPLIANCE CHECK
+            # ============================================================
+            compliance = job.check_section_11_compliance()
+
+            if not compliance['can_start']:
+                # Check if emergency override requested
+                if override_section_11:
+                    if not emergency_reason:
+                        return {
+                            'success': False,
+                            'error': 'Emergency override requires a documented reason.',
+                            'section_11_blocked': True,
+                            'compliance_status': compliance,
+                        }
+                    # Mark as emergency access
+                    job.action_mark_emergency_access(emergency_reason)
+                else:
+                    return {
+                        'success': False,
+                        'error': compliance['reason'],
+                        'section_11_blocked': True,
+                        'compliance_status': compliance,
+                        'hours_remaining': compliance.get('hours_remaining', 0),
+                    }
 
             # Create check-in
             checkin = request.env['property_fielder.job.checkin'].create({
@@ -205,7 +238,8 @@ class MobileAPIController(http.Controller):
             return {
                 'success': True,
                 'checkin_id': checkin.id,
-                'message': 'Checked in successfully'
+                'message': 'Checked in successfully',
+                'section_11_compliant': True,
             }
         except Exception as e:
             _logger.error(f'Check-in failed: {str(e)}', exc_info=True)
@@ -416,6 +450,215 @@ class MobileAPIController(http.Controller):
             }
         except Exception as e:
             _logger.error(f'Get my routes failed: {str(e)}', exc_info=True)
+            return {'success': False, 'error': str(e)}
+
+    # ========== Safety Timer (Lone Worker Protection) ==========
+
+    @http.route('/mobile/api/safety/timer/start', type='jsonrpc', auth='user', methods=['POST'])
+    def start_safety_timer(self, job_id=None, duration_minutes=60, latitude=None, longitude=None):
+        """Start a safety timer for lone worker protection.
+
+        HSE Compliance: Lone workers must be able to set a check-in timer.
+        If the timer expires without being cancelled or extended, alerts are sent.
+        """
+        try:
+            # Get inspector
+            inspector = request.env['property_fielder.inspector'].search([
+                ('user_id', '=', request.env.user.id)
+            ], limit=1)
+
+            if not inspector:
+                return {'success': False, 'error': 'No inspector profile found'}
+
+            # Create timer
+            timer = request.env['property_fielder.safety.timer'].start_timer_for_job(
+                job_id=job_id,
+                duration_minutes=duration_minutes,
+                latitude=latitude,
+                longitude=longitude
+            )
+
+            return {
+                'success': True,
+                'timer_id': timer.id,
+                'expected_end': timer.expected_end.isoformat(),
+                'message': f'Safety timer started for {duration_minutes} minutes'
+            }
+        except Exception as e:
+            _logger.error(f'Start safety timer failed: {str(e)}', exc_info=True)
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/mobile/api/safety/timer/extend', type='jsonrpc', auth='user', methods=['POST'])
+    def extend_safety_timer(self, timer_id=None, minutes=30, latitude=None, longitude=None):
+        """Extend the current safety timer.
+
+        Allows inspector to add more time if job is taking longer than expected.
+        """
+        try:
+            # Get inspector
+            inspector = request.env['property_fielder.inspector'].search([
+                ('user_id', '=', request.env.user.id)
+            ], limit=1)
+
+            if not inspector:
+                return {'success': False, 'error': 'No inspector profile found'}
+
+            # Find timer
+            if timer_id:
+                timer = request.env['property_fielder.safety.timer'].browse(timer_id)
+            else:
+                timer = request.env['property_fielder.safety.timer'].get_active_timer_for_inspector(
+                    inspector.id
+                )
+
+            if not timer:
+                return {'success': False, 'error': 'No active safety timer found'}
+
+            # Update location if provided
+            if latitude and longitude:
+                timer.update_location(latitude, longitude)
+
+            # Extend timer
+            timer.action_extend(minutes)
+
+            return {
+                'success': True,
+                'timer_id': timer.id,
+                'new_expected_end': timer.expected_end.isoformat(),
+                'extension_count': timer.extended_count,
+                'message': f'Timer extended by {minutes} minutes'
+            }
+        except Exception as e:
+            _logger.error(f'Extend safety timer failed: {str(e)}', exc_info=True)
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/mobile/api/safety/timer/cancel', type='jsonrpc', auth='user', methods=['POST'])
+    def cancel_safety_timer(self, timer_id=None):
+        """Cancel/complete the safety timer (inspector is safe)."""
+        try:
+            # Get inspector
+            inspector = request.env['property_fielder.inspector'].search([
+                ('user_id', '=', request.env.user.id)
+            ], limit=1)
+
+            if not inspector:
+                return {'success': False, 'error': 'No inspector profile found'}
+
+            # Find timer
+            if timer_id:
+                timer = request.env['property_fielder.safety.timer'].browse(timer_id)
+            else:
+                timer = request.env['property_fielder.safety.timer'].get_active_timer_for_inspector(
+                    inspector.id
+                )
+
+            if not timer:
+                return {'success': False, 'error': 'No active safety timer found'}
+
+            # Complete timer
+            timer.action_complete()
+
+            return {
+                'success': True,
+                'timer_id': timer.id,
+                'message': 'Safety timer completed - inspector safe'
+            }
+        except Exception as e:
+            _logger.error(f'Cancel safety timer failed: {str(e)}', exc_info=True)
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/mobile/api/safety/panic', type='jsonrpc', auth='user', methods=['POST'])
+    def trigger_panic(self, reason='', latitude=None, longitude=None):
+        """PANIC BUTTON - Trigger immediate emergency response.
+
+        This immediately notifies:
+        1. Inspector's emergency contact
+        2. Field Service Manager
+        3. Logs the event with location
+        """
+        try:
+            # Get inspector
+            inspector = request.env['property_fielder.inspector'].search([
+                ('user_id', '=', request.env.user.id)
+            ], limit=1)
+
+            if not inspector:
+                return {'success': False, 'error': 'No inspector profile found'}
+
+            # Find or create timer
+            timer = request.env['property_fielder.safety.timer'].get_active_timer_for_inspector(
+                inspector.id
+            )
+
+            if not timer:
+                # Create emergency timer for panic
+                from datetime import timedelta
+                now = request.env['property_fielder.safety.timer'].fields.Datetime.now()
+                timer = request.env['property_fielder.safety.timer'].create({
+                    'inspector_id': inspector.id,
+                    'started_at': now,
+                    'expected_end': now + timedelta(minutes=1),
+                    'state': 'active',
+                })
+
+            # Update location
+            if latitude and longitude:
+                timer.update_location(latitude, longitude)
+
+            # Trigger panic
+            timer.action_trigger_panic(reason)
+
+            return {
+                'success': True,
+                'timer_id': timer.id,
+                'message': '🚨 PANIC ALERT SENT - Help is on the way',
+                'alert_sent': True
+            }
+        except Exception as e:
+            _logger.error(f'Panic trigger failed: {str(e)}', exc_info=True)
+            return {'success': False, 'error': str(e)}
+
+    @http.route('/mobile/api/safety/status', type='jsonrpc', auth='user', methods=['GET'])
+    def get_safety_status(self):
+        """Get current safety timer status for the inspector."""
+        try:
+            # Get inspector
+            inspector = request.env['property_fielder.inspector'].search([
+                ('user_id', '=', request.env.user.id)
+            ], limit=1)
+
+            if not inspector:
+                return {'success': False, 'error': 'No inspector profile found'}
+
+            # Find active timer
+            timer = request.env['property_fielder.safety.timer'].get_active_timer_for_inspector(
+                inspector.id
+            )
+
+            if not timer:
+                return {
+                    'success': True,
+                    'has_active_timer': False,
+                    'timer': None
+                }
+
+            return {
+                'success': True,
+                'has_active_timer': True,
+                'timer': {
+                    'id': timer.id,
+                    'state': timer.state,
+                    'started_at': timer.started_at.isoformat(),
+                    'expected_end': timer.expected_end.isoformat(),
+                    'minutes_remaining': timer.minutes_remaining,
+                    'is_overdue': timer.is_overdue,
+                    'extension_count': timer.extended_count,
+                    'job_id': timer.job_id.id if timer.job_id else None,
+                    'job_name': timer.job_id.name if timer.job_id else None,
+                }
+            }
+        except Exception as e:
+            _logger.error(f'Get safety status failed: {str(e)}', exc_info=True)
             return {'success': False, 'error': str(e)}
 
     # ========== Sync ==========

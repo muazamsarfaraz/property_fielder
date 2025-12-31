@@ -4,4 +4,5 @@ from . import create_jobs_wizard
 from . import bulk_schedule_wizard
 from . import bulk_upload_certificates_wizard
 from . import bulk_import_properties_wizard
+from . import email_report_wizard
 

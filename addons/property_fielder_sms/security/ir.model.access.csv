@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sms_config_user,property_fielder.sms.config.user,model_property_fielder_sms_config,base.group_user,1,0,0,0
+access_sms_config_manager,property_fielder.sms.config.manager,model_property_fielder_sms_config,property_fielder_field_service.group_field_service_manager,1,1,1,1
+access_sms_template_user,property_fielder.sms.template.user,model_property_fielder_sms_template,base.group_user,1,0,0,0
+access_sms_template_manager,property_fielder.sms.template.manager,model_property_fielder_sms_template,property_fielder_field_service.group_field_service_manager,1,1,1,1
+access_sms_log_user,property_fielder.sms.log.user,model_property_fielder_sms_log,base.group_user,1,0,0,0
+access_sms_log_manager,property_fielder.sms.log.manager,model_property_fielder_sms_log,property_fielder_field_service.group_field_service_manager,1,1,1,1
+

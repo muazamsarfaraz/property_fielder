@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Calendar Configuration Form View -->
+    <record id="view_calendar_config_form" model="ir.ui.view">
+        <field name="name">property_fielder.calendar.config.form</field>
+        <field name="model">property_fielder.calendar.config</field>
+        <field name="arch" type="xml">
+            <form string="Calendar Configuration">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_test_connection" type="object" class="oe_stat_button" icon="fa-check-circle">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Test Connection</span>
+                            </div>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Inactive" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="provider" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Provider" invisible="provider != 'google'">
+                            <field name="google_client_id" password="True"/>
+                            <field name="google_client_secret" password="True"/>
+                        </group>
+                        <group string="Provider" invisible="provider != 'microsoft'">
+                            <field name="microsoft_client_id" password="True"/>
+                            <field name="microsoft_client_secret" password="True"/>
+                            <field name="microsoft_tenant_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Sync Settings">
+                            <field name="auto_sync_enabled"/>
+                            <field name="sync_on_schedule"/>
+                            <field name="sync_on_reschedule"/>
+                            <field name="sync_on_cancel"/>
+                        </group>
+                        <group string="iCal Settings">
+                            <field name="ical_enabled"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Setup Instructions">
+                        <div class="alert alert-info" role="alert" invisible="provider != 'google'">
+                            <h5>Google Calendar Setup</h5>
+                            <ol>
+                                <li>Go to <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a></li>
+                                <li>Create a new project or select existing</li>
+                                <li>Enable the Google Calendar API</li>
+                                <li>Create OAuth 2.0 credentials (Web application)</li>
+                                <li>Add authorized redirect URI: <code>{base_url}/calendar/oauth/google/callback</code></li>
+                                <li>Copy Client ID and Client Secret here</li>
+                            </ol>
+                        </div>
+                        <div class="alert alert-info" role="alert" invisible="provider != 'microsoft'">
+                            <h5>Microsoft Outlook/365 Setup</h5>
+                            <ol>
+                                <li>Go to <a href="https://portal.azure.com" target="_blank">Azure Portal</a></li>
+                                <li>Navigate to Azure Active Directory → App registrations</li>
+                                <li>Register a new application</li>
+                                <li>Add Calendars.ReadWrite permission</li>
+                                <li>Create a client secret</li>
+                                <li>Add redirect URI: <code>{base_url}/calendar/oauth/microsoft/callback</code></li>
+                                <li>Copy Client ID, Secret, and Tenant ID here</li>
+                            </ol>
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Calendar Configuration List View -->
+    <record id="view_calendar_config_list" model="ir.ui.view">
+        <field name="name">property_fielder.calendar.config.list</field>
+        <field name="model">property_fielder.calendar.config</field>
+        <field name="arch" type="xml">
+            <list string="Calendar Configurations">
+                <field name="provider"/>
+                <field name="auto_sync_enabled"/>
+                <field name="ical_enabled"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_calendar_config" model="ir.actions.act_window">
+        <field name="name">Calendar Configuration</field>
+        <field name="res_model">property_fielder.calendar.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    
+</odoo>
+
