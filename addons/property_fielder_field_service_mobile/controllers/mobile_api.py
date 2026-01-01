@@ -488,7 +488,7 @@ class MobileAPIController(http.Controller):
             _logger.error(f'Start safety timer failed: {str(e)}', exc_info=True)
             return {'success': False, 'error': str(e)}
 
-    @http.route('/mobile/api/safety/timer/extend', type='jsonrpc', auth='user', methods=['POST'])
+    @http.route('/mobile/api/safety/timer/extend', type='jsonrpc', auth='user', methods=['POST'], cors='*')
     def extend_safety_timer(self, timer_id=None, minutes=30, latitude=None, longitude=None):
         """Extend the current safety timer.
 
