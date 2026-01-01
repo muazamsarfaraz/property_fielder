@@ -14,7 +14,7 @@ class MobileAPIController(http.Controller):
     
     # ========== Authentication ==========
     
-    @http.route('/mobile/api/auth/login', type='jsonrpc', auth='none', methods=['POST'], csrf=False)
+    @http.route('/mobile/api/auth/login', type='jsonrpc', auth='none', methods=['POST'], csrf=False, cors='*')
     def mobile_login(self, username, password):
         """Mobile app login"""
         try:
@@ -52,7 +52,7 @@ class MobileAPIController(http.Controller):
     
     # ========== Jobs ==========
     
-    @http.route('/mobile/api/jobs/my', type='jsonrpc', auth='user', methods=['GET'])
+    @http.route('/mobile/api/jobs/my', type='jsonrpc', auth='user', methods=['GET'], cors='*')
     def get_my_jobs(self, date=None, status=None):
         """Get jobs assigned to current inspector"""
         try:
@@ -102,7 +102,7 @@ class MobileAPIController(http.Controller):
             _logger.error(f'Get my jobs failed: {str(e)}', exc_info=True)
             return {'success': False, 'error': str(e)}
     
-    @http.route('/mobile/api/jobs/<int:job_id>', type='jsonrpc', auth='user', methods=['GET'])
+    @http.route('/mobile/api/jobs/<int:job_id>', type='jsonrpc', auth='user', methods=['GET'], cors='*')
     def get_job_detail(self, job_id):
         """Get detailed job information"""
         try:
@@ -169,7 +169,7 @@ class MobileAPIController(http.Controller):
 
     # ========== Check-In/Out ==========
 
-    @http.route('/mobile/api/jobs/<int:job_id>/checkin', type='jsonrpc', auth='user', methods=['POST'])
+    @http.route('/mobile/api/jobs/<int:job_id>/checkin', type='jsonrpc', auth='user', methods=['POST'], cors='*')
     def checkin_job(self, job_id, latitude=None, longitude=None, accuracy=None, notes=None,
                     device_info=None, override_section_11=False, emergency_reason=''):
         """Check in to a job.
@@ -245,7 +245,7 @@ class MobileAPIController(http.Controller):
             _logger.error(f'Check-in failed: {str(e)}', exc_info=True)
             return {'success': False, 'error': str(e)}
 
-    @http.route('/mobile/api/jobs/<int:job_id>/checkout', type='jsonrpc', auth='user', methods=['POST'])
+    @http.route('/mobile/api/jobs/<int:job_id>/checkout', type='jsonrpc', auth='user', methods=['POST'], cors='*')
     def checkout_job(self, job_id, latitude=None, longitude=None, notes=None):
         """Check out from a job"""
         try:
@@ -272,7 +272,7 @@ class MobileAPIController(http.Controller):
 
     # ========== Photos ==========
 
-    @http.route('/mobile/api/jobs/<int:job_id>/photos', type='jsonrpc', auth='user', methods=['POST'])
+    @http.route('/mobile/api/jobs/<int:job_id>/photos', type='jsonrpc', auth='user', methods=['POST'], cors='*')
     def upload_photo(self, job_id, image_data, name='Photo', category='during',
                      latitude=None, longitude=None, notes=None, device_info=None):
         """Upload a photo for a job"""
@@ -314,7 +314,7 @@ class MobileAPIController(http.Controller):
 
     # ========== Signatures ==========
 
-    @http.route('/mobile/api/jobs/<int:job_id>/signature', type='jsonrpc', auth='user', methods=['POST'])
+    @http.route('/mobile/api/jobs/<int:job_id>/signature', type='jsonrpc', auth='user', methods=['POST'], cors='*')
     def capture_signature(self, job_id, signature_data, signer_name, signer_title=None,
                          signer_email=None, signer_phone=None, signature_type='completion',
                          latitude=None, longitude=None, notes=None, agreement_text=None,
@@ -362,7 +362,7 @@ class MobileAPIController(http.Controller):
 
     # ========== Notes ==========
 
-    @http.route('/mobile/api/jobs/<int:job_id>/notes', type='jsonrpc', auth='user', methods=['POST'])
+    @http.route('/mobile/api/jobs/<int:job_id>/notes', type='jsonrpc', auth='user', methods=['POST'], cors='*')
     def add_note(self, job_id, title, content, category='general', priority='normal',
                  latitude=None, longitude=None, requires_follow_up=False, follow_up_date=None):
         """Add a note to a job"""
@@ -405,7 +405,7 @@ class MobileAPIController(http.Controller):
 
     # ========== Routes ==========
 
-    @http.route('/mobile/api/routes/my', type='jsonrpc', auth='user', methods=['GET'])
+    @http.route('/mobile/api/routes/my', type='jsonrpc', auth='user', methods=['GET'], cors='*')
     def get_my_routes(self, date=None):
         """Get routes assigned to current inspector"""
         try:
@@ -454,7 +454,7 @@ class MobileAPIController(http.Controller):
 
     # ========== Safety Timer (Lone Worker Protection) ==========
 
-    @http.route('/mobile/api/safety/timer/start', type='jsonrpc', auth='user', methods=['POST'])
+    @http.route('/mobile/api/safety/timer/start', type='jsonrpc', auth='user', methods=['POST'], cors='*')
     def start_safety_timer(self, job_id=None, duration_minutes=60, latitude=None, longitude=None):
         """Start a safety timer for lone worker protection.
 
