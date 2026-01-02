@@ -2,7 +2,8 @@
 
 [build]
 builder = "dockerfile"
-dockerfilePath = "Dockerfile"
+dockerfilePath = "./Dockerfile"
+watchPatterns = ["**/*.dart", "pubspec.yaml", "web/**", "lib/**"]
 
 [deploy]
 startCommand = "nginx -g 'daemon off;'"
@@ -10,4 +11,8 @@ healthcheckPath = "/health"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
+
+# Ensure we're in the right directory
+[build.env]
+RAILWAY_SERVICE_NAME = "mobile-app"
 
