@@ -76,10 +76,11 @@ admin_passwd = $ADMIN_PASSWD
 addons_path = /usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
 proxy_mode = True
 list_db = False
-workers = 2
+workers = 0
 limit_time_cpu = 600
 limit_time_real = 1200
 log_level = info
+gevent_port = 0
 EOF
 
 # Check if database needs initialization
