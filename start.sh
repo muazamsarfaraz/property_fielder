@@ -45,6 +45,10 @@ if [ "$DB_USER" = "postgres" ]; then
     echo "Switched to user: $DB_USER"
 fi
 
+# Unset PG* environment variables to prevent Odoo from detecting postgres superuser
+# Odoo will use the config file settings instead
+unset PGUSER PGPASSWORD PGHOST PGPORT PGDATABASE 2>/dev/null || true
+
 # Create runtime config with database settings
 # Use db_name = False to let Odoo auto-select the database based on --database flag
 # Allow overriding workers and gevent_port via environment variables
