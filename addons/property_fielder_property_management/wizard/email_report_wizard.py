@@ -14,13 +14,15 @@ class EmailReportWizard(models.TransientModel):
     _description = 'Email Report Wizard'
     
     # Report Selection
+    # NOTE: HHSRS/DHS options temporarily disabled due to circular dependency
+    # These will be re-enabled when moved to property_fielder_hhsrs module
     report_type = fields.Selection([
         ('certificate', 'Certificate'),
         ('inspection', 'Inspection Report'),
         ('compliance', 'Property Compliance Summary'),
         ('portfolio', 'Portfolio Report'),
-        ('hhsrs', 'HHSRS Assessment'),
-        ('dhs', 'DHS Assessment'),
+        # ('hhsrs', 'HHSRS Assessment'),  # Disabled - circular dependency
+        # ('dhs', 'DHS Assessment'),  # Disabled - circular dependency
     ], string='Report Type', required=True, default='certificate')
     
     # Record selection (varies by report type)
@@ -36,14 +38,16 @@ class EmailReportWizard(models.TransientModel):
         'property_fielder.property',
         string='Property'
     )
-    hhsrs_assessment_id = fields.Many2one(
-        'property_fielder.hhsrs.assessment',
-        string='HHSRS Assessment'
-    )
-    dhs_assessment_id = fields.Many2one(
-        'property_fielder.dhs.assessment',
-        string='DHS Assessment'
-    )
+    # HHSRS/DHS fields - DISABLED due to circular dependency
+    # These will be moved to property_fielder_hhsrs module in a future update
+    # hhsrs_assessment_id = fields.Many2one(
+    #     'property_fielder.hhsrs.assessment',
+    #     string='HHSRS Assessment'
+    # )
+    # dhs_assessment_id = fields.Many2one(
+    #     'property_fielder.dhs.assessment',
+    #     string='DHS Assessment'
+    # )
     
     # Recipients
     recipient_ids = fields.Many2many(
@@ -222,15 +226,16 @@ class EmailReportWizard(models.TransientModel):
             record = self.env['property_fielder.property'].search([])
             filename = f"Portfolio_Report_{fields.Date.today()}.pdf"
 
-        elif self.report_type == 'hhsrs' and self.hhsrs_assessment_id:
-            report_ref = 'property_fielder_hhsrs.action_report_hhsrs_assessment'
-            record = self.hhsrs_assessment_id
-            filename = f"HHSRS_{record.name}.pdf"
+        # HHSRS/DHS report generation - DISABLED due to circular dependency
+        # elif self.report_type == 'hhsrs' and self.hhsrs_assessment_id:
+        #     report_ref = 'property_fielder_hhsrs.action_report_hhsrs_assessment'
+        #     record = self.hhsrs_assessment_id
+        #     filename = f"HHSRS_{record.name}.pdf"
 
-        elif self.report_type == 'dhs' and self.dhs_assessment_id:
-            report_ref = 'property_fielder_hhsrs.action_report_dhs_assessment'
-            record = self.dhs_assessment_id
-            filename = f"DHS_{record.name}.pdf"
+        # elif self.report_type == 'dhs' and self.dhs_assessment_id:
+        #     report_ref = 'property_fielder_hhsrs.action_report_dhs_assessment'
+        #     record = self.dhs_assessment_id
+        #     filename = f"DHS_{record.name}.pdf"
 
         if not report_ref or not record:
             raise UserError(_('Please select a record to generate the report.'))

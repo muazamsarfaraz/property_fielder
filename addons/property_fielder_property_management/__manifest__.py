@@ -37,7 +37,6 @@ Features:
         'mail',
         'web',
         'property_fielder_field_service',  # Integration with field service
-        'property_fielder_hhsrs',  # For HHSRS/DHS assessment reports in email wizard
     ],
     'data': [
         # Security
