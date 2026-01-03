@@ -39,12 +39,13 @@ Future<void> setupDependencies() async {
     },
   ));
 
-  // Add auth interceptor
+  // Add auth interceptor - send session_id as Cookie header for Odoo compatibility
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) {
       final token = storageService.getAuthToken();
       if (token != null) {
-        options.headers['Authorization'] = 'Bearer $token';
+        // Send session_id as Cookie header for Odoo session auth
+        options.headers['Cookie'] = 'session_id=$token';
       }
       return handler.next(options);
     },
