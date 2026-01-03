@@ -76,6 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: const Text('Settings'),
       ),
       body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           _buildSection('Account', [
             Consumer<AuthProvider>(
@@ -84,69 +85,146 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 final email = auth.userEmail;
                 final hasEmail = email != null && email.isNotEmpty;
 
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    child: Text(
-                      name[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    name,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: hasEmail
-                      ? Text(email)
-                      : Text(
-                          'Logged in as inspector',
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.secondary,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              name[0].toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                              ),
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                hasEmail ? email : 'Logged in as inspector',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  fontStyle: hasEmail ? FontStyle.normal : FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
-            ListTile(
-              leading: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
-              title: Text('Logout', style: TextStyle(color: Theme.of(context).colorScheme.error)),
-              onTap: _logout,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: OutlinedButton.icon(
+                onPressed: _logout,
+                icon: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
+                label: Text('Logout', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Theme.of(context).colorScheme.error),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  minimumSize: const Size(double.infinity, 48),
+                ),
+              ),
             ),
           ]),
           _buildSection('Server', [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: TextField(
                 controller: _serverUrlController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Server URL',
                   hintText: 'https://your-odoo-server.com',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: Icon(
+                    Icons.cloud_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: FilledButton.icon(
                 onPressed: _saveServerUrl,
-                child: const Text('Save Server URL'),
+                icon: const Icon(Icons.save_outlined),
+                label: const Text('Save Server URL'),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  minimumSize: const Size(double.infinity, 48),
+                ),
               ),
             ),
           ]),
           _buildSection('About', [
-            ListTile(
-              leading: const Icon(Icons.info),
-              title: const Text('Version'),
-              subtitle: Text(_appVersion),
-            ),
-            const ListTile(
-              leading: Icon(Icons.business),
-              title: Text('Property Fielder'),
-              subtitle: Text('Field Service Inspector App'),
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    title: const Text('Version'),
+                    subtitle: Text(_appVersion),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.business_outlined,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    title: const Text('Property Fielder'),
+                    subtitle: const Text('Field Service Inspector App'),
+                  ),
+                ],
+              ),
             ),
           ]),
         ],
@@ -159,18 +237,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
           child: Text(
-            title,
+            title.toUpperCase(),
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).primaryColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
         ...children,
-        const Divider(),
+        const SizedBox(height: 8),
       ],
     );
   }
