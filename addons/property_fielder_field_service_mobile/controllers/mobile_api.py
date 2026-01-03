@@ -77,7 +77,8 @@ class MobileAPIController(http.Controller):
                 'user_id': uid,
                 'inspector_id': inspector_id,
                 'inspector_name': inspector_name,
-                'session_id': session_id
+                'session_id': session_id,
+                'token': session_id,  # Alias for Flutter app compatibility
             }
 
         except Exception as e:
