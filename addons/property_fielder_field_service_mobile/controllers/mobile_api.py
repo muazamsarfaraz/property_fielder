@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from odoo import http
-from odoo.http import request
 import json
 import base64
 import logging
+from contextlib import ExitStack
+
+import odoo
+import odoo.modules.registry
+from odoo import http
+from odoo.http import request
+from odoo.exceptions import AccessDenied
 
 _logger = logging.getLogger(__name__)
 
@@ -16,40 +21,68 @@ class MobileAPIController(http.Controller):
     
     @http.route('/mobile/api/auth/login', type='jsonrpc', auth='none', methods=['POST'], csrf=False, cors='*')
     def mobile_login(self, username, password):
-        """Mobile app login"""
+        """Mobile app login - Odoo 19 compatible using ExitStack pattern"""
         try:
-            # Odoo 19: authenticate() takes only username, password (db is determined from session)
-            uid = request.session.authenticate(username, password)
-            if uid:
+            # Get database
+            db = request.session.db
+            if not db:
+                dbs = http.db_list()
+                if dbs:
+                    db = dbs[0]
+                else:
+                    return {'success': False, 'error': 'No database available'}
+
+            # Use ExitStack to manage cursor lifecycle (same pattern as Odoo's session controller)
+            with ExitStack() as stack:
+                # Create cursor and environment
+                cr = stack.enter_context(odoo.modules.registry.Registry(db).cursor())
+                env = odoo.api.Environment(cr, odoo.SUPERUSER_ID, {})
+
+                # Authenticate with Odoo 19 credential dict
+                credential = {'login': username, 'password': password, 'type': 'password'}
+
+                try:
+                    auth_info = request.session.authenticate(env, credential)
+                    uid = auth_info.get('uid') or request.session.uid
+                except AccessDenied:
+                    return {'success': False, 'error': 'Invalid credentials'}
+                except Exception as auth_error:
+                    _logger.warning(f'Authentication failed: {auth_error}')
+                    return {'success': False, 'error': 'Invalid credentials'}
+
+                if not uid:
+                    return {'success': False, 'error': 'Invalid credentials'}
+
+                # Set session db and save session while cursor is still open
+                request.session.db = db
+                request._save_session(env)
+
                 # Get inspector for this user
-                inspector = request.env['property_fielder.inspector'].sudo().search([
+                user_env = env(user=uid)
+                inspector = user_env['property_fielder.inspector'].sudo().search([
                     ('user_id', '=', uid)
                 ], limit=1)
-                
-                if not inspector:
-                    return {
-                        'success': False,
-                        'error': 'No inspector profile found for this user'
-                    }
-                
-                return {
-                    'success': True,
-                    'user_id': uid,
-                    'inspector_id': inspector.id,
-                    'inspector_name': inspector.name,
-                    'session_id': request.session.sid
-                }
-            else:
-                return {
-                    'success': False,
-                    'error': 'Invalid credentials'
-                }
+
+                # Read values before cursor closes
+                inspector_id = inspector.id if inspector else None
+                inspector_name = inspector.name if inspector else None
+                session_id = request.session.sid
+
+            # Return response after cursor is properly closed
+            if not inspector_id:
+                return {'success': False, 'error': 'No inspector profile found for this user'}
+
+            return {
+                'success': True,
+                'user_id': uid,
+                'inspector_id': inspector_id,
+                'inspector_name': inspector_name,
+                'session_id': session_id
+            }
+
         except Exception as e:
             _logger.error(f'Mobile login failed: {str(e)}', exc_info=True)
-            return {
-                'success': False,
-                'error': str(e)
-            }
+            return {'success': False, 'error': str(e)}
     
     # ========== Jobs ==========
     
