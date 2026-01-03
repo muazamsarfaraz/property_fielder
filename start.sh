@@ -78,6 +78,12 @@ DB_INITIALIZED=$(PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -p $DB_PORT -U $DB_USE
 if [ "$DB_INITIALIZED" = "t" ]; then
     echo "Database is already initialized, starting Odoo normally..."
     INIT_FLAG=""
+
+    # Check if we need to upgrade modules (set ODOO_UPGRADE_MODULES env var to trigger)
+    if [ -n "$ODOO_UPGRADE_MODULES" ]; then
+        echo "Module upgrade requested: $ODOO_UPGRADE_MODULES"
+        INIT_FLAG="-u $ODOO_UPGRADE_MODULES"
+    fi
 else
     echo "Database needs initialization, will initialize base module..."
     INIT_FLAG="-i base"

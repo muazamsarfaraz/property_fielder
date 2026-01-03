@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Property Fielder Field Service',
-    'version': '1.0.0',
+    'version': '1.0.1',  # Added confirmation_state field
     'category': 'Fielder',
     'summary': 'AI-Powered Job Dispatch and Route Optimization',
     'description': """
@@ -58,15 +58,15 @@ Technical:
         'data/email_templates.xml',
         'data/cron_data.xml',
 
-        # Views (load actions first, then menus)
+        # Views (load actions first, then views that reference them, then menus)
         'views/job_views.xml',
         'views/inspector_views.xml',
         'views/route_views.xml',
         'views/skill_views.xml',
         'views/optimization_views.xml',
         'views/change_request_views.xml',
+        'views/dispatch_view.xml',  # Must load before dashboard (dashboard references dispatch actions)
         'views/dashboard.xml',
-        'views/dispatch_view.xml',
         'views/appointment_portal_templates.xml',
         'views/menu.xml',  # Load menu last after all actions are defined
 

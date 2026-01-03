@@ -212,5 +212,7 @@ export class DispatchTimelineWidget extends Component {
     }
 }
 
-registry.category("fields").add("dispatch_timeline", DispatchTimelineWidget);
+// Export the component for use in dispatch views
+// Note: This is a standalone OWL component, NOT a form field widget
+// It is imported directly by enhanced_dispatch_view.js and dispatch_view.js
 
