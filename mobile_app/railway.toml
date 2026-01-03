@@ -6,7 +6,7 @@ dockerfilePath = "./Dockerfile"
 watchPatterns = ["**/*.dart", "pubspec.yaml", "web/**", "lib/**"]
 
 [deploy]
-startCommand = "nginx -g 'daemon off;'"
+startCommand = "/docker-entrypoint.sh"
 healthcheckPath = "/health"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"

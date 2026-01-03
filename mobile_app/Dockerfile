@@ -24,12 +24,19 @@ FROM nginx:alpine
 # Copy the built web app from the build stage
 COPY --from=build /app/build/web /usr/share/nginx/html
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx configuration template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Expose port 80
-EXPOSE 80
+# Expose Railway's dynamic PORT (defaults to 8000)
+EXPOSE ${PORT:-8000}
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Create startup script to substitute PORT variable
+RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
+    echo 'export PORT=${PORT:-8000}' >> /docker-entrypoint.sh && \
+    echo 'envsubst "\$PORT" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf' >> /docker-entrypoint.sh && \
+    echo 'nginx -g "daemon off;"' >> /docker-entrypoint.sh && \
+    chmod +x /docker-entrypoint.sh
+
+# Start nginx with PORT substitution
+CMD ["/docker-entrypoint.sh"]
 
