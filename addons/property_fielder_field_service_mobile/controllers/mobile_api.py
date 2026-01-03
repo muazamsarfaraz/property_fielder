@@ -123,6 +123,12 @@ class MobileAPIController(http.Controller):
                     ('user_id', '=', uid)
                 ], limit=1)
 
+                # Get user details
+                user = user_env['res.users'].sudo().browse(uid)
+                user_name = user.name if user else None
+                user_email = user.email if user else None
+                user_login = user.login if user else None
+
                 # Read values before cursor closes
                 inspector_id = inspector.id if inspector else None
                 inspector_name = inspector.name if inspector else None
@@ -137,6 +143,8 @@ class MobileAPIController(http.Controller):
                 'user_id': uid,
                 'inspector_id': inspector_id,
                 'inspector_name': inspector_name,
+                'name': user_name or inspector_name,  # User's full name
+                'email': user_email or user_login,  # User's email or login
                 'session_id': session_id,
                 'token': session_id,  # Alias for Flutter app compatibility
             }
@@ -863,4 +871,119 @@ class MobileAPIController(http.Controller):
         except Exception as e:
             _logger.error(f'Sync failed: {str(e)}', exc_info=True)
             return {'success': False, 'error': str(e)}
+
+    # ========== Demo Data ==========
+
+    @http.route('/mobile/api/demo/create-jobs', type='http', auth='public', methods=['POST', 'OPTIONS'], cors='*', csrf=False)
+    def create_demo_jobs(self, count=5, **kwargs):
+        """Create demo jobs for the current inspector (for testing purposes)"""
+        # Handle OPTIONS preflight
+        if request.httprequest.method == 'OPTIONS':
+            return _json_response({})
+
+        uid, error_response = _check_session()
+        if error_response:
+            return error_response
+
+        try:
+            count = int(count) if count else 5
+            count = min(count, 20)  # Limit to 20 jobs max
+
+            # Get inspector for current user
+            inspector = request.env['property_fielder.inspector'].sudo().search([
+                ('user_id', '=', uid)
+            ], limit=1)
+
+            if not inspector:
+                return _json_response({'success': False, 'error': 'No inspector profile found'}, 400)
+
+            import random
+            from datetime import datetime, timedelta
+
+            # Get or create a test partner
+            partner = request.env['res.partner'].sudo().search([
+                ('name', 'ilike', 'Demo Customer')
+            ], limit=1)
+            if not partner:
+                partner = request.env['res.partner'].sudo().create({
+                    'name': 'Demo Customer - Property Fielder',
+                    'is_company': True,
+                    'street': '1 Demo Street',
+                    'city': 'London',
+                    'zip': 'SW1A 1AA',
+                })
+
+            # Get UK country
+            uk_country = request.env.ref('base.uk', raise_if_not_found=False) or \
+                        request.env['res.country'].sudo().search([('code', '=', 'GB')], limit=1)
+
+            # Get a certification type
+            cert_type = request.env['property_fielder.certification.type'].sudo().search([], limit=1)
+
+            jobs_created = []
+            today = datetime.now().date()
+
+            # London property addresses for demo
+            demo_addresses = [
+                {'street': '10 Downing Street', 'city': 'Westminster', 'zip': 'SW1A 2AA', 'lat': 51.5034, 'lng': -0.1276},
+                {'street': '221B Baker Street', 'city': 'London', 'zip': 'NW1 6XE', 'lat': 51.5238, 'lng': -0.1586},
+                {'street': 'Tower Bridge', 'city': 'London', 'zip': 'SE1 2UP', 'lat': 51.5055, 'lng': -0.0754},
+                {'street': '1 Canada Square', 'city': 'Canary Wharf', 'zip': 'E14 5AB', 'lat': 51.5049, 'lng': -0.0197},
+                {'street': 'Buckingham Palace', 'city': 'London', 'zip': 'SW1A 1AA', 'lat': 51.5014, 'lng': -0.1419},
+                {'street': '30 St Mary Axe', 'city': 'London', 'zip': 'EC3A 8BF', 'lat': 51.5145, 'lng': -0.0803},
+                {'street': 'British Museum', 'city': 'London', 'zip': 'WC1B 3DG', 'lat': 51.5194, 'lng': -0.1270},
+                {'street': 'Piccadilly Circus', 'city': 'London', 'zip': 'W1J 9HS', 'lat': 51.5100, 'lng': -0.1347},
+                {'street': 'Westminster Abbey', 'city': 'London', 'zip': 'SW1P 3PA', 'lat': 51.4994, 'lng': -0.1273},
+                {'street': 'London Eye', 'city': 'London', 'zip': 'SE1 7PB', 'lat': 51.5033, 'lng': -0.1195},
+            ]
+
+            for i in range(count):
+                addr = demo_addresses[i % len(demo_addresses)]
+
+                # Create property
+                prop = request.env['property_fielder.property'].sudo().create({
+                    'name': f'Demo Property {i + 1} - {addr["street"]}',
+                    'partner_id': partner.id,
+                    'street': addr['street'],
+                    'city': addr['city'],
+                    'zip': addr['zip'],
+                    'country_id': uk_country.id if uk_country else False,
+                    'latitude': addr['lat'],
+                    'longitude': addr['lng'],
+                })
+
+                # Create job directly assigned to this inspector
+                scheduled_date = today + timedelta(days=random.randint(0, 7))
+                job = request.env['property_fielder.job'].sudo().create({
+                    'name': f'Inspection: {addr["street"]}',
+                    'partner_id': partner.id,
+                    'street': addr['street'],
+                    'city': addr['city'],
+                    'zip': addr['zip'],
+                    'country_id': uk_country.id if uk_country else False,
+                    'latitude': addr['lat'],
+                    'longitude': addr['lng'],
+                    'scheduled_date': scheduled_date,
+                    'inspector_id': inspector.id,
+                    'state': 'assigned',
+                    'priority': random.choice(['low', 'normal', 'high']),
+                    'duration': random.choice([30, 45, 60, 90]),
+                })
+
+                jobs_created.append({
+                    'id': job.id,
+                    'name': job.name,
+                    'scheduled_date': scheduled_date.isoformat(),
+                    'address': f'{addr["street"]}, {addr["city"]}',
+                })
+
+            return _json_response({
+                'success': True,
+                'message': f'Created {len(jobs_created)} demo jobs',
+                'jobs': jobs_created,
+            })
+
+        except Exception as e:
+            _logger.error(f'Create demo jobs failed: {str(e)}', exc_info=True)
+            return _json_response({'success': False, 'error': str(e)}, 500)
 
