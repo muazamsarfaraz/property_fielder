@@ -29,6 +29,13 @@ def _json_response(data, status=200):
     )
 
 
+def _check_session():
+    """Check if user is authenticated. Returns (user_id, error_response)."""
+    if not request.session.uid:
+        return None, _json_response({'success': False, 'error': 'Not authenticated'}, 401)
+    return request.session.uid, None
+
+
 class MobileAPIController(http.Controller):
     """REST API for mobile app"""
     
@@ -102,17 +109,22 @@ class MobileAPIController(http.Controller):
     
     # ========== Jobs ==========
 
-    @http.route('/mobile/api/jobs/my', type='http', auth='user', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
+    @http.route('/mobile/api/jobs/my', type='http', auth='public', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
     def get_my_jobs(self, date=None, status=None, **kwargs):
         """Get jobs assigned to current inspector"""
         # Handle OPTIONS preflight
         if request.httprequest.method == 'OPTIONS':
             return _json_response({})
 
+        # Check authentication
+        uid, error = _check_session()
+        if error:
+            return error
+
         try:
             # Get inspector for current user
             inspector = request.env['property_fielder.inspector'].search([
-                ('user_id', '=', request.env.user.id)
+                ('user_id', '=', uid)
             ], limit=1)
 
             if not inspector:
@@ -156,12 +168,17 @@ class MobileAPIController(http.Controller):
             _logger.error(f'Get my jobs failed: {str(e)}', exc_info=True)
             return _json_response({'success': False, 'error': str(e)}, 500)
     
-    @http.route('/mobile/api/jobs/<int:job_id>', type='http', auth='user', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
+    @http.route('/mobile/api/jobs/<int:job_id>', type='http', auth='public', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
     def get_job_detail(self, job_id, **kwargs):
         """Get detailed job information"""
         # Handle OPTIONS preflight
         if request.httprequest.method == 'OPTIONS':
             return _json_response({})
+
+        # Check authentication
+        uid, error = _check_session()
+        if error:
+            return error
 
         try:
             job = request.env['property_fielder.job'].browse(job_id)
@@ -463,17 +480,22 @@ class MobileAPIController(http.Controller):
 
     # ========== Routes ==========
 
-    @http.route('/mobile/api/routes/my', type='http', auth='user', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
+    @http.route('/mobile/api/routes/my', type='http', auth='public', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
     def get_my_routes(self, date=None, **kwargs):
         """Get routes assigned to current inspector"""
         # Handle OPTIONS preflight
         if request.httprequest.method == 'OPTIONS':
             return _json_response({})
 
+        # Check authentication
+        uid, error = _check_session()
+        if error:
+            return error
+
         try:
             # Get inspector
             inspector = request.env['property_fielder.inspector'].search([
-                ('user_id', '=', request.env.user.id)
+                ('user_id', '=', uid)
             ], limit=1)
 
             if not inspector:
@@ -680,17 +702,22 @@ class MobileAPIController(http.Controller):
             _logger.error(f'Panic trigger failed: {str(e)}', exc_info=True)
             return {'success': False, 'error': str(e)}
 
-    @http.route('/mobile/api/safety/status', type='http', auth='user', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
+    @http.route('/mobile/api/safety/status', type='http', auth='public', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
     def get_safety_status(self, **kwargs):
         """Get current safety timer status for the inspector."""
         # Handle OPTIONS preflight
         if request.httprequest.method == 'OPTIONS':
             return _json_response({})
 
+        # Check authentication
+        uid, error = _check_session()
+        if error:
+            return error
+
         try:
             # Get inspector
             inspector = request.env['property_fielder.inspector'].search([
-                ('user_id', '=', request.env.user.id)
+                ('user_id', '=', uid)
             ], limit=1)
 
             if not inspector:
