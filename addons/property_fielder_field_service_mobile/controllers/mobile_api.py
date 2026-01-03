@@ -30,10 +30,48 @@ def _json_response(data, status=200):
 
 
 def _check_session():
-    """Check if user is authenticated. Returns (user_id, error_response)."""
-    if not request.session.uid:
-        return None, _json_response({'success': False, 'error': 'Not authenticated'}, 401)
-    return request.session.uid, None
+    """Check if user is authenticated. Returns (user_id, error_response).
+
+    Handles authentication via:
+    1. Odoo session cookie (automatic)
+    2. Authorization: Bearer <session_id> header
+    3. Cookie: session_id=<session_id> header (cross-origin)
+    """
+    # First check if already authenticated via cookie
+    if request.session.uid:
+        return request.session.uid, None
+
+    # Try to get session_id from Authorization header (Bearer token)
+    auth_header = request.httprequest.headers.get('Authorization', '')
+    session_id = None
+
+    if auth_header.startswith('Bearer '):
+        session_id = auth_header[7:]  # Remove 'Bearer ' prefix
+
+    # Also check Cookie header for session_id (cross-origin mobile apps)
+    if not session_id:
+        cookie_header = request.httprequest.headers.get('Cookie', '')
+        for cookie in cookie_header.split(';'):
+            cookie = cookie.strip()
+            if cookie.startswith('session_id='):
+                session_id = cookie[11:]  # Remove 'session_id=' prefix
+                break
+
+    if session_id:
+        # Try to load the session
+        try:
+            from odoo.http import root
+            # Get session store and load session
+            session_store = root.session_store
+            session = session_store.get(session_id)
+            if session and session.uid:
+                # Update request's session
+                request.session.update(session)
+                return session.uid, None
+        except Exception as e:
+            _logger.warning(f'Session validation failed: {e}')
+
+    return None, _json_response({'success': False, 'error': 'Not authenticated'}, 401)
 
 
 class MobileAPIController(http.Controller):
