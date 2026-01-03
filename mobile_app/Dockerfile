@@ -6,6 +6,11 @@ FROM ghcr.io/cirruslabs/flutter:stable AS build
 # Set working directory
 WORKDIR /app
 
+# Disable analytics and accept licenses
+ENV PUB_CACHE=/tmp/.pub-cache
+ENV FLUTTER_ROOT=/sdks/flutter
+RUN flutter config --no-analytics
+
 # Copy pubspec files
 COPY pubspec.yaml pubspec.lock ./
 
@@ -15,8 +20,8 @@ RUN flutter pub get
 # Copy the rest of the app
 COPY . .
 
-# Build the web app for production (--web-renderer removed in Flutter 3.22+)
-RUN flutter build web --release
+# Build the web app for production
+RUN flutter build web --release --web-renderer canvaskit
 
 # Stage 2: Serve the built app with Nginx
 FROM nginx:alpine

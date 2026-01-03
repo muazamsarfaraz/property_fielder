@@ -1,14 +1,13 @@
 # Railway configuration for Flutter Mobile App
-# This service should be configured on Railway with Root Directory = "mobile_app"
 
 [build]
 builder = "dockerfile"
-dockerfilePath = "./Dockerfile"
-watchPatterns = ["**/*.dart", "pubspec.yaml", "web/**", "lib/**", "Dockerfile", "nginx.conf"]
+dockerfilePath = "Dockerfile"
+watchPatterns = ["**/*.dart", "pubspec.yaml", "web/**", "lib/**"]
 
 [deploy]
 startCommand = "/docker-entrypoint.sh"
-healthcheckPath = "/health"
+healthcheckPath = "/"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
