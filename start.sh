@@ -80,9 +80,10 @@ if [ "$DB_INITIALIZED" = "t" ]; then
     INIT_FLAG=""
 
     # Check if we need to upgrade modules (set ODOO_UPGRADE_MODULES env var to trigger)
+    # Modules should be comma-separated without spaces, e.g., "module1,module2"
     if [ -n "$ODOO_UPGRADE_MODULES" ]; then
         echo "Module upgrade requested: $ODOO_UPGRADE_MODULES"
-        INIT_FLAG="-u $ODOO_UPGRADE_MODULES"
+        INIT_FLAG="-u ${ODOO_UPGRADE_MODULES}"
     fi
 else
     echo "Database needs initialization, will initialize base module..."

@@ -6,13 +6,10 @@
     
     <record id="ir_cron_safety_timer_check" model="ir.cron">
         <field name="name">Safety Timer: Check Overdue Timers</field>
-        <field name="model_id" ref="model_property_fielder_safety_timer"/>
-        <field name="state">code</field>
+        <field name="model_id" search="[('model', '=', 'property_fielder.safety.timer')]"/>
         <field name="code">model._cron_check_overdue_timers()</field>
         <field name="interval_number">5</field>
         <field name="interval_type">minutes</field>
-        <field name="numbercall">-1</field>
-        <field name="doall" eval="False"/>
         <field name="active" eval="True"/>
         <field name="priority">5</field>
     </record>
@@ -21,7 +18,7 @@
     
     <record id="email_template_safety_overdue" model="mail.template">
         <field name="name">Safety Timer: Overdue Alert</field>
-        <field name="model_id" ref="model_property_fielder_safety_timer"/>
+        <field name="model_id" search="[('model', '=', 'property_fielder.safety.timer')]"/>
         <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
         <field name="email_to">{{ object.inspector_id.user_id.partner_id.email }}</field>
         <field name="subject">⚠️ OVERDUE Safety Check - {{ object.inspector_id.name }}</field>
@@ -54,7 +51,7 @@
     
     <record id="email_template_safety_escalation" model="mail.template">
         <field name="name">Safety Timer: Escalation Alert</field>
-        <field name="model_id" ref="model_property_fielder_safety_timer"/>
+        <field name="model_id" search="[('model', '=', 'property_fielder.safety.timer')]"/>
         <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
         <field name="email_to">{{ object.inspector_id.emergency_contact_email or object.inspector_id.user_id.partner_id.email }}</field>
         <field name="subject">🚨 ESCALATED: Safety Timer - {{ object.inspector_id.name }} Unresponsive</field>
@@ -88,7 +85,7 @@
     
     <record id="email_template_safety_panic" model="mail.template">
         <field name="name">Safety Timer: PANIC Alert</field>
-        <field name="model_id" ref="model_property_fielder_safety_timer"/>
+        <field name="model_id" search="[('model', '=', 'property_fielder.safety.timer')]"/>
         <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
         <field name="email_to">{{ object.inspector_id.emergency_contact_email }}</field>
         <field name="subject">🚨🚨 PANIC BUTTON - {{ object.inspector_id.name }} NEEDS HELP!</field>

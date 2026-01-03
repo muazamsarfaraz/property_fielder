@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Property Fielder Field Service Mobile',
-    'version': '1.0.0',
+    'version': '1.0.1',  # Fixed model references in cron data
     'category': 'Fielder',
     'summary': 'Mobile app for field inspectors',
     'description': """
