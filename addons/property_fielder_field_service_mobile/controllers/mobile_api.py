@@ -15,16 +15,16 @@ _logger = logging.getLogger(__name__)
 
 
 def _json_response(data, status=200):
-    """Create a JSON HTTP response with CORS headers."""
+    """Create a JSON HTTP response.
+
+    Note: CORS headers are handled by the route decorator (cors='*'),
+    so we don't add them here to avoid duplicate headers.
+    """
     return Response(
         json.dumps(data),
         status=status,
         headers={
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
-            'Access-Control-Allow-Credentials': 'true',
         }
     )
 
