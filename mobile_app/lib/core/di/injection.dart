@@ -39,13 +39,15 @@ Future<void> setupDependencies() async {
     },
   ));
 
-  // Add auth interceptor - send session_id as Cookie header for Odoo compatibility
+  // Add auth interceptor - send session_id as Bearer token for cross-origin compatibility
+  // Note: Cookie headers are blocked by browsers for cross-origin requests (CORS),
+  // so we use Authorization: Bearer header instead which works across all platforms.
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) {
       final token = storageService.getAuthToken();
       if (token != null) {
-        // Send session_id as Cookie header for Odoo session auth
-        options.headers['Cookie'] = 'session_id=$token';
+        // Send session_id as Bearer token (works for cross-origin requests)
+        options.headers['Authorization'] = 'Bearer $token';
       }
       return handler.next(options);
     },

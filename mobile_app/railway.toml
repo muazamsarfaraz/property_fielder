@@ -1,4 +1,5 @@
 # Railway configuration for Flutter Mobile App
+# This service should be configured on Railway with Root Directory = "mobile_app"
 
 [build]
 builder = "dockerfile"
@@ -11,8 +12,4 @@ healthcheckPath = "/health"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
-
-# Ensure we're in the right directory
-[build.env]
-RAILWAY_SERVICE_NAME = "mobile-app"
 
