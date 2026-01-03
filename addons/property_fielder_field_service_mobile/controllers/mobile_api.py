@@ -8,10 +8,25 @@ from contextlib import ExitStack
 import odoo
 import odoo.modules.registry
 from odoo import http
-from odoo.http import request
+from odoo.http import request, Response
 from odoo.exceptions import AccessDenied
 
 _logger = logging.getLogger(__name__)
+
+
+def _json_response(data, status=200):
+    """Create a JSON HTTP response with CORS headers."""
+    return Response(
+        json.dumps(data),
+        status=status,
+        headers={
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, Cookie',
+            'Access-Control-Allow-Credentials': 'true',
+        }
+    )
 
 
 class MobileAPIController(http.Controller):
@@ -86,39 +101,43 @@ class MobileAPIController(http.Controller):
             return {'success': False, 'error': str(e)}
     
     # ========== Jobs ==========
-    
-    @http.route('/mobile/api/jobs/my', type='jsonrpc', auth='user', methods=['GET'], cors='*')
-    def get_my_jobs(self, date=None, status=None):
+
+    @http.route('/mobile/api/jobs/my', type='http', auth='user', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
+    def get_my_jobs(self, date=None, status=None, **kwargs):
         """Get jobs assigned to current inspector"""
+        # Handle OPTIONS preflight
+        if request.httprequest.method == 'OPTIONS':
+            return _json_response({})
+
         try:
             # Get inspector for current user
             inspector = request.env['property_fielder.inspector'].search([
                 ('user_id', '=', request.env.user.id)
             ], limit=1)
-            
+
             if not inspector:
-                return {'success': False, 'error': 'No inspector profile found'}
-            
+                return _json_response({'success': False, 'error': 'No inspector profile found'}, 400)
+
             # Build domain
             domain = [('inspector_id', '=', inspector.id)]
-            
+
             if date:
                 domain.append(('scheduled_date', '=', date))
-            
+
             if status:
                 domain.append(('state', '=', status))
-            
+
             # Get jobs
             jobs = request.env['property_fielder.job'].search(domain)
-            
-            return {
+
+            return _json_response({
                 'success': True,
                 'jobs': [{
                     'id': job.id,
                     'job_number': job.job_number,
                     'name': job.name,
-                    'customer_name': job.partner_id.name,
-                    'customer_phone': job.partner_id.phone,
+                    'customer_name': job.partner_id.name if job.partner_id else None,
+                    'customer_phone': job.partner_id.phone if job.partner_id else None,
                     'address': job.street,
                     'city': job.city,
                     'latitude': job.latitude,
@@ -132,47 +151,51 @@ class MobileAPIController(http.Controller):
                     'skills': [skill.name for skill in job.skill_ids],
                     'notes': job.notes,
                 } for job in jobs]
-            }
+            })
         except Exception as e:
             _logger.error(f'Get my jobs failed: {str(e)}', exc_info=True)
-            return {'success': False, 'error': str(e)}
+            return _json_response({'success': False, 'error': str(e)}, 500)
     
-    @http.route('/mobile/api/jobs/<int:job_id>', type='jsonrpc', auth='user', methods=['GET'], cors='*')
-    def get_job_detail(self, job_id):
+    @http.route('/mobile/api/jobs/<int:job_id>', type='http', auth='user', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
+    def get_job_detail(self, job_id, **kwargs):
         """Get detailed job information"""
+        # Handle OPTIONS preflight
+        if request.httprequest.method == 'OPTIONS':
+            return _json_response({})
+
         try:
             job = request.env['property_fielder.job'].browse(job_id)
-            
+
             if not job.exists():
-                return {'success': False, 'error': 'Job not found'}
-            
+                return _json_response({'success': False, 'error': 'Job not found'}, 404)
+
             # Get related data
             checkins = request.env['property_fielder.job.checkin'].search([
                 ('job_id', '=', job_id)
             ])
-            
+
             photos = request.env['property_fielder.job.photo'].search([
                 ('job_id', '=', job_id)
             ])
-            
+
             signatures = request.env['property_fielder.job.signature'].search([
                 ('job_id', '=', job_id)
             ])
-            
+
             notes = request.env['property_fielder.job.note'].search([
                 ('job_id', '=', job_id)
             ])
-            
-            return {
+
+            return _json_response({
                 'success': True,
                 'job': {
                     'id': job.id,
                     'job_number': job.job_number,
                     'name': job.name,
                     'customer': {
-                        'name': job.partner_id.name,
-                        'phone': job.partner_id.phone,
-                        'email': job.partner_id.email,
+                        'name': job.partner_id.name if job.partner_id else None,
+                        'phone': job.partner_id.phone if job.partner_id else None,
+                        'email': job.partner_id.email if job.partner_id else None,
                     },
                     'address': {
                         'street': job.street,
@@ -197,10 +220,10 @@ class MobileAPIController(http.Controller):
                     'signatures': len(signatures),
                     'notes_count': len(notes),
                 }
-            }
+            })
         except Exception as e:
             _logger.error(f'Get job detail failed: {str(e)}', exc_info=True)
-            return {'success': False, 'error': str(e)}
+            return _json_response({'success': False, 'error': str(e)}, 500)
 
     # ========== Check-In/Out ==========
 
@@ -440,9 +463,13 @@ class MobileAPIController(http.Controller):
 
     # ========== Routes ==========
 
-    @http.route('/mobile/api/routes/my', type='jsonrpc', auth='user', methods=['GET'], cors='*')
-    def get_my_routes(self, date=None):
+    @http.route('/mobile/api/routes/my', type='http', auth='user', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
+    def get_my_routes(self, date=None, **kwargs):
         """Get routes assigned to current inspector"""
+        # Handle OPTIONS preflight
+        if request.httprequest.method == 'OPTIONS':
+            return _json_response({})
+
         try:
             # Get inspector
             inspector = request.env['property_fielder.inspector'].search([
@@ -450,7 +477,7 @@ class MobileAPIController(http.Controller):
             ], limit=1)
 
             if not inspector:
-                return {'success': False, 'error': 'No inspector profile found'}
+                return _json_response({'success': False, 'error': 'No inspector profile found'}, 400)
 
             # Build domain
             domain = [('inspector_id', '=', inspector.id)]
@@ -461,7 +488,7 @@ class MobileAPIController(http.Controller):
             # Get routes
             routes = request.env['property_fielder.route'].search(domain)
 
-            return {
+            return _json_response({
                 'success': True,
                 'routes': [{
                     'id': route.id,
@@ -476,16 +503,16 @@ class MobileAPIController(http.Controller):
                         'id': job.id,
                         'job_number': job.job_number,
                         'name': job.name,
-                        'customer_name': job.partner_id.name,
+                        'customer_name': job.partner_id.name if job.partner_id else None,
                         'latitude': job.latitude,
                         'longitude': job.longitude,
                         'state': job.state,
                     } for job in route.job_ids]
                 } for route in routes]
-            }
+            })
         except Exception as e:
             _logger.error(f'Get my routes failed: {str(e)}', exc_info=True)
-            return {'success': False, 'error': str(e)}
+            return _json_response({'success': False, 'error': str(e)}, 500)
 
     # ========== Safety Timer (Lone Worker Protection) ==========
 
@@ -653,9 +680,13 @@ class MobileAPIController(http.Controller):
             _logger.error(f'Panic trigger failed: {str(e)}', exc_info=True)
             return {'success': False, 'error': str(e)}
 
-    @http.route('/mobile/api/safety/status', type='jsonrpc', auth='user', methods=['GET'])
-    def get_safety_status(self):
+    @http.route('/mobile/api/safety/status', type='http', auth='user', methods=['GET', 'OPTIONS'], cors='*', csrf=False)
+    def get_safety_status(self, **kwargs):
         """Get current safety timer status for the inspector."""
+        # Handle OPTIONS preflight
+        if request.httprequest.method == 'OPTIONS':
+            return _json_response({})
+
         try:
             # Get inspector
             inspector = request.env['property_fielder.inspector'].search([
@@ -663,7 +694,7 @@ class MobileAPIController(http.Controller):
             ], limit=1)
 
             if not inspector:
-                return {'success': False, 'error': 'No inspector profile found'}
+                return _json_response({'success': False, 'error': 'No inspector profile found'}, 400)
 
             # Find active timer
             timer = request.env['property_fielder.safety.timer'].get_active_timer_for_inspector(
@@ -671,13 +702,13 @@ class MobileAPIController(http.Controller):
             )
 
             if not timer:
-                return {
+                return _json_response({
                     'success': True,
                     'has_active_timer': False,
                     'timer': None
-                }
+                })
 
-            return {
+            return _json_response({
                 'success': True,
                 'has_active_timer': True,
                 'timer': {
@@ -691,10 +722,10 @@ class MobileAPIController(http.Controller):
                     'job_id': timer.job_id.id if timer.job_id else None,
                     'job_name': timer.job_id.name if timer.job_id else None,
                 }
-            }
+            })
         except Exception as e:
             _logger.error(f'Get safety status failed: {str(e)}', exc_info=True)
-            return {'success': False, 'error': str(e)}
+            return _json_response({'success': False, 'error': str(e)}, 500)
 
     # ========== Sync ==========
 
