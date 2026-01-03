@@ -16,15 +16,16 @@
                         <field name="inspection_id" 
                                invisible="report_type != 'inspection'"
                                required="report_type == 'inspection'"/>
-                        <field name="property_id" 
+                        <field name="property_id"
                                invisible="report_type != 'compliance'"
                                required="report_type == 'compliance'"/>
-                        <field name="hhsrs_assessment_id" 
+                        <!-- HHSRS/DHS fields disabled due to circular dependency -->
+                        <!-- <field name="hhsrs_assessment_id"
                                invisible="report_type != 'hhsrs'"
                                required="report_type == 'hhsrs'"/>
-                        <field name="dhs_assessment_id" 
+                        <field name="dhs_assessment_id"
                                invisible="report_type != 'dhs'"
-                               required="report_type == 'dhs'"/>
+                               required="report_type == 'dhs'"/> -->
                     </group>
                     <group string="Recipients">
                         <field name="recipient_ids" widget="many2many_tags"/>
