@@ -63,6 +63,10 @@ fi
 
 # Create runtime config with database settings
 # Use db_name = False to let Odoo auto-select the database based on --database flag
+# Allow overriding workers and gevent_port via environment variables
+WORKERS=${ODOO_WORKERS:-0}
+GEVENT_PORT=${ODOO_GEVENT_PORT:-0}
+
 cat > /tmp/odoo-runtime.conf << EOF
 [options]
 db_host = $DB_HOST
@@ -76,11 +80,11 @@ admin_passwd = $ADMIN_PASSWD
 addons_path = /usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
 proxy_mode = True
 list_db = False
-workers = 0
+workers = $WORKERS
 limit_time_cpu = 600
 limit_time_real = 1200
 log_level = info
-gevent_port = 0
+gevent_port = $GEVENT_PORT
 EOF
 
 # Check if database needs initialization
