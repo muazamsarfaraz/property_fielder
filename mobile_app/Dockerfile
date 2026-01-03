@@ -15,8 +15,8 @@ RUN flutter pub get
 # Copy the rest of the app
 COPY . .
 
-# Build the web app for production
-RUN flutter build web --release --web-renderer canvaskit
+# Build the web app for production (--web-renderer removed in Flutter 3.22+)
+RUN flutter build web --release
 
 # Stage 2: Serve the built app with Nginx
 FROM nginx:alpine

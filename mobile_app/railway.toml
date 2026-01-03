@@ -3,7 +3,7 @@
 [build]
 builder = "dockerfile"
 dockerfilePath = "./Dockerfile"
-watchPatterns = ["**/*.dart", "pubspec.yaml", "web/**", "lib/**"]
+watchPatterns = ["**/*.dart", "pubspec.yaml", "web/**", "lib/**", "Dockerfile", "nginx.conf"]
 
 [deploy]
 startCommand = "/docker-entrypoint.sh"
