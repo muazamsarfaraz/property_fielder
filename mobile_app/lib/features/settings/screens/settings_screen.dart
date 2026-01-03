@@ -80,16 +80,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildSection('Account', [
             Consumer<AuthProvider>(
               builder: (context, auth, _) {
+                final name = auth.userName ?? 'Inspector';
+                final email = auth.userEmail;
+                final hasEmail = email != null && email.isNotEmpty;
+
                 return ListTile(
-                  leading: const Icon(Icons.person),
-                  title: Text(auth.userName ?? 'Unknown'),
-                  subtitle: Text(auth.userEmail ?? 'No email'),
+                  leading: CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    child: Text(
+                      name[0].toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    name,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: hasEmail
+                      ? Text(email)
+                      : Text(
+                          'Logged in as inspector',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                 );
               },
             ),
             ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text('Logout', style: TextStyle(color: Colors.red)),
+              leading: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
+              title: Text('Logout', style: TextStyle(color: Theme.of(context).colorScheme.error)),
               onTap: _logout,
             ),
           ]),

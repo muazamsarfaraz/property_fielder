@@ -79,7 +79,7 @@ class _JobListScreenState extends State<JobListScreen> with SingleTickerProvider
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -161,7 +161,7 @@ class _JobListScreenState extends State<JobListScreen> with SingleTickerProvider
         ),
         trailing: Chip(
           label: Text(job.statusLabel, style: const TextStyle(fontSize: 10)),
-          backgroundColor: _getStatusColor(job.status).withOpacity(0.2),
+          backgroundColor: _getStatusColor(job.status).withValues(alpha: 0.2),
         ),
         onTap: () => Navigator.pushNamed(
           context,

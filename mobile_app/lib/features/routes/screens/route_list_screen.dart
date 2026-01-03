@@ -31,14 +31,56 @@ class _RouteListScreenState extends State<RouteListScreen> {
 
           final routes = routeProvider.routes;
           if (routes.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.route, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('No routes found', style: TextStyle(color: Colors.grey)),
-                ],
+            return RefreshIndicator(
+              onRefresh: () => routeProvider.refresh(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.route_outlined,
+                              size: 64,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'No Routes Yet',
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Optimized routes for your jobs will appear here.\nPull down to refresh.',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          OutlinedButton.icon(
+                            onPressed: () => routeProvider.refresh(),
+                            icon: const Icon(Icons.refresh),
+                            label: const Text('Refresh'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             );
           }
@@ -75,7 +117,7 @@ class _RouteListScreenState extends State<RouteListScreen> {
                 ),
                 Chip(
                   label: Text(route.statusLabel),
-                  backgroundColor: _getStatusColor(route.status).withOpacity(0.2),
+                  backgroundColor: _getStatusColor(route.status).withValues(alpha: 0.2),
                 ),
               ],
             ),

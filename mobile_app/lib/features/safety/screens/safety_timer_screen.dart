@@ -84,17 +84,17 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
     }
   }
 
-  // Safety-specific colors that work with the app theme
-  Color get _safetyColor => const Color(0xFFE65100); // Deep orange for safety
-  Color get _safetyColorLight => const Color(0xFFFFF3E0); // Light orange background
+  // Safety-specific colors that integrate with the app theme
+  Color get _safetyColor => Theme.of(context).colorScheme.tertiary;
+  Color get _safetyColorLight => Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.3);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Safety Timer'),
-        backgroundColor: _safetyColor,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
+        foregroundColor: Theme.of(context).colorScheme.onTertiary,
       ),
       body: Consumer<SafetyProvider>(
         builder: (context, provider, _) {
@@ -228,7 +228,7 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: isOverdue ? errorColor.withOpacity(0.1) : _safetyColorLight,
+        color: isOverdue ? errorColor.withValues(alpha: 0.1) : _safetyColorLight,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isOverdue ? errorColor : _safetyColor,
