@@ -7,28 +7,12 @@ echo "Starting Property Fielder (Odoo 19)..."
 # Use Railway's PORT or default to 8069
 HTTP_PORT=${PORT:-8069}
 
-# Parse DATABASE_URL using Python (more reliable than sed)
-if [ -n "$DATABASE_URL" ]; then
-    echo "Parsing DATABASE_URL..."
-    eval $(python3 << EOF
-import os
-from urllib.parse import urlparse
-url = urlparse(os.environ.get('DATABASE_URL', ''))
-print(f"export DB_HOST={url.hostname or 'db'}")
-print(f"export DB_PORT={url.port or 5432}")
-print(f"export DB_USER={url.username or 'odoo'}")
-print(f"export DB_PASSWORD={url.password or 'odoo'}")
-print(f"export DB_NAME={url.path.lstrip('/') or 'property_fielder'}")
-EOF
-)
-else
-    # Fallback to individual env vars
-    export DB_HOST=${PGHOST:-db}
-    export DB_PORT=${PGPORT:-5432}
-    export DB_USER=${PGUSER:-odoo}
-    export DB_PASSWORD=${PGPASSWORD:-odoo}
-    export DB_NAME=${PGDATABASE:-property_fielder}
-fi
+# Use individual env vars (prefer PGHOST/PGUSER over DATABASE_URL to avoid postgres superuser)
+export DB_HOST=${PGHOST:-db}
+export DB_PORT=${PGPORT:-5432}
+export DB_USER=${PGUSER:-odoo}
+export DB_PASSWORD=${PGPASSWORD:-odoo}
+export DB_NAME=${PGDATABASE:-property_fielder}
 
 # Admin password
 ADMIN_PASSWD=${ODOO_ADMIN_PASSWORD:-admin}

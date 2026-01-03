@@ -18,7 +18,8 @@ class MobileAPIController(http.Controller):
     def mobile_login(self, username, password):
         """Mobile app login"""
         try:
-            uid = request.session.authenticate(request.session.db, username, password)
+            # Odoo 19: authenticate() takes only username, password (db is determined from session)
+            uid = request.session.authenticate(username, password)
             if uid:
                 # Get inspector for this user
                 inspector = request.env['property_fielder.inspector'].sudo().search([
