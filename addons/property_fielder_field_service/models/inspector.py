@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import logging
 from odoo import models, fields, api
+
+_logger = logging.getLogger(__name__)
 
 
 class FieldServiceInspector(models.Model):
@@ -186,5 +189,88 @@ class FieldServiceInspector(models.Model):
             'view_mode': 'tree,form',
             'domain': [('inspector_id', '=', self.id)],
             'context': {'default_inspector_id': self.id}
+        }
+
+    def _assign_field_service_group(self, user):
+        """Assign the Field Service/User security group to the user.
+
+        This ensures that users linked to inspector profiles have the necessary
+        permissions to access field service data via the mobile app or web.
+        """
+        if not user:
+            return
+
+        # Get the Field Service User group
+        field_service_group = self.env.ref(
+            'property_fielder_field_service.group_field_service_user',
+            raise_if_not_found=False
+        )
+
+        if field_service_group and field_service_group not in user.groups_id:
+            user.sudo().write({
+                'groups_id': [(4, field_service_group.id)]
+            })
+            _logger.info(
+                f"Added user '{user.login}' (ID: {user.id}) to Field Service/User group"
+            )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override create to auto-assign Field Service/User group to linked users."""
+        records = super().create(vals_list)
+
+        for record in records:
+            if record.user_id:
+                record._assign_field_service_group(record.user_id)
+
+        return records
+
+    def write(self, vals):
+        """Override write to auto-assign Field Service/User group when user_id is set."""
+        result = super().write(vals)
+
+        # If user_id was updated, assign the security group
+        if 'user_id' in vals and vals['user_id']:
+            for record in self:
+                if record.user_id:
+                    record._assign_field_service_group(record.user_id)
+
+        return result
+
+    @api.model
+    def fix_existing_inspector_permissions(self):
+        """Fix permissions for all existing inspectors with linked users.
+
+        This method can be called to retroactively add the Field Service/User
+        group to all users who are linked to inspector profiles but don't yet
+        have the proper security group.
+
+        Can be called via:
+        - Server action
+        - Shell: env['property_fielder.inspector'].fix_existing_inspector_permissions()
+        - Scheduled action on module upgrade
+        """
+        inspectors_with_users = self.search([('user_id', '!=', False)])
+        fixed_count = 0
+
+        for inspector in inspectors_with_users:
+            user = inspector.user_id
+            field_service_group = self.env.ref(
+                'property_fielder_field_service.group_field_service_user',
+                raise_if_not_found=False
+            )
+
+            if field_service_group and field_service_group not in user.groups_id:
+                inspector._assign_field_service_group(user)
+                fixed_count += 1
+
+        _logger.info(
+            f"Fixed permissions for {fixed_count} inspector user(s) "
+            f"(checked {len(inspectors_with_users)} inspectors)"
+        )
+
+        return {
+            'inspectors_checked': len(inspectors_with_users),
+            'users_fixed': fixed_count
         }
 
