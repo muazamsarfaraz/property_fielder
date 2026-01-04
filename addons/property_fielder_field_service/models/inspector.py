@@ -254,13 +254,13 @@ class FieldServiceInspector(models.Model):
         fixed_count = 0
 
         for inspector in inspectors_with_users:
-            user = inspector.user_id
+            user = inspector.user_id.sudo()
             field_service_group = self.env.ref(
                 'property_fielder_field_service.group_field_service_user',
                 raise_if_not_found=False
             )
 
-            if field_service_group and field_service_group not in user.groups_id:
+            if field_service_group and field_service_group.id not in user.groups_id.ids:
                 inspector._assign_field_service_group(user)
                 fixed_count += 1
 
