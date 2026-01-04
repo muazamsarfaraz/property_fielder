@@ -115,5 +115,6 @@ Technical:
     'auto_install': False,
     'price': 299.00,
     'currency': 'USD',
+    'post_init_hook': '_post_init_hook',
 }
 
