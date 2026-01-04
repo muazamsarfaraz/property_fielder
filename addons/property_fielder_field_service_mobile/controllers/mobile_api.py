@@ -987,3 +987,30 @@ class MobileAPIController(http.Controller):
             _logger.error(f'Create demo jobs failed: {str(e)}', exc_info=True)
             return _json_response({'success': False, 'error': str(e)}, 500)
 
+    # ========== Admin Utilities ==========
+
+    @http.route('/mobile/api/admin/fix-permissions', type='http', auth='public', methods=['POST', 'OPTIONS'], cors='*', csrf=False)
+    def fix_inspector_permissions(self, **kwargs):
+        """Fix permissions for all existing inspectors.
+
+        This endpoint adds the Field Service/User security group to all users
+        who are linked to inspector profiles but don't yet have the proper group.
+
+        This is a one-time fix for existing data - new inspectors will get
+        the group automatically when created.
+        """
+        # Handle OPTIONS preflight
+        if request.httprequest.method == 'OPTIONS':
+            return _json_response({})
+
+        try:
+            result = request.env['property_fielder.inspector'].sudo().fix_existing_inspector_permissions()
+            return _json_response({
+                'success': True,
+                'message': f'Fixed permissions for {result["users_fixed"]} user(s)',
+                **result
+            })
+        except Exception as e:
+            _logger.error(f'Fix permissions failed: {str(e)}', exc_info=True)
+            return _json_response({'success': False, 'error': str(e)}, 500)
+

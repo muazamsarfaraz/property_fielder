@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Property Fielder Field Service',
-    'version': '1.0.1',  # Added confirmation_state field
+    'version': '1.0.2',  # Auto-assign Field Service/User group to inspector users
     'category': 'Fielder',
     'summary': 'AI-Powered Job Dispatch and Route Optimization',
     'description': """
