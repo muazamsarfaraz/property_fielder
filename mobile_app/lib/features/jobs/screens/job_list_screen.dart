@@ -71,46 +71,48 @@ class _JobListScreenState extends State<JobListScreen> with SingleTickerProvider
           child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.6,
             child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.assignment_outlined,
-                        size: 64,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'No Jobs Yet',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Icon(
+                      Icons.assignment_outlined,
+                      size: 64,
+                      color: Colors.blue.shade300,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Jobs assigned to you will appear here.\nPull down to refresh.',
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'No jobs assigned yet',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 48),
+                    child: Text(
+                      'Pull down to refresh or sync to get your latest assigned jobs.',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                      style: TextStyle(color: Colors.grey.shade600),
                     ),
-                    const SizedBox(height: 24),
-                    OutlinedButton.icon(
-                      onPressed: () => context.read<JobProvider>().refresh(),
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Refresh'),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () => context.read<JobProvider>().refresh(),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh Jobs'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -161,7 +163,7 @@ class _JobListScreenState extends State<JobListScreen> with SingleTickerProvider
         ),
         trailing: Chip(
           label: Text(job.statusLabel, style: const TextStyle(fontSize: 10)),
-          backgroundColor: _getStatusColor(job.status).withValues(alpha: 0.2),
+          backgroundColor: _getStatusColor(job.status).withOpacity(0.2),
         ),
         onTap: () => Navigator.pushNamed(
           context,

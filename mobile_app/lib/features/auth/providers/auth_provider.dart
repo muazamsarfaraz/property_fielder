@@ -34,6 +34,8 @@ class AuthProvider extends ChangeNotifier {
     final token = _storageService.getAuthToken();
     _userId = _storageService.getUserId();
     _inspectorId = _storageService.getInspectorId();
+    _userName = _storageService.getUserName();
+    _userEmail = _storageService.getUserEmail();
     _isAuthenticated = token != null && _userId != null;
     notifyListeners();
   }
@@ -61,6 +63,12 @@ class AuthProvider extends ChangeNotifier {
           await _storageService.saveUserId(userId);
           if (inspectorId != null) {
             await _storageService.saveInspectorId(inspectorId);
+          }
+          if (userName != null) {
+            await _storageService.saveUserName(userName);
+          }
+          if (userEmail != null) {
+            await _storageService.saveUserEmail(userEmail);
           }
 
           _isAuthenticated = true;

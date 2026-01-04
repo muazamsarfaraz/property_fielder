@@ -157,7 +157,6 @@ class _JobMapScreenState extends State<JobMapScreen> {
           IconButton(
             icon: const Icon(Icons.my_location),
             onPressed: _fitBounds,
-            tooltip: 'Fit all markers',
           ),
         ],
       ),
@@ -174,27 +173,6 @@ class _JobMapScreenState extends State<JobMapScreen> {
               _fitBounds();
             },
           ),
-          // Legend overlay
-          Positioned(
-            top: 16,
-            right: 16,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildLegendItem(Colors.green, 'Completed'),
-                    const SizedBox(height: 4),
-                    _buildLegendItem(Colors.blue, 'In Progress'),
-                    const SizedBox(height: 4),
-                    _buildLegendItem(Colors.orange, 'Pending'),
-                  ],
-                ),
-              ),
-            ),
-          ),
           if (_selectedJob != null)
             Positioned(
               left: 16,
@@ -207,110 +185,32 @@ class _JobMapScreenState extends State<JobMapScreen> {
     );
   }
 
-  Widget _buildLegendItem(Color color, String label) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
-    );
-  }
-
   Widget _buildJobCard(Job job) {
     return Card(
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    Icons.work_outline,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    job.name,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: Text(job.name, style: Theme.of(context).textTheme.titleMedium),
                 ),
                 IconButton(
-                  icon: Icon(
-                    Icons.close,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                  icon: const Icon(Icons.close),
                   onPressed: () => setState(() => _selectedJob = null),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            Text(job.fullAddress, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 8),
             Row(
               children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    job.fullAddress,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(job.status).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    job.statusLabel,
-                    style: TextStyle(
-                      color: _getStatusColor(job.status),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
+                Chip(label: Text(job.statusLabel)),
                 const Spacer(),
-                FilledButton.icon(
+                ElevatedButton.icon(
                   onPressed: () => _navigateToJob(job),
                   icon: const Icon(Icons.directions),
                   label: const Text('Navigate'),
@@ -321,22 +221,6 @@ class _JobMapScreenState extends State<JobMapScreen> {
         ),
       ),
     );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'completed':
-        return Colors.green;
-      case 'in_progress':
-        return Colors.blue;
-      case 'pending':
-      case 'assigned':
-        return Colors.orange;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
   }
 }
 

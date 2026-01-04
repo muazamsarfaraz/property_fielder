@@ -104,29 +104,13 @@ class _TemplateExecutionScreenState extends State<TemplateExecutionScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.3),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    provider.errorMessage ?? 'No template found',
-                    style: Theme.of(context).textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
+                  const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(provider.errorMessage ?? 'No template found'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
                     onPressed: () => provider.startInspection(widget.jobId),
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
+                    child: const Text('Retry'),
                   ),
                 ],
               ),
@@ -195,76 +179,47 @@ class _TemplateExecutionScreenState extends State<TemplateExecutionScreen> {
   }
 
   Widget _buildNavigationBar(TemplateProvider provider) {
-    final percentage = (provider.completionPercentage * 100).toInt();
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
+            color: Colors.black.withAlpha(26),
+            blurRadius: 4,
             offset: const Offset(0, -2),
           ),
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
-          // Progress bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: provider.completionPercentage,
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-              minHeight: 6,
+          if (provider.currentSectionIndex > 0)
+            OutlinedButton.icon(
+              onPressed: provider.previousSection,
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Previous'),
+            )
+          else
+            const SizedBox(width: 100),
+          const Spacer(),
+          Text(
+            '${(provider.completionPercentage * 100).toInt()}% Complete',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const Spacer(),
+          if (!provider.isLastSection)
+            ElevatedButton.icon(
+              onPressed: provider.nextSection,
+              icon: const Icon(Icons.arrow_forward),
+              label: const Text('Next'),
+            )
+          else
+            ElevatedButton.icon(
+              onPressed: provider.isLoading ? null : _submitInspection,
+              icon: const Icon(Icons.check),
+              label: const Text('Submit'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
             ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              if (provider.currentSectionIndex > 0)
-                OutlinedButton.icon(
-                  onPressed: provider.previousSection,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Previous'),
-                )
-              else
-                const SizedBox(width: 100),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '$percentage% Complete',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              if (!provider.isLastSection)
-                FilledButton.icon(
-                  onPressed: provider.nextSection,
-                  icon: const Icon(Icons.arrow_forward),
-                  label: const Text('Next'),
-                )
-              else
-                FilledButton.icon(
-                  onPressed: provider.isLoading ? null : _submitInspection,
-                  icon: const Icon(Icons.check),
-                  label: const Text('Submit'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-            ],
-          ),
         ],
       ),
     );

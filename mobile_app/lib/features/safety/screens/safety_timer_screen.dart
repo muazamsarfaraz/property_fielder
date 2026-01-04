@@ -84,17 +84,13 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
     }
   }
 
-  // Safety-specific colors that integrate with the app theme
-  Color get _safetyColor => Theme.of(context).colorScheme.tertiary;
-  Color get _safetyColorLight => Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.3);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Safety Timer'),
-        backgroundColor: Theme.of(context).colorScheme.tertiary,
-        foregroundColor: Theme.of(context).colorScheme.onTertiary,
+        backgroundColor: Colors.deepOrange,
+        foregroundColor: Colors.white,
       ),
       body: Consumer<SafetyProvider>(
         builder: (context, provider, _) {
@@ -113,7 +109,7 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(Icons.timer, size: 80, color: _safetyColor),
+          const Icon(Icons.timer, size: 80, color: Colors.deepOrange),
           const SizedBox(height: 24),
           Text(
             'Lone Worker Protection',
@@ -123,9 +119,7 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
           const SizedBox(height: 8),
           Text(
             'Start a safety timer when working alone. If the timer expires without being cancelled, emergency contacts will be notified.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -136,7 +130,7 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
             icon: const Icon(Icons.play_arrow),
             label: Text(provider.isLoading ? 'Starting...' : 'Start Safety Timer'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: _safetyColor,
+              backgroundColor: Colors.deepOrange,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               textStyle: const TextStyle(fontSize: 18),
@@ -163,7 +157,7 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
               label: Text('$mins min'),
               selected: isSelected,
               onSelected: (sel) => setState(() => _selectedDuration = mins),
-              selectedColor: _safetyColor,
+              selectedColor: Colors.deepOrange,
               labelStyle: TextStyle(color: isSelected ? Colors.white : null),
             );
           }).toList(),
@@ -223,15 +217,13 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
   }
 
   Widget _buildTimerDisplay(timer, bool isOverdue) {
-    final errorColor = Theme.of(context).colorScheme.error;
-
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: isOverdue ? errorColor.withValues(alpha: 0.1) : _safetyColorLight,
+        color: isOverdue ? Colors.red.shade50 : Colors.orange.shade50,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isOverdue ? errorColor : _safetyColor,
+          color: isOverdue ? Colors.red : Colors.deepOrange,
           width: 3,
         ),
       ),
@@ -240,7 +232,7 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
           Icon(
             isOverdue ? Icons.warning : Icons.timer,
             size: 48,
-            color: isOverdue ? errorColor : _safetyColor,
+            color: isOverdue ? Colors.red : Colors.deepOrange,
           ),
           const SizedBox(height: 16),
           Text(
@@ -248,7 +240,7 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
             style: TextStyle(
               fontSize: 56,
               fontWeight: FontWeight.bold,
-              color: isOverdue ? errorColor : _safetyColor,
+              color: isOverdue ? Colors.red : Colors.deepOrange,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
@@ -258,7 +250,7 @@ class _SafetyTimerScreenState extends State<SafetyTimerScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: isOverdue ? FontWeight.bold : FontWeight.normal,
-              color: isOverdue ? errorColor : Theme.of(context).colorScheme.onSurfaceVariant,
+              color: isOverdue ? Colors.red : Colors.grey[700],
             ),
           ),
         ],

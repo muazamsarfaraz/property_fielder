@@ -131,31 +131,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   Widget _buildHeader(String title, String status) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: Text(title, style: Theme.of(context).textTheme.headlineSmall),
         ),
-        const SizedBox(width: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            status,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-          ),
-        ),
+        Chip(label: Text(status)),
       ],
     );
   }
@@ -163,17 +143,12 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   Widget _buildInfoCard(String title, List<Widget> children) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
             ...children,
           ],
         ),
@@ -183,22 +158,11 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
 
   Widget _buildInfoRow(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: 12),
+          Icon(icon, size: 20, color: Colors.grey[600]),
+          const SizedBox(width: 8),
           Expanded(child: Text(text)),
         ],
       ),
@@ -215,27 +179,21 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
           children: [
             if (job.canCheckIn)
               Expanded(
-                child: FilledButton.icon(
+                child: ElevatedButton.icon(
                   onPressed: checkinProvider.isLoading ? null : _handleCheckIn,
                   icon: const Icon(Icons.login),
                   label: const Text('Check In'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                 ),
               ),
             if (job.canCheckOut) ...[
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
-                child: FilledButton.icon(
+                child: ElevatedButton.icon(
                   onPressed: checkinProvider.isLoading ? null : _handleCheckOut,
                   icon: const Icon(Icons.logout),
                   label: const Text('Check Out'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.tertiary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                 ),
               ),
             ],
@@ -248,45 +206,24 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   Widget _buildQuickActions() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Actions',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
+            Text('Actions', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Expanded(
-                  child: _buildActionButton(
-                    Icons.camera_alt_outlined,
-                    'Photos',
-                    () => Navigator.pushNamed(context, AppRouter.photoGallery, arguments: {'jobId': widget.jobId}),
-                    Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionButton(
-                    Icons.draw_outlined,
-                    'Signature',
-                    () => Navigator.pushNamed(context, AppRouter.signatureCapture, arguments: {'jobId': widget.jobId}),
-                    Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildActionButton(
-                    Icons.note_add_outlined,
-                    'Notes',
-                    () => Navigator.pushNamed(context, AppRouter.noteList, arguments: {'jobId': widget.jobId}),
-                    Theme.of(context).colorScheme.tertiary,
-                  ),
-                ),
+                _buildActionButton(Icons.camera_alt, 'Photos', () {
+                  Navigator.pushNamed(context, AppRouter.photoGallery, arguments: {'jobId': widget.jobId});
+                }),
+                _buildActionButton(Icons.draw, 'Signature', () {
+                  Navigator.pushNamed(context, AppRouter.signatureCapture, arguments: {'jobId': widget.jobId});
+                }),
+                _buildActionButton(Icons.note_add, 'Notes', () {
+                  Navigator.pushNamed(context, AppRouter.noteList, arguments: {'jobId': widget.jobId});
+                }),
               ],
             ),
           ],
@@ -295,29 +232,18 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label, VoidCallback onTap, Color color) {
-    return Material(
-      color: color.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-          child: Column(
-            children: [
-              Icon(icon, size: 28, color: color),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                  color: color,
-                ),
-              ),
-            ],
-          ),
+  Widget _buildActionButton(IconData icon, String label, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            Icon(icon, size: 32, color: Theme.of(context).primaryColor),
+            const SizedBox(height: 4),
+            Text(label),
+          ],
         ),
       ),
     );

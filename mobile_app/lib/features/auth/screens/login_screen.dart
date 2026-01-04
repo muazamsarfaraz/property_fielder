@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Theme.of(context).colorScheme.error,
+        backgroundColor: Colors.red,
       ),
     );
   }
@@ -74,31 +74,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo with gradient background
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.secondary,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.engineering,
-                      size: 64,
-                      color: Colors.white,
-                    ),
+                  // Logo
+                  Icon(
+                    Icons.engineering,
+                    size: 100,
+                    color: Theme.of(context).primaryColor,
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
                   // Title
                   Text(
-                    'Property Fielder',
+                    'Property Fielder Inspector',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -106,9 +92,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Field Service Inspector App',
+                    'Field Service Mobile App',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: Colors.grey,
                         ),
                     textAlign: TextAlign.center,
                   ),
@@ -117,12 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Username field
                   TextFormField(
                     controller: _usernameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Username',
-                      prefixIcon: Icon(
-                        Icons.person_outline,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                      prefixIcon: Icon(Icons.person),
+                      border: OutlineInputBorder(),
                     ),
                     textInputAction: TextInputAction.next,
                     validator: (value) {
@@ -139,14 +123,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _passwordController,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: Icon(
-                        Icons.lock_outline,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                      prefixIcon: const Icon(Icons.lock),
+                      border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() => _obscurePassword = !_obscurePassword);
@@ -163,28 +144,31 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
                   // Login button
-                  FilledButton(
+                  ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
-                    style: FilledButton.styleFrom(
+                    style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
                     ),
                     child: _isLoading
-                        ? SizedBox(
+                        ? const SizedBox(
                             height: 20,
                             width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Sign In'),
+                        : const Text('Login'),
+                  ),
+                  const SizedBox(height: 48),
+
+                  // Version number
+                  Text(
+                    'v1.0.1-bearer-auth',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey,
+                        ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),

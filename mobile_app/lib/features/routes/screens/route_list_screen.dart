@@ -36,48 +36,50 @@ class _RouteListScreenState extends State<RouteListScreen> {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.7,
+                  height: MediaQuery.of(context).size.height * 0.6,
                   child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.route_outlined,
-                              size: 64,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade50,
+                            shape: BoxShape.circle,
                           ),
-                          const SizedBox(height: 24),
-                          Text(
-                            'No Routes Yet',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                          child: Icon(
+                            Icons.route_outlined,
+                            size: 64,
+                            color: Colors.green.shade300,
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Optimized routes for your jobs will appear here.\nPull down to refresh.',
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'No routes scheduled',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 48),
+                          child: Text(
+                            'Routes are created by your dispatcher. Pull down to refresh.',
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                            style: TextStyle(color: Colors.grey.shade600),
                           ),
-                          const SizedBox(height: 24),
-                          OutlinedButton.icon(
-                            onPressed: () => routeProvider.refresh(),
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Refresh'),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () => routeProvider.refresh(),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Refresh Routes'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -117,7 +119,7 @@ class _RouteListScreenState extends State<RouteListScreen> {
                 ),
                 Chip(
                   label: Text(route.statusLabel),
-                  backgroundColor: _getStatusColor(route.status).withValues(alpha: 0.2),
+                  backgroundColor: _getStatusColor(route.status).withOpacity(0.2),
                 ),
               ],
             ),

@@ -29,7 +29,7 @@ Future<void> setupDependencies() async {
   }
   getIt.registerSingleton<StorageService>(storageService);
 
-  // Dio HTTP Client
+  // Dio HTTP Client with cookie support
   final dio = Dio(BaseOptions(
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 30),

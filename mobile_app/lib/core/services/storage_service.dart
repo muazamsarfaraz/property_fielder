@@ -200,6 +200,18 @@ class StorageService {
 
   int? getInspectorId() => _settings.get('inspector_id') as int?;
 
+  Future<void> saveUserName(String name) async {
+    await _settings.put('user_name', name);
+  }
+
+  String? getUserName() => _settings.get('user_name') as String?;
+
+  Future<void> saveUserEmail(String email) async {
+    await _settings.put('user_email', email);
+  }
+
+  String? getUserEmail() => _settings.get('user_email') as String?;
+
   Future<void> saveServerUrl(String url) async {
     await _settings.put('server_url', url);
   }

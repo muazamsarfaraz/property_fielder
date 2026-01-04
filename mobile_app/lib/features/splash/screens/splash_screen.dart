@@ -34,72 +34,32 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.secondary,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.engineering,
-                  size: 72,
-                  color: Colors.white,
-                ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.engineering,
+              size: 100,
+              color: Theme.of(context).primaryColor,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Property Fielder',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 32),
-              Text(
-                'Property Fielder',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Field Service Inspector',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Colors.grey,
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Field Service Inspector',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 64),
-              SizedBox(
-                width: 48,
-                height: 48,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 48),
+            const CircularProgressIndicator(),
+          ],
         ),
       ),
     );
